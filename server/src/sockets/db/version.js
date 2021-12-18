@@ -1,9 +1,9 @@
 import 'dotenv/config';
-import { version } from '../../../../package.json';
 
 // eslint-disable-next-line import/prefer-default-export
 export const checkVersion = (localVersion) => {
-  const matches = version === localVersion || localVersion === null;
+  const { APP_VERSION } = process.env;
+  const matches = APP_VERSION === localVersion || localVersion === null;
 
-  return { version, matches };
+  return { version: APP_VERSION, matches };
 };
