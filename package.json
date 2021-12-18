@@ -1,9 +1,9 @@
 {
-  "name": "vue-solitaire",
-  "version": "2.3.0",
+  "name": "solitaire-server",
+  "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": ">=14.x"
+    "node": "14.x"
   },
   "scripts": {
     "postinstall": "cd server && yarn install --production=false",
