@@ -16,7 +16,7 @@ export default {
   plugins: [
     alias({
       entries: [
-        { find: '@', replacement: path.resolve(projectRootDir, '../src') },
+        { find: '@', replacement: path.resolve(projectRootDir, './src') },
       ],
     }),
     commonjs(),
