@@ -5,6 +5,9 @@ module.exports = {
     mocha: true,
     'cypress/globals': true,
   },
+  parserOptions: {
+    ecmaVersion: 2020,
+  },
   rules: {
     strict: 'off',
     'cypress/no-unnecessary-waiting': 'off',

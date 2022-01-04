@@ -22,8 +22,6 @@ jobs:
       MONGODB_DB: ${{ secrets.MONGODB_DB }}
       MONGODB_USER: ${{ secrets.MONGODB_USER }}
       MONGOBD_PASS: ${{ secrets.MONGOBD_PASS }}
-      GQL_INTROSPECTION: ${{ secrets.GQL_INTROSPECTION }}
-      GQL_PLAYGROUND: ${{ secrets.GQL_PLAYGROUND }}
       VITE_WEBSOCKETS_URL: ${{ secrets.VITE_WEBSOCKETS_URL }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -49,6 +47,3 @@ jobs:
 
       - name: Unit Tests
         run: yarn test:unit
-
-      - name: e2e Tests
-        run: yarn test:e2e

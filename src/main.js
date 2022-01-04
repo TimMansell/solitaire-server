@@ -1,23 +1,40 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-// eslint-disable-next-line import/no-unresolved
-import 'virtual:svg-icons-register';
+import { Server } from 'socket.io';
 
-import App from '@/App.vue';
-import store from '@/store';
-import router from '@/router';
+import { setupServer, setupDB } from './setup';
+import {
+  setupOnSocket,
+  checkVersion,
+  newGame,
+  saveGame,
+  setUser,
+  getUserHistory,
+  getUserCounts,
+  getGlobalCounts,
+  getStats,
+  getLeaderboards,
+  disconnect,
+} from './sockets';
 
-Vue.config.productionTip = false;
+const main = async () => {
+  const [server, db] = await Promise.all([setupServer(), setupDB()]);
+  const io = new Server(server);
 
-Vue.use(VueRouter);
+  io.on('connection', async (socket) => {
+    const on = setupOnSocket({ socket, db, io });
 
-const solitaire = new Vue({
-  store,
-  router,
-  render: (h) => h(App),
-}).$mount('#app');
+    on(checkVersion);
+    on(newGame);
+    on(saveGame);
+    on(setUser);
+    on(getUserHistory);
+    on(getUserCounts);
+    on(getGlobalCounts);
+    on(getStats);
+    on(getLeaderboards);
+    on(disconnect);
 
-// Give access to cypress.
-if (import.meta.env.DEV) {
-  window.solitaire = solitaire;
-}
+    console.log('Client connected.', socket.id);
+  });
+};
+
+main();

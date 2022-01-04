@@ -3,17 +3,12 @@ module.exports = {
   env: {
     node: true,
   },
-  extends: [
-    'airbnb-base',
-    'plugin:vue/strongly-recommended',
-    'plugin:vue-scoped-css/recommended',
-    'plugin:prettier/recommended',
-  ],
+  extends: ['airbnb-base', 'plugin:prettier/recommended'],
   plugins: ['jest', 'prettier'],
   parserOptions: {
-    parser: 'babel-eslint',
+    ecmaVersion: 2020,
   },
-  ignorePatterns: ['server/dist/'],
+  ignorePatterns: ['dist/'],
   rules: {
     'import/no-cycle': 'off',
     'import/no-unresolved': [2, { ignore: ['@'] }],
@@ -28,17 +23,6 @@ module.exports = {
         ],
       },
     ],
-    'vue/max-attributes-per-line': 'off',
-    'vue/html-self-closing': [
-      'error',
-      {
-        html: {
-          normal: 'always',
-          void: 'always',
-        },
-      },
-    ],
-    'vue/singleline-html-element-content-newline': 'off',
   },
   overrides: [
     {
