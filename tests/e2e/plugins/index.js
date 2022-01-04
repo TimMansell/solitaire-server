@@ -4,13 +4,7 @@ require('dotenv').config();
 const { MONGOBD_URI, MONGODB_USER, MONGOBD_PASS, MONGODB_DB } = process.env;
 const URI = `mongodb+srv://${MONGODB_USER}:${MONGOBD_PASS}@${MONGOBD_URI}/test?retryWrites=true&w=majority`;
 
-const {
-  addMatchImageSnapshotPlugin,
-} = require('cypress-image-snapshot/plugin');
-
 module.exports = (on, config) => {
-  addMatchImageSnapshotPlugin(on, config);
-
   let connection;
   let db;
 
