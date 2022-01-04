@@ -14,7 +14,10 @@
     "watch": "rollup -c ./rollup.config.js -w",
     "start": "node ./dist/index.js",
     "test:unit": "jest",
-    "test:e2e": "run-p -r serve:test test:e2e:cli",
+    "test:e2e": "run-p -r serve:test cypress:run",
+    "test:e2e:gui": "run-p -r serve:test cypress:open",
+    "cypress:run": "cypress run --headless --browser chrome",
+    "cypress:open": "cypress open",
     "lint": "eslint {src,tests}/**/*.js --fix"
   },
   "dependencies": {
