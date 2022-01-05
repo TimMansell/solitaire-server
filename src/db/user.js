@@ -4,7 +4,6 @@ import {
   colors,
   animals,
 } from 'unique-names-generator';
-import { formatHistoryGames } from '@/services/stats';
 
 export const createUser = async (db, uid) => {
   const name = uniqueNamesGenerator({
@@ -26,8 +25,17 @@ export const getUser = async (db, uid) => {
   return user?.name;
 };
 
+export const getUsers = async (db) => {
+  const users = await db
+    .collection('users')
+    .find({}, { projection: { uid: 1 } })
+    .toArray();
+
+  return users;
+};
+
 export const getGames = async (db, uid, offset, limit) => {
-  const findGames = db
+  const games = await db
     .collection('games')
     .find(
       { uid },
@@ -38,14 +46,14 @@ export const getGames = async (db, uid, offset, limit) => {
     .sort({ date: -1 })
     .toArray();
 
-  const findGamesPlayed = db
+  return games;
+};
+
+export const getGamesPlayed = async (db, uid) => {
+  const gamesPlayed = db
     .collection('games')
     .find({ uid }, { projection: { date: 1 } })
     .count();
 
-  const [games, gamesPlayed] = await Promise.all([findGames, findGamesPlayed]);
-
-  const formattedGames = formatHistoryGames(games, gamesPlayed, offset);
-
-  return formattedGames;
+  return gamesPlayed;
 };

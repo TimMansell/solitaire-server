@@ -49,22 +49,41 @@ export const formatHistoryGames = (games, gamesPlayed, offset) =>
     duration: formatTime(time),
   }));
 
-export const formatStats = ({ completed, won, lost }) => {
-  const abandoned = completed - won - lost;
+export const calculateStats = (games) => {
+  const gamesCompleted = games.length;
+  const gamesWon = games.filter(({ won }) => won).length;
+  const gamesLost = games.filter(({ lost }) => lost).length;
+  const gamesQuit = gamesCompleted - gamesWon - gamesLost;
 
-  const completedCount = formatNumber(completed);
-  const wonCount = formatNumber(won);
-  const lostCount = formatNumber(lost);
-  const abandonedCount = formatNumber(abandoned);
+  const completed = formatNumber(gamesCompleted);
+  const won = formatNumber(gamesWon);
+  const lost = formatNumber(gamesLost);
+  const quit = formatNumber(gamesQuit);
 
-  const wonPercent = formatPercent(won / completed);
-  const lostPercent = formatPercent(lost / completed);
-  const abandonedPercent = formatPercent(abandoned / completed);
+  const wonPercent = formatPercent(gamesWon / gamesCompleted);
+  const lostPercent = formatPercent(gamesLost / gamesCompleted);
+  const quitPercent = formatPercent(gamesQuit / gamesCompleted);
 
-  const stats = [
-    [completedCount, wonCount, lostCount, abandonedCount],
-    ['', wonPercent, lostPercent, abandonedPercent],
-  ];
-
-  return stats;
+  return {
+    completed,
+    won,
+    lost,
+    quit,
+    wonPercent,
+    lostPercent,
+    quitPercent,
+  };
 };
+
+export const formatStats = ({
+  completed,
+  won,
+  lost,
+  quit,
+  wonPercent,
+  lostPercent,
+  quitPercent,
+}) => [
+  [completed, won, lost, quit],
+  ['', wonPercent, lostPercent, quitPercent],
+];

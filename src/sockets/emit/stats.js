@@ -1,31 +1,16 @@
-import {
-  getUserCounts,
-  getGlobalCounts,
-  getPlayerStats,
-  getGlobalStats,
-  getLeaderboards,
-} from '@/db/stats';
+import { getUserStats, getGlobalStats, getLeaderboards } from '@/db/stats';
+import { formatStats } from '@/services/stats';
 
-export const emitGetUserCounts = async ({ socket, db, uid }) => {
+export const emitCounts = async ({ socket, io, db, uid }) => {
   try {
-    const counts = await getUserCounts(db, uid);
+    const [user, global] = await Promise.all([
+      getUserStats(db, uid),
+      getGlobalStats(db),
+    ]);
 
-    socket.emit('getUserCounts', counts);
-  } catch (error) {
-    console.log({ error });
-  }
-};
+    socket.emit('getUserCounts', user);
 
-export const emitGetGlobalCounts = async ({ io, socket, db }) => {
-  try {
-    const counts = await getGlobalCounts(db);
-
-    if (io) {
-      io.emit('getGlobalCounts', counts);
-      return;
-    }
-
-    socket.emit('getGlobalCounts', counts);
+    io.emit('getGlobalCounts', global);
   } catch (error) {
     console.log({ error });
   }
@@ -33,10 +18,13 @@ export const emitGetGlobalCounts = async ({ io, socket, db }) => {
 
 export const emitGetStats = async ({ socket, db, uid }) => {
   try {
-    const [userStats, globalStats] = await Promise.all([
-      getPlayerStats(db, uid),
+    const [user, global] = await Promise.all([
+      getUserStats(db, uid),
       getGlobalStats(db),
     ]);
+
+    const userStats = formatStats(user);
+    const globalStats = formatStats(global);
 
     socket.emit('getStats', { userStats, globalStats });
   } catch (error) {

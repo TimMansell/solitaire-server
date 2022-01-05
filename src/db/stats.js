@@ -1,87 +1,16 @@
-import {
-  getLeaderboadSortBy,
-  formatLeaderboardGames,
-  formatStats,
-} from '@/services/stats';
+import { getLeaderboadSortBy, formatLeaderboardGames } from '@/services/stats';
 
-export const getUserCounts = async (db, uid) => {
-  const completed = await db
-    .collection('games')
-    .find({ uid, completed: true }, { projection: { completed: 1 } })
-    .count();
+export const getUserStats = async (db, uid) =>
+  db.collection('userStats').findOne({ uid }, { _id: 0 });
 
-  return { completed };
-};
+export const getGlobalStats = async (db) =>
+  db.collection('globalStats').findOne({}, { _id: 0 });
 
-export const getGlobalCounts = async (db) => {
-  const getCompleted = db
-    .collection('games')
-    .find({ completed: true }, { projection: { completed: 1 } })
-    .count();
+export const getUsersGames = (db, uid) =>
+  db.collection('games').find({ uid }, { _id: 0 }).toArray();
 
-  const getPlayers = db
-    .collection('users')
-    .find({}, { projection: {} })
-    .count();
-
-  const [completed, players] = await Promise.all([getCompleted, getPlayers]);
-
-  return { completed, players };
-};
-
-export const getPlayerStats = async (db, uid) => {
-  const getCompleted = db
-    .collection('games')
-    .find({ uid, completed: true }, { projection: { completed: 1 } })
-    .count();
-
-  const getWon = db
-    .collection('games')
-    .find({ uid, won: true }, { projection: { won: 1 } })
-    .count();
-
-  const getLost = db
-    .collection('games')
-    .find({ uid, lost: true }, { projection: { lost: 1 } })
-    .count();
-
-  const [completed, won, lost] = await Promise.all([
-    getCompleted,
-    getWon,
-    getLost,
-  ]);
-
-  const formattedStats = formatStats({ completed, won, lost });
-
-  return formattedStats;
-};
-
-export const getGlobalStats = async (db) => {
-  const getCompleted = db
-    .collection('games')
-    .find({ completed: true }, { projection: { completed: 1 } })
-    .count();
-
-  const getWon = db
-    .collection('games')
-    .find({ won: true }, { projection: { won: 1 } })
-    .count();
-
-  const getLost = db
-    .collection('games')
-    .find({ lost: true }, { projection: { lost: 1 } })
-    .count();
-
-  const [completed, won, lost] = await Promise.all([
-    getCompleted,
-    getWon,
-    getLost,
-  ]);
-
-  const formattedStats = formatStats({ completed, won, lost });
-
-  return formattedStats;
-};
+export const getAllGames = (db) =>
+  db.collection('games').find({}, { _id: 0 }).toArray();
 
 export const getLeaderboards = async (db, showBest, limit) => {
   const sortBy = getLeaderboadSortBy(showBest);
@@ -106,4 +35,12 @@ export const getLeaderboards = async (db, showBest, limit) => {
   const formattedGames = formatLeaderboardGames(games, players, sortBy);
 
   return formattedGames;
+};
+
+export const updateStats = async (db, collection, stats) => {
+  const { uid } = stats;
+
+  return db
+    .collection(collection)
+    .findOneAndUpdate({ uid }, { $set: { ...stats } }, { upsert: true });
 };
