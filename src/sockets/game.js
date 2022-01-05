@@ -1,7 +1,8 @@
+import { saveNewGame } from '@/db/game';
 import { getAllGames, getUsersGames, updateStats } from '@/db/stats';
 import { calculateStats } from '@/services/stats';
 
-import { emitNewGame, emitSavedGame } from './emit/game';
+import { emitNewGame } from './emit/game';
 import { emitCounts } from './emit/stats';
 import { emitSetUser } from './emit/user';
 
@@ -14,7 +15,7 @@ export const newGame = ({ socket, db }) => {
 export const saveGame = ({ socket, db, io }) => {
   socket.on('saveGame', async ({ uid, game, gameOutcome }) => {
     await Promise.all([
-      emitSavedGame({ socket, db, uid, game, gameOutcome }),
+      saveNewGame(db, uid, game, gameOutcome),
       emitSetUser({ socket, db, uid, create: true }),
     ]);
 

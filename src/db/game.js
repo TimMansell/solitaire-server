@@ -23,7 +23,7 @@ export const newDeck = async (db, uid, isMocked) => {
   return cards;
 };
 
-export const saveGame = async (db, uid, game, gameOutcome) => {
+export const saveNewGame = async (db, uid, game, gameOutcome) => {
   const { moves, time } = game;
   const date = createISODate();
 
@@ -45,7 +45,7 @@ export const saveGame = async (db, uid, game, gameOutcome) => {
 
     if (!user) return;
 
-    db.collection('games').insertOne({
+    await db.collection('games').insertOne({
       date,
       uid,
       moves: moves.length,
@@ -61,7 +61,7 @@ export const saveGame = async (db, uid, game, gameOutcome) => {
   const { cards } = value;
   const { isGameFinished, hasMoves } = checkGameState(moves, cards);
 
-  db.collection('games').insertOne({
+  await db.collection('games').insertOne({
     date,
     uid,
     moves: moves.length,
