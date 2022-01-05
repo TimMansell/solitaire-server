@@ -1,23 +1,7 @@
 import { createServer } from 'http';
 import express from 'express';
-import { graphqlHTTP } from 'express-graphql';
-import { buildSchema } from 'graphql';
 import { MongoClient } from 'mongodb';
-import { Server } from 'socket.io';
 import 'dotenv/config';
-import {
-  setupOnSocket,
-  checkVersion,
-  newGame,
-  saveGame,
-  setUser,
-  getUserHistory,
-  getUserCounts,
-  getGlobalCounts,
-  getStats,
-  getLeaderboards,
-  disconnect,
-} from '../sockets';
 
 export const setupDB = async () => {
   const { MONGOBD_URI, MONGODB_USER, MONGOBD_PASS, MONGODB_DB } = process.env;
@@ -46,50 +30,4 @@ export const setupExpress = async () => {
   console.log(`http server listening on ${APP_PORT}`);
 
   return { server, app };
-};
-
-export const setupSockets = ({ server }, db) => {
-  const io = new Server(server);
-
-  io.on('connection', async (socket) => {
-    const on = setupOnSocket({ socket, db, io });
-
-    on(checkVersion);
-    on(newGame);
-    on(saveGame);
-    on(setUser);
-    on(getUserHistory);
-    on(getUserCounts);
-    on(getGlobalCounts);
-    on(getStats);
-    on(getLeaderboards);
-    on(disconnect);
-
-    console.log('Client connected.', socket.id);
-  });
-};
-
-export const setupGraphQl = ({ app }) => {
-  // Construct a schema, using GraphQL schema language
-  const schema = buildSchema(`
-type Query {
-  hello: String
-}
-`);
-
-  // The root provides a resolver function for each API endpoint
-  const root = {
-    hello: () => {
-      return 'Hello world!';
-    },
-  };
-
-  app.use(
-    '/graphql',
-    graphqlHTTP({
-      schema,
-      rootValue: root,
-      graphiql: true,
-    })
-  );
 };
