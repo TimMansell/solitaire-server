@@ -1,4 +1,4 @@
-import { newDeck, saveGame } from '../db/game';
+import { newDeck, saveGame } from '@/db/game';
 
 export const emitNewGame = async ({ socket, db, uid }) => {
   const isMocked = process.env.NODE_ENV === 'test';

@@ -4,7 +4,7 @@ import {
   getPlayerStats,
   getGlobalStats,
   getLeaderboards,
-} from '../db/stats';
+} from '@/db/stats';
 
 export const emitGetUserCounts = async ({ socket, db, uid }) => {
   try {

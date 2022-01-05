@@ -1,4 +1,4 @@
-import { createUser, getUser, getGames } from '../db/user';
+import { createUser, getUser, getGames } from '@/db/user';
 
 export const emitSetUser = async ({ socket, db, uid, create = false }) => {
   try {
