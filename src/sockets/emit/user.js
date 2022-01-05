@@ -1,5 +1,4 @@
-import { createUser, getUser, getGames, getGamesPlayed } from '@/db/user';
-import { formatHistoryGames } from '@/services/stats';
+import { createUser, getUser, getGames } from '@/db/user';
 
 export const emitSetUser = async ({ socket, db, uid, create = false }) => {
   try {
@@ -28,14 +27,9 @@ export const emitGetUserHistory = async ({
   limit,
 }) => {
   try {
-    const [games, gamesPlayed] = await Promise.all([
-      getGames(db, uid, offset, limit),
-      getGamesPlayed(db, uid),
-    ]);
+    const games = await getGames(db, uid, offset, limit);
 
-    const formattedGames = formatHistoryGames(games, gamesPlayed, offset);
-
-    socket.emit('getUserHistory', formattedGames);
+    socket.emit('getUserHistory', games);
   } catch (error) {
     console.log({ error });
   }
