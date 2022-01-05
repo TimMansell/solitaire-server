@@ -1,6 +1,6 @@
 import { Server } from 'socket.io';
 
-import { setupServer, setupDB } from './setup';
+import { setupExpress, setupDB, setupGraphQl } from './setup';
 import {
   setupOnSocket,
   checkVersion,
@@ -16,8 +16,8 @@ import {
 } from './sockets';
 
 const main = async () => {
-  const [server, db] = await Promise.all([setupServer(), setupDB()]);
-  const io = new Server(server);
+  const [express, db] = await Promise.all([setupExpress(), setupDB()]);
+  const io = new Server(express.server);
 
   io.on('connection', async (socket) => {
     const on = setupOnSocket({ socket, db, io });
@@ -35,6 +35,8 @@ const main = async () => {
 
     console.log('Client connected.', socket.id);
   });
+
+  setupGraphQl(express);
 };
 
 main();

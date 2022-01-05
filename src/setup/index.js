@@ -1,5 +1,7 @@
 import { createServer } from 'http';
 import express from 'express';
+import { graphqlHTTP } from 'express-graphql';
+import { buildSchema } from 'graphql';
 import { MongoClient } from 'mongodb';
 import 'dotenv/config';
 
@@ -17,7 +19,7 @@ export const setupDB = async () => {
   return db;
 };
 
-export const setupServer = () => {
+export const setupExpress = async () => {
   const APP_PORT = process.env.PORT || 5000;
 
   const app = express().use(express.static(`${__dirname}/`));
@@ -27,7 +29,32 @@ export const setupServer = () => {
     res.send('Server is responding :)');
   });
 
-  console.log('http server listening on %d', APP_PORT);
+  console.log(`http server listening on ${APP_PORT}`);
 
-  return server;
+  return { server, app };
+};
+
+export const setupGraphQl = ({ app }) => {
+  // Construct a schema, using GraphQL schema language
+  const schema = buildSchema(`
+type Query {
+  hello: String
+}
+`);
+
+  // The root provides a resolver function for each API endpoint
+  const root = {
+    hello: () => {
+      return 'Hello world!';
+    },
+  };
+
+  app.use(
+    '/graphql',
+    graphqlHTTP({
+      schema,
+      rootValue: root,
+      graphiql: true,
+    })
+  );
 };
