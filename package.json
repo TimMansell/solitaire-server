@@ -5,13 +5,15 @@
   "engines": {
     "node": "14.x"
   },
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "build": "rollup -c ./rollup.config.js",
+    "build": "rollup -c ",
+    "build:tasks": "rollup -c -i ./src/tasks/stats.js -o ./dist/stats.js",
     "serve:dev": "run-p serve watch",
     "serve:test": "cross-env NODE_ENV=test run-s build start",
     "serve": "nodemon ./dist/index.js",
-    "watch": "rollup -c ./rollup.config.js -w",
+    "watch": "rollup -c -w",
     "start": "node ./dist/index.js",
     "test:unit": "jest",
     "test:e2e": "run-p -r serve:test cypress:run",
