@@ -8,7 +8,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "build": "rollup -c ",
+    "build": "rollup -c",
     "build:tasks": "rollup -c -i ./src/tasks/stats.js -o ./dist/stats.js",
     "serve:dev": "run-p serve watch",
     "serve:test": "cross-env NODE_ENV=test run-s build start",
