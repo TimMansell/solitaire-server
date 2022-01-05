@@ -1,40 +1,12 @@
-import { Server } from 'socket.io';
-
-import { setupServer, setupDB } from './setup';
-import {
-  setupOnSocket,
-  checkVersion,
-  newGame,
-  saveGame,
-  setUser,
-  getUserHistory,
-  getUserCounts,
-  getGlobalCounts,
-  getStats,
-  getLeaderboards,
-  disconnect,
-} from './sockets';
+import { setupExpress, setupDB } from './setup';
+import { setupSockets } from './sockets';
+import { setupGraphQl } from './graphql';
 
 const main = async () => {
-  const [server, db] = await Promise.all([setupServer(), setupDB()]);
-  const io = new Server(server);
+  const [express, db] = await Promise.all([setupExpress(), setupDB()]);
 
-  io.on('connection', async (socket) => {
-    const on = setupOnSocket({ socket, db, io });
-
-    on(checkVersion);
-    on(newGame);
-    on(saveGame);
-    on(setUser);
-    on(getUserHistory);
-    on(getUserCounts);
-    on(getGlobalCounts);
-    on(getStats);
-    on(getLeaderboards);
-    on(disconnect);
-
-    console.log('Client connected.', socket.id);
-  });
+  setupSockets(express, db);
+  setupGraphQl(express);
 };
 
 main();

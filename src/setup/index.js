@@ -17,7 +17,7 @@ export const setupDB = async () => {
   return db;
 };
 
-export const setupServer = () => {
+export const setupExpress = async () => {
   const APP_PORT = process.env.PORT || 5000;
 
   const app = express().use(express.static(`${__dirname}/`));
@@ -27,7 +27,7 @@ export const setupServer = () => {
     res.send('Server is responding :)');
   });
 
-  console.log('http server listening on %d', APP_PORT);
+  console.log(`http server listening on ${APP_PORT}`);
 
-  return server;
+  return { server, app };
 };
