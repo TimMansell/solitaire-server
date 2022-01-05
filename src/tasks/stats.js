@@ -1,21 +1,43 @@
-import {
-  // getUserCounts,
-  getGlobalCounts,
-  // getPlayerStats,
-  // getGlobalStats,
-  // getLeaderboards,
-} from '@/db/stats';
 import { setupDB } from '../setup';
+import { getAllGames } from '@/db/stats';
+import { getUsers } from '@/db/user';
+import { calculateStats } from '@/services/stats';
+
+const updateBulkStats = async (db, collection, stats) => {
+  const bulk = db.collection(collection).initializeUnorderedBulkOp();
+
+  stats.forEach((stat) => {
+    const { uid } = stat;
+
+    bulk
+      .find({ uid })
+      .upsert()
+      .update({ $set: { ...stat } });
+  });
+
+  await bulk.execute();
+};
 
 const main = async () => {
   const db = await setupDB();
 
   try {
-    const counts = await getGlobalCounts(db);
+    const games = await getAllGames(db);
 
-    // socket.emit('getUserCounts', counts);
+    const globalStats = calculateStats(games);
 
-    console.log({ counts });
+    const users = await getUsers(db);
+
+    const userStats = users.map(({ uid }) => {
+      const userGames = games.filter(({ uid: uid2 }) => uid2 === uid);
+
+      const stats = calculateStats(userGames);
+
+      return { uid, ...stats };
+    });
+
+    updateBulkStats(db, 'globalStats', [globalStats]);
+    updateBulkStats(db, 'userStats', userStats);
   } catch (error) {
     console.log({ error });
   }
