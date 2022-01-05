@@ -1,5 +1,5 @@
 import { getUserStats, getGlobalStats, getLeaderboards } from '@/db/stats';
-import { formatStats } from '@/services/stats';
+import { formatStats, formatEmptyStats } from '@/services/stats';
 
 export const emitCounts = async ({ socket, io, db, uid }) => {
   try {
@@ -23,7 +23,7 @@ export const emitGetStats = async ({ socket, db, uid }) => {
       getGlobalStats(db),
     ]);
 
-    const userStats = formatStats(user);
+    const userStats = user ? formatStats(user) : formatEmptyStats();
     const globalStats = formatStats(global);
 
     socket.emit('getStats', { userStats, globalStats });

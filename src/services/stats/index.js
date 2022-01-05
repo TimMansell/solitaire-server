@@ -87,3 +87,19 @@ export const formatStats = ({
   [completed, won, lost, quit],
   ['', wonPercent, lostPercent, quitPercent],
 ];
+
+export const formatEmptyStats = () => {
+  const stats = {
+    completed: formatNumber(0),
+    won: formatNumber(0),
+    lost: formatNumber(0),
+    quit: formatNumber(0),
+    wonPercent: formatPercent(0),
+    lostPercent: formatPercent(0),
+    quitPercent: formatPercent(0),
+  };
+
+  const formattedStats = formatStats(stats);
+
+  return formattedStats;
+};
