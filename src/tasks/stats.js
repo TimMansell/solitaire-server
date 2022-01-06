@@ -1,7 +1,7 @@
-import { setupDB } from '../setup';
 import { getAllGames, updateGlobalStats, updatePlayerStats } from '@/db/stats';
 import { getUsers } from '@/db/user';
 import { calculateStats } from '@/services/stats';
+import { setupDB } from '../setup';
 
 const updateBulkUsers = async (db) => {
   const [games, users] = await Promise.all([getAllGames(db), getUsers(db)]);

@@ -51,8 +51,8 @@ export const formatHistoryGames = (games, gamesPlayed, offset) =>
 
 export const calculateStats = (games) => {
   const completed = games.length;
-  const won = games.filter(({ won }) => won).length;
-  const lost = games.filter(({ lost }) => lost).length;
+  const won = games.filter(({ won: w }) => w).length;
+  const lost = games.filter(({ lost: l }) => l).length;
   const quit = completed - won - lost;
 
   const wonPercent = won / completed;
