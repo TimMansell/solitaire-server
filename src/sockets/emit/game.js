@@ -1,5 +1,6 @@
-import { newDeck, saveGame } from '../db/game';
+import { newDeck } from '@/db/game';
 
+// eslint-disable-next-line import/prefer-default-export
 export const emitNewGame = async ({ socket, db, uid }) => {
   const isMocked = process.env.NODE_ENV === 'test';
 
@@ -7,16 +8,6 @@ export const emitNewGame = async ({ socket, db, uid }) => {
     const cards = await newDeck(db, uid, isMocked);
 
     socket.emit('newGame', cards);
-  } catch (error) {
-    console.log({ error });
-  }
-};
-
-export const emitSavedGame = async ({ socket, db, uid, game, gameOutcome }) => {
-  try {
-    await saveGame(db, uid, game, gameOutcome);
-
-    socket.emit('savedGame');
   } catch (error) {
     console.log({ error });
   }

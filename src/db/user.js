@@ -6,28 +6,35 @@ import {
 } from 'unique-names-generator';
 import { formatHistoryGames } from '@/services/stats';
 
-export const createUser = async (db, uid) => {
+export const createNewUser = (db, uid) => {
   const name = uniqueNamesGenerator({
     dictionaries: [adjectives, colors, animals],
     separator: '',
     style: 'capital',
   });
 
-  db.collection('users').insertOne({ uid, name });
-
-  return name;
+  return db.collection('users').insertOne({ uid, name });
 };
 
 export const getUser = async (db, uid) => {
   const user = await db
     .collection('users')
-    .findOne({ uid }, { projection: { name: 1 } });
+    .findOne({ uid }, { projection: { _id: 0, name: 1 } });
 
-  return user?.name;
+  return user;
+};
+
+export const getUsers = async (db) => {
+  const users = await db
+    .collection('users')
+    .find({}, { projection: { uid: 1 } })
+    .toArray();
+
+  return users;
 };
 
 export const getGames = async (db, uid, offset, limit) => {
-  const findGames = db
+  const findGames = await db
     .collection('games')
     .find(
       { uid },

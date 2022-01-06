@@ -20,7 +20,7 @@ export const setupDB = async () => {
 export const setupExpress = async () => {
   const APP_PORT = process.env.PORT || 5000;
 
-  const app = express().use(express.static(`${__dirname}/`));
+  const app = express();
   const server = createServer(app).listen(APP_PORT);
 
   app.get('/', (req, res) => {

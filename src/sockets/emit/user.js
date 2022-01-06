@@ -1,19 +1,10 @@
-import { createUser, getUser, getGames } from '../db/user';
+import { getUser, getGames } from '@/db/user';
 
-export const emitSetUser = async ({ socket, db, uid, create = false }) => {
+export const emitSetUser = async ({ socket, db, uid }) => {
   try {
     const user = await getUser(db, uid);
 
-    if (user) {
-      socket.emit('setUser', user);
-      return;
-    }
-
-    if (create) {
-      const newUser = await createUser(db, uid);
-
-      socket.emit('setUser', newUser);
-    }
+    socket.emit('setUser', user);
   } catch (error) {
     console.log({ error });
   }

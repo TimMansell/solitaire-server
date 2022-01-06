@@ -1,4 +1,4 @@
-import { checkVersion } from '../db/version';
+import { checkVersion } from '@/db/version';
 
 // eslint-disable-next-line import/prefer-default-export
 export const emitCheckVersion = ({ socket, localVersion }) => {

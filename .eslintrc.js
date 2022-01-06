@@ -14,15 +14,6 @@ module.exports = {
     'import/no-unresolved': [2, { ignore: ['@'] }],
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-param-reassign': [
-      'error',
-      {
-        props: true,
-        ignorePropertyModificationsFor: [
-          'state', // for vuex state
-        ],
-      },
-    ],
   },
   overrides: [
     {
