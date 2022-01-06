@@ -8,9 +8,11 @@ export const emitCounts = async ({ socket, io, db, uid }) => {
       getGlobalStats(db),
     ]);
 
-    socket.emit('getUserCounts', user);
+    const userCounts = user ?? 0;
+    const globalCounts = global;
 
-    io.emit('getGlobalCounts', global);
+    socket.emit('getUserCounts', userCounts);
+    io.emit('getGlobalCounts', globalCounts);
   } catch (error) {
     console.log({ error });
   }

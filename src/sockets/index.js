@@ -4,7 +4,7 @@ import { setupOnSocket } from './setup';
 import { disconnect } from './disconnect';
 import { checkVersion } from './version';
 import { newGame, saveGame } from './game';
-import { setUser, getUserHistory } from './user';
+import { createUser, setUser, getUserHistory } from './user';
 import { getCounts, getStats, getLeaderboards } from './stats';
 
 // eslint-disable-next-line import/prefer-default-export
@@ -17,6 +17,7 @@ export const setupSockets = ({ server }, db) => {
     on(checkVersion);
     on(newGame);
     on(saveGame);
+    on(createUser);
     on(setUser);
     on(getUserHistory);
     on(getCounts);

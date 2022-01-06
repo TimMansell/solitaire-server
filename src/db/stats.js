@@ -1,4 +1,9 @@
-import { getLeaderboadSortBy, formatLeaderboardGames } from '@/services/stats';
+import { getUsers } from '@/db/user';
+import {
+  getLeaderboadSortBy,
+  formatLeaderboardGames,
+  calculateStats,
+} from '@/services/stats';
 
 export const getUserStats = async (db, uid) =>
   db.collection('userStats').findOne({ uid }, { _id: 0 });
@@ -37,10 +42,32 @@ export const getLeaderboards = async (db, showBest, limit) => {
   return formattedGames;
 };
 
-export const updateStats = async (db, collection, stats) => {
-  const { uid } = stats;
+export const updateUserStats = async (db, uid) => {
+  const usersGames = await getUsersGames(db, uid);
+
+  const stats = calculateStats(usersGames);
 
   return db
-    .collection(collection)
+    .collection('userStats')
     .findOneAndUpdate({ uid }, { $set: { ...stats } }, { upsert: true });
+};
+
+export const updateGlobalStats = async (db) => {
+  const games = await getAllGames(db);
+
+  const stats = calculateStats(games);
+
+  return db
+    .collection('globalStats')
+    .findOneAndUpdate({}, { $set: { ...stats } }, { upsert: true });
+};
+
+export const updatePlayerStats = async (db) => {
+  const users = await getUsers(db);
+
+  const stats = { players: users.length };
+
+  return db
+    .collection('globalStats')
+    .findOneAndUpdate({}, { $set: { ...stats } }, { upsert: true });
 };
