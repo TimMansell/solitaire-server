@@ -1,12 +1,22 @@
 import { setupDB } from '../setup';
-import { getAllGames } from '@/db/stats';
+import { getAllGames, updateGlobalStats, updatePlayerStats } from '@/db/stats';
 import { getUsers } from '@/db/user';
 import { calculateStats } from '@/services/stats';
 
-const updateBulkStats = async (db, collection, stats) => {
-  const bulk = db.collection(collection).initializeUnorderedBulkOp();
+const updateBulkUsers = async (db) => {
+  const [games, users] = await Promise.all([getAllGames(db), getUsers(db)]);
 
-  stats.forEach((stat) => {
+  const userStats = users.map(({ uid }) => {
+    const userGames = games.filter(({ uid: uuid }) => uuid === uid);
+
+    const stats = calculateStats(userGames);
+
+    return { uid, ...stats };
+  });
+
+  const bulk = db.collection('userStats').initializeUnorderedBulkOp();
+
+  userStats.forEach((stat) => {
     const { uid } = stat;
 
     bulk
@@ -22,22 +32,13 @@ const main = async () => {
   const db = await setupDB();
 
   try {
-    const games = await getAllGames(db);
+    await Promise.all([
+      updateGlobalStats(db),
+      updatePlayerStats(db),
+      updateBulkUsers(db),
+    ]);
 
-    const globalStats = calculateStats(games);
-
-    const users = await getUsers(db);
-
-    const userStats = users.map(({ uid }) => {
-      const userGames = games.filter(({ uid: uid2 }) => uid2 === uid);
-
-      const stats = calculateStats(userGames);
-
-      return { uid, ...stats };
-    });
-
-    updateBulkStats(db, 'globalStats', [globalStats]);
-    updateBulkStats(db, 'userStats', userStats);
+    console.log('stats updated');
   } catch (error) {
     console.log({ error });
   }
