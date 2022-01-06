@@ -460,6 +460,4 @@ export const mockPlayers = [
   { uid: '2cbf658a-3102-4e9d-b749-bac853efed0d', name: 'Player 2' },
 ];
 
-export const mockStats = { won: 2, lost: 4, completed: 9, players: 4 };
-
 export const mockVersionNumber = '1.0.0';
