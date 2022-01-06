@@ -8,9 +8,14 @@ import json from '@rollup/plugin-json';
 const projectRootDir = path.resolve(__dirname);
 
 export default {
-  input: './src/main.js',
+  input: {
+    index: './src/main.js',
+    stats: './src/tasks/stats.js',
+  },
   output: {
-    file: './dist/index.js',
+    dir: 'dist',
+    entryFileNames: '[name].js',
+    format: 'cjs',
   },
   plugins: [
     alias({
