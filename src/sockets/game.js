@@ -10,8 +10,8 @@ export const newGame = ({ socket, db }) => {
 };
 
 export const saveGame = ({ socket, db, io }) => {
-  socket.on('saveGame', async ({ uid, game, gameOutcome }) => {
-    await saveNewGame(db, uid, game, gameOutcome);
+  socket.on('saveGame', async ({ uid, game }) => {
+    await saveNewGame(db, uid, game);
 
     await Promise.all([updateUserStats(db, uid), updateGlobalStats(db)]);
 
