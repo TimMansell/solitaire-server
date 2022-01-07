@@ -1,5 +1,9 @@
 import { getUserStats, getGlobalStats, getLeaderboards } from '@/db/stats';
-import { formatStats, formatEmptyStats } from '@/services/stats';
+import {
+  formatStats,
+  formatEmptyStats,
+  formatLeaderboardGames,
+} from '../format';
 
 export const emitCounts = async ({ socket, io, db, uid }) => {
   try {
@@ -36,9 +40,11 @@ export const emitGetStats = async ({ socket, db, uid }) => {
 
 export const emitGetLeaderboards = async ({ socket, db, showBest, limit }) => {
   try {
-    const games = await getLeaderboards(db, showBest, limit);
+    const [games, players] = await getLeaderboards(db, showBest, limit);
 
-    socket.emit('getLeaderboards', games);
+    const formattedGames = formatLeaderboardGames(games, players, showBest);
+
+    socket.emit('getLeaderboards', formattedGames);
   } catch (error) {
     console.log({ error });
   }
