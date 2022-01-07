@@ -11,7 +11,7 @@
     "serve:dev": "run-p serve watch",
     "serve:test": "cross-env NODE_ENV=test run-s build start",
     "serve": "nodemon ./dist/index.js",
-    "serve:stats": "nodemon ./dist/stats.js",
+    "stats": "node ./dist/stats.js",
     "watch": "rollup -c -w",
     "start": "node ./dist/index.js",
     "test:unit": "jest",
