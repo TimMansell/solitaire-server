@@ -1,4 +1,5 @@
 import { getUser, getGames } from '@/db/user';
+import { formatHistoryGames } from './format';
 
 export const emitSetUser = async ({ socket, db, uid }) => {
   try {
@@ -18,9 +19,11 @@ export const emitGetUserHistory = async ({
   limit,
 }) => {
   try {
-    const games = await getGames(db, uid, offset, limit);
+    const [games, gamesPlayed] = await getGames(db, uid, offset, limit);
 
-    socket.emit('getUserHistory', games);
+    const formattedGames = formatHistoryGames(games, gamesPlayed, offset);
+
+    socket.emit('getUserHistory', formattedGames);
   } catch (error) {
     console.log({ error });
   }

@@ -1,5 +1,5 @@
 import { getUser, createNewUser } from '@/db/user';
-import { updatePlayerStats } from '@/db/stats';
+import { updatePlayerStats } from '../format';
 import { emitSetUser, emitGetUserHistory } from './emit/user';
 
 export const createUser = ({ socket, db }) => {

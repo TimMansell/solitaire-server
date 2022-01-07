@@ -1,9 +1,5 @@
 import { getUsers } from '@/db/user';
-import {
-  getLeaderboadSortBy,
-  formatLeaderboardGames,
-  calculateStats,
-} from '@/services/stats';
+import { calculateStats } from '../format';
 
 export const getUserStats = async (db, uid) =>
   db.collection('userStats').findOne({ uid }, { _id: 0 });
@@ -17,9 +13,7 @@ export const getUsersGames = (db, uid) =>
 export const getAllGames = (db) =>
   db.collection('games').find({}, { _id: 0 }).toArray();
 
-export const getLeaderboards = async (db, showBest, limit) => {
-  const sortBy = getLeaderboadSortBy(showBest);
-
+export const getLeaderboards = async (db, sortBy, limit) => {
   const games = await db
     .collection('games')
     .find(
@@ -37,9 +31,7 @@ export const getLeaderboards = async (db, showBest, limit) => {
     .find({ uid: { $in: uids } }, { projection: { _id: 0, uid: 1, name: 1 } })
     .toArray();
 
-  const formattedGames = formatLeaderboardGames(games, players, sortBy);
-
-  return formattedGames;
+  return [games, players];
 };
 
 export const updateUserStats = async (db, uid) => {

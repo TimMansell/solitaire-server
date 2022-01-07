@@ -2,14 +2,6 @@ import { formatTime } from '@/helpers/times';
 import { formatNumber, formatPercent } from '@/helpers/numbers';
 import { gameOutcome } from '@/helpers/game';
 
-export const getLeaderboadSortBy = (showBest) => {
-  if (showBest === 'times') {
-    return 'time';
-  }
-
-  return 'moves';
-};
-
 export const formatLeaderboardGames = (games, players, sortBy) =>
   games.map((item, index) => {
     const { uid, date, time, moves } = item;
@@ -48,27 +40,6 @@ export const formatHistoryGames = (games, gamesPlayed, offset) =>
     moves,
     duration: formatTime(time),
   }));
-
-export const calculateStats = (games) => {
-  const completed = games.length;
-  const won = games.filter(({ won: w }) => w).length;
-  const lost = games.filter(({ lost: l }) => l).length;
-  const quit = completed - won - lost;
-
-  const wonPercent = won / completed;
-  const lostPercent = lost / completed;
-  const quitPercent = quit / completed;
-
-  return {
-    completed,
-    won,
-    lost,
-    quit,
-    wonPercent,
-    lostPercent,
-    quitPercent,
-  };
-};
 
 export const formatStats = ({
   completed,
