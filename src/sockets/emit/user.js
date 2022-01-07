@@ -1,5 +1,5 @@
 import { getUser, getGames } from '@/db/user';
-import { formatHistoryGames } from './format';
+import { formatHistoryGames } from '../format';
 
 export const emitSetUser = async ({ socket, db, uid }) => {
   try {

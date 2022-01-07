@@ -1,5 +1,5 @@
 import { getUsers } from '@/db/user';
-import { calculateStats } from '../format';
+import { calculateStats } from './format';
 
 export const getUserStats = async (db, uid) =>
   db.collection('userStats').findOne({ uid }, { _id: 0 });

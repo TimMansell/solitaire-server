@@ -1,6 +1,6 @@
 import { getAllGames, updateGlobalStats, updatePlayerStats } from '@/db/stats';
 import { getUsers } from '@/db/user';
-import { calculateStats } from '@/sockets/format';
+import { calculateStats } from '@/db/format';
 import { setupDB } from '../setup';
 
 const updateBulkUsers = async (db) => {

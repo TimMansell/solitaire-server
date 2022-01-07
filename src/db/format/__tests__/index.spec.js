@@ -1,6 +1,6 @@
 import { mockHistoryApi } from '@/mockData';
-import { calculateStats } from '../index';
 import { formatStats } from '@/sockets/format';
+import { calculateStats } from '../index';
 
 describe('Stats service', () => {
   it('should return calculated stats', async () => {
