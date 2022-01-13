@@ -1,28 +1,39 @@
-import { getUser, createNewUser } from '@/db/user';
+import { getUser, createNewUser, getGames } from '@/db/user';
 import { updatePlayerStats } from '@/db/stats';
-import { emitSetUser, emitGetUserHistory } from './emit/user';
+import { formatHistoryGames } from './format';
 
-export const createUser = ({ socket, db }) => {
-  socket.on('createUser', async (uid) => {
+export const createUser = async ({ socket, db }, uid) => {
+  const user = await getUser(db, uid);
+
+  if (!user) {
+    await createNewUser(db, uid);
+    await updatePlayerStats(db);
+  }
+
+  socket.emit('setUser', user);
+};
+
+export const setUser = async ({ socket, db }, uid) => {
+  try {
     const user = await getUser(db, uid);
 
-    if (!user) {
-      await createNewUser(db, uid);
-      await updatePlayerStats(db);
-    }
-
-    emitSetUser({ socket, db, uid });
-  });
+    socket.emit('setUser', user);
+  } catch (error) {
+    console.log({ error });
+  }
 };
 
-export const setUser = ({ socket, db }) => {
-  socket.on('setUser', (uid) => {
-    emitSetUser({ socket, db, uid });
-  });
-};
+export const getUserHistory = async (
+  { socket, db },
+  { uid, offset, limit }
+) => {
+  try {
+    const [games, gamesPlayed] = await getGames(db, uid, offset, limit);
 
-export const getUserHistory = ({ socket, db }) => {
-  socket.on('getUserHistory', ({ uid, offset, limit }) => {
-    emitGetUserHistory({ socket, db, uid, offset, limit });
-  });
+    const formattedGames = formatHistoryGames(games, gamesPlayed, offset);
+
+    socket.emit('getUserHistory', formattedGames);
+  } catch (error) {
+    console.log({ error });
+  }
 };

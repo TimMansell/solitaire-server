@@ -1,20 +1,24 @@
-import { saveNewGame } from '@/db/game';
+import { newDeck, saveNewGame } from '@/db/game';
 import { updateUserStats, updateGlobalStats } from '@/db/stats';
-import { emitNewGame } from './emit/game';
-import { emitCounts } from './emit/stats';
 
-export const newGame = ({ socket, db }) => {
-  socket.on('newGame', (uid) => {
-    emitNewGame({ socket, db, uid });
-  });
+import { getCounts } from './stats';
+
+export const newGame = async ({ socket, db }, uid) => {
+  const isMocked = process.env.NODE_ENV === 'test';
+
+  try {
+    const cards = await newDeck(db, uid, isMocked);
+
+    socket.emit('newGame', cards);
+  } catch (error) {
+    console.log({ error });
+  }
 };
 
-export const saveGame = ({ socket, db, io }) => {
-  socket.on('saveGame', async ({ uid, game }) => {
-    await saveNewGame(db, uid, game);
+export const saveGame = async ({ socket, db, io }, { uid, game }) => {
+  await saveNewGame(db, uid, game);
 
-    await Promise.all([updateUserStats(db, uid), updateGlobalStats(db)]);
+  await Promise.all([updateUserStats(db, uid), updateGlobalStats(db)]);
 
-    emitCounts({ socket, io, db, uid });
-  });
+  getCounts({ socket, db, io }, uid);
 };

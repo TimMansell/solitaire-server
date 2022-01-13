@@ -13,7 +13,7 @@ export const getUsersGames = (db, uid) =>
 export const getAllGames = (db) =>
   db.collection('games').find({}, { _id: 0 }).toArray();
 
-export const getLeaderboards = async (db, sortBy, limit) => {
+export const getLeaderboard = async (db, sortBy, limit) => {
   const games = await db
     .collection('games')
     .find(
