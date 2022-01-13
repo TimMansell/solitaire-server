@@ -6,8 +6,13 @@ export const createUser = async ({ socket, db }, uid) => {
   const user = await getUser(db, uid);
 
   if (!user) {
-    await createNewUser(db, uid);
+    const newUser = await createNewUser(db, uid);
+
     await updatePlayerStats(db);
+
+    socket.emit('setUser', newUser);
+
+    return;
   }
 
   socket.emit('setUser', user);
