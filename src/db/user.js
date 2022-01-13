@@ -5,14 +5,16 @@ import {
   animals,
 } from 'unique-names-generator';
 
-export const createNewUser = (db, uid) => {
+export const createNewUser = async (db, uid) => {
   const name = uniqueNamesGenerator({
     dictionaries: [adjectives, colors, animals],
     separator: '',
     style: 'capital',
   });
 
-  return db.collection('users').insertOne({ uid, name });
+  await db.collection('users').insertOne({ uid, name });
+
+  return name;
 };
 
 export const getUser = async (db, uid) => {
@@ -20,7 +22,7 @@ export const getUser = async (db, uid) => {
     .collection('users')
     .findOne({ uid }, { projection: { _id: 0, name: 1 } });
 
-  return user;
+  return user?.name;
 };
 
 export const getUsers = async (db) => {
