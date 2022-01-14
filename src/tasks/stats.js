@@ -1,4 +1,4 @@
-import { getAllGames, updateGlobalStats, updatePlayerStats } from '@/db/stats';
+import { getAllGames, updateGlobalStats, updatePlayerCount } from '@/db/stats';
 import { getUsers } from '@/db/user';
 import { calculateStats } from '@/db/format';
 import { setupDB } from '../setup';
@@ -14,7 +14,7 @@ const updateBulkUsers = async (db) => {
     return { uid, ...stats };
   });
 
-  const bulk = db.collection('userStats').initializeUnorderedBulkOp();
+  const bulk = db.collection('users').initializeUnorderedBulkOp();
 
   userStats.forEach((stat) => {
     const { uid } = stat;
@@ -34,7 +34,7 @@ const main = async () => {
   try {
     await Promise.all([
       updateGlobalStats(db),
-      updatePlayerStats(db),
+      updatePlayerCount(db),
       updateBulkUsers(db),
     ]);
 

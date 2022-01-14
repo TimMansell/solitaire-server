@@ -2,13 +2,10 @@ import { getUsers } from '@/db/user';
 import { calculateStats } from './format';
 
 export const getUserStats = async (db, uid) =>
-  db.collection('userStats').findOne({ uid }, { _id: 0 });
+  db.collection('users').findOne({ uid }, { _id: 0 });
 
 export const getGlobalStats = async (db) =>
   db.collection('globalStats').findOne({}, { _id: 0 });
-
-export const getUsersGames = (db, uid) =>
-  db.collection('games').find({ uid }, { _id: 0 }).toArray();
 
 export const getAllGames = (db) =>
   db.collection('games').find({}, { _id: 0 }).toArray();
@@ -35,12 +32,15 @@ export const getLeaderboard = async (db, sortBy, limit) => {
 };
 
 export const updateUserStats = async (db, uid) => {
-  const usersGames = await getUsersGames(db, uid);
+  const usersGames = await db
+    .collection('games')
+    .find({ uid }, { _id: 0 })
+    .toArray();
 
   const stats = calculateStats(usersGames);
 
   return db
-    .collection('userStats')
+    .collection('users')
     .findOneAndUpdate({ uid }, { $set: { ...stats } }, { upsert: true });
 };
 
@@ -54,7 +54,7 @@ export const updateGlobalStats = async (db) => {
     .findOneAndUpdate({}, { $set: { ...stats } }, { upsert: true });
 };
 
-export const updatePlayerStats = async (db) => {
+export const updatePlayerCount = async (db) => {
   const users = await getUsers(db);
 
   const stats = { players: users.length };

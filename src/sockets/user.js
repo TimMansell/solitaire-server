@@ -1,26 +1,28 @@
-import { getUser, createNewUser, getGames } from '@/db/user';
-import { updatePlayerStats } from '@/db/stats';
+import {
+  uniqueNamesGenerator,
+  adjectives,
+  colors,
+  animals,
+} from 'unique-names-generator';
+import { updateUser, getUserDetails, getGames } from '@/db/user';
+import { updatePlayerCount } from '@/db/stats';
 import { formatHistoryGames } from './format';
 
 export const createUser = async ({ socket, db }, uid) => {
-  const user = await getUser(db, uid);
+  const name = uniqueNamesGenerator({
+    dictionaries: [adjectives, colors, animals],
+    separator: '',
+    style: 'capital',
+  });
 
-  if (!user) {
-    const newUser = await createNewUser(db, uid);
+  await Promise.all([updateUser(db, uid, name), updatePlayerCount(db)]);
 
-    await updatePlayerStats(db);
-
-    socket.emit('setUser', newUser);
-
-    return;
-  }
-
-  socket.emit('setUser', user);
+  socket.emit('setUser', name);
 };
 
-export const setUser = async ({ socket, db }, uid) => {
+export const getUser = async ({ socket, db }, uid) => {
   try {
-    const user = await getUser(db, uid);
+    const user = await getUserDetails(db, uid);
 
     socket.emit('setUser', user);
   } catch (error) {

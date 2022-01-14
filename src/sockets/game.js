@@ -1,8 +1,6 @@
 import { newDeck, saveNewGame } from '@/db/game';
 import { updateUserStats, updateGlobalStats } from '@/db/stats';
 
-import { getCounts } from './stats';
-
 export const newGame = async ({ socket, db }, uid) => {
   const isMocked = process.env.NODE_ENV === 'test';
 
@@ -15,10 +13,12 @@ export const newGame = async ({ socket, db }, uid) => {
   }
 };
 
-export const saveGame = async ({ socket, db, io }, { uid, game }) => {
+export const saveGame = async ({ socket, db }, { uid, game }) => {
+  console.log({ game });
+
   await saveNewGame(db, uid, game);
 
   await Promise.all([updateUserStats(db, uid), updateGlobalStats(db)]);
 
-  getCounts({ socket, db, io }, uid);
+  socket.emit('saveGame');
 };
