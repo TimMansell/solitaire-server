@@ -6,7 +6,7 @@ import {
   formatLeaderboardGames,
 } from './format';
 
-export const getCounts = async ({ socket, io, db }, uid) => {
+export const getGameCounts = async ({ socket, io, db }, uid) => {
   try {
     const [user, global] = await Promise.all([
       getUserStats(db, uid),
@@ -16,8 +16,18 @@ export const getCounts = async ({ socket, io, db }, uid) => {
     const userCounts = user ?? 0;
     const globalCounts = global;
 
-    socket.emit('getUserCounts', userCounts);
-    io.emit('getGlobalCounts', globalCounts);
+    socket.emit('getUserGames', userCounts);
+    io.emit('getGlobalGames', globalCounts);
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
+export const getPlayerCount = async ({ io, db }) => {
+  try {
+    const players = await getGlobalStats(db);
+
+    io.emit('getPlayerCount', players);
   } catch (error) {
     console.log({ error });
   }
