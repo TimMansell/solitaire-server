@@ -9,7 +9,6 @@
   "scripts": {
     "build": "rollup -c",
     "serve:dev": "run-p serve watch",
-    "serve:test": "cross-env NODE_ENV=test run-s build start",
     "serve": "nodemon ./dist/index.js",
     "stats": "node ./dist/stats.js",
     "watch": "rollup -c -w",

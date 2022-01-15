@@ -22,8 +22,6 @@ Cypress.Commands.add('getInitialData', () => {
       data: { globalStats, userStats },
     } = body;
 
-    console.log({ body });
-
     return { globalStats, userStats };
   });
 });
