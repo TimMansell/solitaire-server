@@ -2,17 +2,9 @@ import { initCards, checkGameState } from '@/services/solitaire';
 import { createISODate } from '@/helpers/dates';
 import 'dotenv/config';
 
-const getMockedCards = async (db, uid) => {
-  const { value } = await db
-    .collection('decks')
-    .findOneAndUpdate({ isMocked: true }, { $set: { uid } }, { upsert: true });
-
-  return value.cards;
-};
-
-export const newDeck = async (db, uid, isMocked) => {
+export const newDeck = async (db, uid) => {
   const date = createISODate();
-  const cards = !isMocked ? initCards() : await getMockedCards(db, uid);
+  const cards = initCards();
 
   db.collection('decks').findOneAndUpdate(
     { uid },
