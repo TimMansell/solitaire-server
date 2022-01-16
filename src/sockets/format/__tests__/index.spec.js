@@ -8,7 +8,12 @@ import {
   mockLeaderboardsMoves,
   mockPlayers,
 } from '@/mockData';
-import { formatLeaderboardGames, formatHistoryGames } from '../index';
+import {
+  formatLeaderboardGames,
+  formatHistoryGames,
+  formatStats,
+} from '../index';
+import { calculateGameResults, calculateStats } from '@/db/format';
 
 tzMock.register('UTC');
 
@@ -37,5 +42,16 @@ describe('Stats service', () => {
     const result = formatHistoryGames(mockHistoryApi, mockHistoryApi.length, 0);
 
     expect(result).toEqual(mockHistory);
+  });
+
+  it('should return formated stats', async () => {
+    const games = calculateGameResults(mockHistoryApi);
+    const stats = calculateStats(games);
+    const result = formatStats(stats);
+
+    expect(result).toStrictEqual([
+      ['4', '2', '1', '1'],
+      ['', '50.00%', '25.00%', '25.00%'],
+    ]);
   });
 });
