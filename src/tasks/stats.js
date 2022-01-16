@@ -9,7 +9,12 @@ const updateBulkUsers = async (db) => {
   const userStats = users.map(({ uid }) => {
     const userGames = games.filter(({ uid: uuid }) => uuid === uid);
 
-    const stats = calculateStats(userGames);
+    const completed = userGames.length;
+    const won = userGames.filter(({ won: w }) => w).length;
+    const lost = userGames.filter(({ lost: l }) => l).length;
+    const quit = completed - won - lost;
+
+    const stats = calculateStats({ completed, won, lost, quit });
 
     return { uid, ...stats };
   });
