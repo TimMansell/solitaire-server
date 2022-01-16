@@ -1,10 +1,10 @@
 import { mockHistoryApi } from '@/mockData';
-import { formatStats } from '@/sockets/format';
-import { calculateStats } from '../index';
+import { calculateGameResults, calculateStats } from '../index';
 
 describe('Stats service', () => {
   it('should return calculated stats', async () => {
-    const result = calculateStats(mockHistoryApi);
+    const games = calculateGameResults(mockHistoryApi);
+    const result = calculateStats(games);
 
     expect(result).toStrictEqual({
       completed: 4,
@@ -17,13 +17,14 @@ describe('Stats service', () => {
     });
   });
 
-  it('should return formated stats', async () => {
-    const stats = calculateStats(mockHistoryApi);
-    const result = formatStats(stats);
+  it('should return game counts', async () => {
+    const result = calculateGameResults(mockHistoryApi);
 
-    expect(result).toStrictEqual([
-      ['4', '2', '1', '1'],
-      ['', '50.00%', '25.00%', '25.00%'],
-    ]);
+    expect(result).toStrictEqual({
+      completed: 4,
+      lost: 1,
+      quit: 1,
+      won: 2,
+    });
   });
 });

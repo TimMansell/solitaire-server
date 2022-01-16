@@ -1,4 +1,3 @@
-import { getUsers } from '@/db/user';
 import { calculateStats } from './format';
 
 export const getUserStats = async (db, uid) =>
@@ -32,12 +31,35 @@ export const getLeaderboard = async (db, sortBy, limit) => {
 };
 
 export const updateUserStats = async (db, uid) => {
-  const usersGames = await db
+  const [counts] = await db
     .collection('games')
-    .find({ uid }, { _id: 0 })
+    .aggregate([
+      {
+        $facet: {
+          completed: [
+            { $match: { uid, completed: true } },
+            { $count: 'completed' },
+          ],
+          won: [{ $match: { uid, won: true } }, { $count: 'won' }],
+          lost: [{ $match: { uid, lost: true } }, { $count: 'lost' }],
+          quit: [
+            { $match: { uid, won: false, lost: false, completed: true } },
+            { $count: 'quit' },
+          ],
+        },
+      },
+      {
+        $project: {
+          completed: { $arrayElemAt: ['$completed.completed', 0] },
+          won: { $arrayElemAt: ['$won.won', 0] },
+          lost: { $arrayElemAt: ['$lost.lost', 0] },
+          quit: { $arrayElemAt: ['$quit.quit', 0] },
+        },
+      },
+    ])
     .toArray();
 
-  const stats = calculateStats(usersGames);
+  const stats = calculateStats(counts);
 
   return db
     .collection('users')
@@ -45,9 +67,32 @@ export const updateUserStats = async (db, uid) => {
 };
 
 export const updateGlobalStats = async (db) => {
-  const games = await getAllGames(db);
+  const [counts] = await db
+    .collection('games')
+    .aggregate([
+      {
+        $facet: {
+          completed: [{ $match: { completed: true } }, { $count: 'completed' }],
+          won: [{ $match: { won: true } }, { $count: 'won' }],
+          lost: [{ $match: { lost: true } }, { $count: 'lost' }],
+          quit: [
+            { $match: { won: false, lost: false, completed: true } },
+            { $count: 'quit' },
+          ],
+        },
+      },
+      {
+        $project: {
+          completed: { $arrayElemAt: ['$completed.completed', 0] },
+          won: { $arrayElemAt: ['$won.won', 0] },
+          lost: { $arrayElemAt: ['$lost.lost', 0] },
+          quit: { $arrayElemAt: ['$quit.quit', 0] },
+        },
+      },
+    ])
+    .toArray();
 
-  const stats = calculateStats(games);
+  const stats = calculateStats(counts);
 
   return db
     .collection('globalStats')
@@ -55,11 +100,9 @@ export const updateGlobalStats = async (db) => {
 };
 
 export const updatePlayerCount = async (db) => {
-  const users = await getUsers(db);
-
-  const stats = { players: users.length };
+  const players = await db.collection('users').find({}, {}).count();
 
   return db
     .collection('globalStats')
-    .findOneAndUpdate({}, { $set: { ...stats } }, { upsert: true });
+    .findOneAndUpdate({}, { $set: { players } }, { upsert: true });
 };

@@ -1,6 +1,6 @@
 import { getAllGames, updateGlobalStats, updatePlayerCount } from '@/db/stats';
 import { getUsers } from '@/db/user';
-import { calculateStats } from '@/db/format';
+import { calculateGameResults, calculateStats } from '@/db/format';
 import { setupDB } from '../setup';
 
 const updateBulkUsers = async (db) => {
@@ -8,8 +8,8 @@ const updateBulkUsers = async (db) => {
 
   const userStats = users.map(({ uid }) => {
     const userGames = games.filter(({ uid: uuid }) => uuid === uid);
-
-    const stats = calculateStats(userGames);
+    const gameTypes = calculateGameResults(userGames);
+    const stats = calculateStats(gameTypes);
 
     return { uid, ...stats };
   });

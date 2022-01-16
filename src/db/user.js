@@ -20,7 +20,7 @@ export const getUsers = async (db) => {
   return users;
 };
 
-export const getGames = async (db, uid, offset, limit) => {
+export const getUserGames = async (db, uid, offset, limit) => {
   const findGames = await db
     .collection('games')
     .find(
