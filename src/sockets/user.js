@@ -4,7 +4,7 @@ import {
   colors,
   animals,
 } from 'unique-names-generator';
-import { updateUser, getUserDetails, getGames } from '@/db/user';
+import { updateUser, getUserDetails, getUserGames } from '@/db/user';
 import { updatePlayerCount } from '@/db/stats';
 import { formatHistoryGames } from './format';
 
@@ -35,7 +35,7 @@ export const getUserHistory = async (
   { uid, offset, limit }
 ) => {
   try {
-    const [games, gamesPlayed] = await getGames(db, uid, offset, limit);
+    const [games, gamesPlayed] = await getUserGames(db, uid, offset, limit);
 
     const formattedGames = formatHistoryGames(games, gamesPlayed, offset);
 
