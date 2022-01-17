@@ -13,8 +13,8 @@ export const getGameCounts = async ({ socket, io, db }, uid) => {
       getGlobalStats(db),
     ]);
 
-    const userCounts = user ?? 0;
-    const globalCounts = global;
+    const userCounts = user ? user.completed : 0;
+    const globalCounts = global.completed;
 
     socket.emit('getUserGames', userCounts);
     io.emit('getGlobalGames', globalCounts);
@@ -25,7 +25,7 @@ export const getGameCounts = async ({ socket, io, db }, uid) => {
 
 export const getPlayerCount = async ({ io, db }) => {
   try {
-    const players = await getGlobalStats(db);
+    const { players } = await getGlobalStats(db);
 
     io.emit('getPlayerCount', players);
   } catch (error) {

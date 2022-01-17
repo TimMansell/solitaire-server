@@ -6,7 +6,6 @@ import {
 } from 'unique-names-generator';
 import { updateUser, getUserDetails, getUserGames } from '@/db/user';
 import { updatePlayerCount } from '@/db/stats';
-import { getPlayerCount } from './stats';
 import { formatHistoryGames } from './format';
 
 export const createUser = async ({ socket, io, db }, uid) => {
@@ -16,11 +15,16 @@ export const createUser = async ({ socket, io, db }, uid) => {
     style: 'capital',
   });
 
-  await Promise.all([updateUser(db, uid, name), updatePlayerCount(db)]);
+  const [user, players] = await Promise.all([
+    updateUser(db, uid, name),
+    updatePlayerCount(db),
+  ]);
 
   getPlayerCount({ socket, io, db });
 
   socket.emit('setUser', name);
+  socket.emit('setUser', user);
+  io.emit('getPlayerCount', players);
 };
 
 export const getUser = async ({ socket, db }, uid) => {

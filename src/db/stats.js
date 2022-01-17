@@ -61,9 +61,11 @@ export const updateUserStats = async (db, uid) => {
 
   const stats = calculateStats(counts);
 
-  return db
+  await db
     .collection('users')
     .findOneAndUpdate({ uid }, { $set: { ...stats } }, { upsert: true });
+
+  return stats;
 };
 
 export const updateGlobalStats = async (db) => {
@@ -94,15 +96,19 @@ export const updateGlobalStats = async (db) => {
 
   const stats = calculateStats(counts);
 
-  return db
+  await db
     .collection('globalStats')
     .findOneAndUpdate({}, { $set: { ...stats } }, { upsert: true });
+
+  return stats;
 };
 
 export const updatePlayerCount = async (db) => {
   const players = await db.collection('users').find({}, {}).count();
 
-  return db
+  await db
     .collection('globalStats')
     .findOneAndUpdate({}, { $set: { players } }, { upsert: true });
+
+  return players;
 };

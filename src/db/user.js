@@ -1,7 +1,10 @@
-export const updateUser = async (db, uid, name) =>
-  db
+export const updateUser = async (db, uid, name) => {
+  await db
     .collection('users')
     .findOneAndUpdate({ uid }, { $set: { name } }, { upsert: true });
+
+  return name;
+};
 
 export const getUserDetails = async (db, uid) => {
   const user = await db
