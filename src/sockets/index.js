@@ -6,7 +6,7 @@ import { getLatestVersion } from './version';
 import { newGame, saveGame } from './game';
 import { createUser, getUser, getUserHistory } from './user';
 import {
-  getGameCounts,
+  getGamesPlayed,
   getPlayerCount,
   getStats,
   getLeaderboards,
@@ -25,7 +25,7 @@ export const setupSockets = ({ server }, db) => {
     on('createUser', createUser);
     on('getUser', getUser);
     on('getUserHistory', getUserHistory);
-    on('getGameCounts', getGameCounts);
+    on('getGamesPlayed', getGamesPlayed);
     on('getStats', getStats);
     on('getLeaderboards', getLeaderboards);
     on('disconnect', disconnect);

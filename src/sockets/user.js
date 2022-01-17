@@ -20,9 +20,8 @@ export const createUser = async ({ socket, io, db }, uid) => {
     updatePlayerCount(db),
   ]);
 
-  socket.emit('setUser', name);
   socket.emit('setUser', user);
-  io.emit('getPlayerCount', players);
+  io.emit('setPlayerCount', players);
 };
 
 export const getUser = async ({ socket, db }, uid) => {
@@ -44,7 +43,7 @@ export const getUserHistory = async (
 
     const formattedGames = formatHistoryGames(games, gamesPlayed, offset);
 
-    socket.emit('getUserHistory', formattedGames);
+    socket.emit('setUserHistory', formattedGames);
   } catch (error) {
     console.log({ error });
   }

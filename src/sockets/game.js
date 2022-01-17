@@ -19,7 +19,7 @@ export const saveGame = async ({ socket, io, db }, { uid, game }) => {
     updateGlobalStats(db),
   ]);
 
-  socket.emit('saveGame');
-  socket.emit('getUserGames', userStats.completed);
-  io.emit('getGlobalGames', globalStats.completed);
+  socket.emit('gameSaved');
+  socket.emit('setUserGamesPlayed', userStats.completed);
+  io.emit('setGlobalGamesPlayed', globalStats.completed);
 };
