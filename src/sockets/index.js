@@ -6,7 +6,8 @@ import { getLatestVersion } from './version';
 import { newGame, saveGame } from './game';
 import { createUser, getUser, getUserHistory } from './user';
 import {
-  getGameCounts,
+  getUsersGamesPlayed,
+  getGlobalGamesPlayed,
   getPlayerCount,
   getStats,
   getLeaderboards,
@@ -25,13 +26,14 @@ export const setupSockets = ({ server }, db) => {
     on('createUser', createUser);
     on('getUser', getUser);
     on('getUserHistory', getUserHistory);
-    on('getGameCounts', getGameCounts);
+    on('getUsersGamesPlayed', getUsersGamesPlayed);
     on('getStats', getStats);
     on('getLeaderboards', getLeaderboards);
     on('disconnect', disconnect);
 
     getLatestVersion(core);
     getPlayerCount(core);
+    getGlobalGamesPlayed(core);
 
     console.log('Client connected.', socket.id);
   });

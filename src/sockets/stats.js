@@ -6,18 +6,22 @@ import {
   formatLeaderboardGames,
 } from './format';
 
-export const getGameCounts = async ({ socket, io, db }, uid) => {
+export const getUsersGamesPlayed = async ({ socket, db }, uid) => {
   try {
-    const [user, global] = await Promise.all([
-      getUserStats(db, uid),
-      getGlobalStats(db),
-    ]);
+    const userStats = await getUserStats(db, uid);
+    const userCounts = userStats ? userStats.completed : 0;
 
-    const userCounts = user ?? 0;
-    const globalCounts = global;
+    socket.emit('setUserGamesPlayed', userCounts);
+  } catch (error) {
+    console.log({ error });
+  }
+};
 
-    socket.emit('getUserGames', userCounts);
-    io.emit('getGlobalGames', globalCounts);
+export const getGlobalGamesPlayed = async ({ io, db }) => {
+  try {
+    const globalStats = await getGlobalStats(db);
+
+    io.emit('setGlobalGamesPlayed', globalStats.completed);
   } catch (error) {
     console.log({ error });
   }
@@ -25,9 +29,9 @@ export const getGameCounts = async ({ socket, io, db }, uid) => {
 
 export const getPlayerCount = async ({ io, db }) => {
   try {
-    const players = await getGlobalStats(db);
+    const { players } = await getGlobalStats(db);
 
-    io.emit('getPlayerCount', players);
+    io.emit('setPlayerCount', players);
   } catch (error) {
     console.log({ error });
   }
@@ -43,7 +47,7 @@ export const getStats = async ({ socket, db }, uid) => {
     const userStats = user ? formatStats(user) : formatEmptyStats();
     const globalStats = formatStats(global);
 
-    socket.emit('getStats', { userStats, globalStats });
+    socket.emit('setStats', { userStats, globalStats });
   } catch (error) {
     console.log({ error });
   }
@@ -55,7 +59,7 @@ export const getLeaderboards = async ({ socket, db }, { showBest, limit }) => {
 
     const formattedGames = formatLeaderboardGames(games, players, showBest);
 
-    socket.emit('getLeaderboards', formattedGames);
+    socket.emit('setLeaderboards', formattedGames);
   } catch (error) {
     console.log({ error });
   }
