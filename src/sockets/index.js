@@ -17,7 +17,8 @@ export const setupSockets = ({ server }, db) => {
   const io = new Server(server);
 
   io.on('connection', async (socket) => {
-    const on = setupOn({ socket, db, io });
+    const core = { socket, io, db };
+    const on = setupOn(core);
 
     on('newGame', newGame);
     on('saveGame', saveGame);
@@ -25,12 +26,12 @@ export const setupSockets = ({ server }, db) => {
     on('getUser', getUser);
     on('getUserHistory', getUserHistory);
     on('getGameCounts', getGameCounts);
-    on('getPlayerCount', getPlayerCount);
     on('getStats', getStats);
     on('getLeaderboards', getLeaderboards);
     on('disconnect', disconnect);
 
-    getLatestVersion({ socket });
+    getLatestVersion(core);
+    getPlayerCount(core);
 
     console.log('Client connected.', socket.id);
   });
