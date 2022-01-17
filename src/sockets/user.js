@@ -20,8 +20,6 @@ export const createUser = async ({ socket, io, db }, uid) => {
     updatePlayerCount(db),
   ]);
 
-  getPlayerCount({ socket, io, db });
-
   socket.emit('setUser', name);
   socket.emit('setUser', user);
   io.emit('getPlayerCount', players);
