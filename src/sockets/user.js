@@ -5,7 +5,7 @@ import {
   animals,
 } from 'unique-names-generator';
 import { updateUser, getUserDetails, getUserGames } from '@/db/user';
-import { updatePlayerCount } from '@/db/stats';
+import { getPlayers } from '@/db/stats';
 import { formatHistoryGames } from './format';
 
 export const createUser = async ({ socket, io, db }, uid) => {
@@ -18,7 +18,7 @@ export const createUser = async ({ socket, io, db }, uid) => {
 
   const [user, players] = await Promise.all([
     updateUser(db, uid, name),
-    updatePlayerCount(db),
+    getPlayers(db),
   ]);
 
   socket.emit('setUser', user);

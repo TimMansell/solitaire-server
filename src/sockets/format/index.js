@@ -2,29 +2,43 @@ import { formatTime } from '@/helpers/times';
 import { formatNumber, formatPercent } from '@/helpers/numbers';
 import { gameOutcome } from '@/helpers/game';
 
-export const formatLeaderboardGames = (games, players, sortBy) =>
+export const formatLeaderboardGames = (games, players, { showBest }) =>
   games.map((item, index) => {
-    const { uid, date, time, moves } = item;
+    const { uid, date } = item;
 
     const player = players.find(({ uid: id }) => id === uid);
 
     const defaultItems = {
       rank: index + 1,
-      date,
       player: player?.name ?? 'Unknown Player',
     };
 
-    if (sortBy === 'moves') {
+    if (showBest === 'moves') {
+      const { moves } = item;
+
       return {
         ...defaultItems,
+        date,
         moves,
       };
     }
 
-    if (sortBy === 'time') {
+    if (showBest === 'time') {
+      const { time } = item;
+
       return {
         ...defaultItems,
-        duration: formatTime(time),
+        date,
+        time: formatTime(time),
+      };
+    }
+
+    if (showBest === 'wonPercent') {
+      const { percentages } = item;
+
+      return {
+        ...defaultItems,
+        won: formatPercent(percentages.won),
       };
     }
 
@@ -41,38 +55,29 @@ export const formatHistoryGames = (games, gamesPlayed, offset) =>
     duration: formatTime(time),
   }));
 
-export const formatStats = ({
-  completed,
-  won,
-  lost,
-  quit,
-  wonPercent,
-  lostPercent,
-  quitPercent,
-}) => [
+export const formatStats = ({ games, percentages }) => [
   [
-    formatNumber(completed),
-    formatNumber(won),
-    formatNumber(lost),
-    formatNumber(quit),
+    formatNumber(games.completed),
+    formatNumber(games.won),
+    formatNumber(games.lost),
+    formatNumber(games.quit),
   ],
-  [
-    '',
-    formatPercent(wonPercent),
-    formatPercent(lostPercent),
-    formatPercent(quitPercent),
-  ],
+  ['', percentages.won, percentages.lost, percentages.quit],
 ];
 
 export const formatEmptyStats = () => {
   const stats = {
-    completed: 0,
-    won: 0,
-    lost: 0,
-    quit: 0,
-    wonPercent: 0,
-    lostPercent: 0,
-    quitPercent: 0,
+    games: {
+      completed: 0,
+      won: 0,
+      lost: 0,
+      quit: 0,
+    },
+    percentages: {
+      won: 0,
+      lost: 0,
+      quit: 0,
+    },
   };
 
   const formattedStats = formatStats(stats);
