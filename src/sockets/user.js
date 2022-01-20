@@ -1,6 +1,6 @@
 import {
   uniqueNamesGenerator,
-  adjectives,
+  NumberDictionary,
   colors,
   animals,
 } from 'unique-names-generator';
@@ -9,8 +9,9 @@ import { updatePlayerCount } from '@/db/stats';
 import { formatHistoryGames } from './format';
 
 export const createUser = async ({ socket, io, db }, uid) => {
+  const numberDictionary = NumberDictionary.generate({ min: 10, max: 999 });
   const name = uniqueNamesGenerator({
-    dictionaries: [adjectives, colors, animals],
+    dictionaries: [colors, animals, numberDictionary],
     separator: '',
     style: 'capital',
   });
