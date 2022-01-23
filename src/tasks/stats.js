@@ -1,42 +1,46 @@
-import { getAllGames, updateGlobalStats, updatePlayerCount } from '@/db/stats';
-import { getUsers } from '@/db/user';
-import { calculateGameResults, calculateStats } from '@/db/format';
+import { getAllGames } from '@/db/stats';
+import { getAllUsers } from '@/db/user';
+import { calculatePercents } from '@/db/format';
 import { setupDB } from '../setup';
 
-const updateBulkUsers = async (db) => {
-  const [games, users] = await Promise.all([getAllGames(db), getUsers(db)]);
+const calculateGameResults = (games) => {
+  const completed = games.length;
+  const won = games.filter(({ won: w }) => w).length;
+  const lost = games.filter(({ lost: l }) => l).length;
+  const quit = completed - won - lost;
 
-  const userStats = users.map(({ uid }) => {
-    const userGames = games.filter(({ uid: uuid }) => uuid === uid);
-    const gameTypes = calculateGameResults(userGames);
-    const stats = calculateStats(gameTypes);
-
-    return { uid, ...stats };
-  });
-
-  const bulk = db.collection('users').initializeUnorderedBulkOp();
-
-  userStats.forEach((stat) => {
-    const { uid } = stat;
-
-    bulk
-      .find({ uid })
-      .upsert()
-      .update({ $set: { ...stat } });
-  });
-
-  await bulk.execute();
+  return { completed, won, lost, quit };
 };
 
 const main = async () => {
   const db = await setupDB();
 
   try {
-    await Promise.all([
-      updateGlobalStats(db),
-      updatePlayerCount(db),
-      updateBulkUsers(db),
+    const [allGames, allUsers] = await Promise.all([
+      getAllGames(db),
+      getAllUsers(db),
     ]);
+
+    const userStats = allUsers.map(({ uid }) => {
+      const userGames = allGames.filter(({ uid: uuid }) => uuid === uid);
+      const games = calculateGameResults(userGames);
+      const stats = calculatePercents(games);
+
+      return { uid, games, stats };
+    });
+
+    const bulk = db.collection('users').initializeUnorderedBulkOp();
+
+    userStats.forEach((user) => {
+      const { uid } = user;
+
+      bulk
+        .find({ uid })
+        .upsert()
+        .update({ $set: { ...user } });
+    });
+
+    await bulk.execute();
 
     console.log('stats updated');
   } catch (error) {
