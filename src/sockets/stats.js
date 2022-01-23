@@ -65,7 +65,8 @@ export const getLeaderboards = async ({ socket, db }, params) => {
   const query = {
     moves: () => getGameLeaderboards(db, params),
     time: () => getGameLeaderboards(db, params),
-    wonPercent: () => getUserLeaderboards(db, params),
+    winPercent: () => getUserLeaderboards(db, params),
+    wins: () => getUserLeaderboards(db, params),
   };
 
   try {

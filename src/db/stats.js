@@ -30,9 +30,9 @@ export const getGlobalStats = async (db) => {
     .toArray();
 
   const games = calculateResults(counts);
-  const percentages = calculatePercents(counts);
+  const stats = calculatePercents(counts);
 
-  return { games, percentages };
+  return { games, stats };
 };
 
 export const getAllGames = (db) =>
@@ -54,15 +54,22 @@ export const getGameLeaderboards = async (db, { showBest, limit }) => {
 
 export const getUserLeaderboards = async (db, { showBest, limit }) => {
   const fieldMapping = {
-    wonPercent: `percentages.won`,
+    winPercent: {
+      field: 'stats.won',
+      completed: 25,
+    },
+    wins: {
+      field: 'games.won',
+      completed: 0,
+    },
   };
 
-  const field = fieldMapping[showBest];
+  const { field, completed } = fieldMapping[showBest];
 
   const games = await db
     .collection('users')
     .find(
-      { completed: { $gte: 25 }, [field]: { $gt: 0 } },
+      { 'games.completed': { $gte: completed }, [field]: { $gt: 0 } },
       { projection: { _id: 0, uid: 1, [field]: 1 } }
     )
     .limit(limit)
@@ -102,17 +109,13 @@ export const updateUserStats = async (db, uid) => {
     .toArray();
 
   const games = calculateResults(counts);
-  const percentages = calculatePercents(counts);
+  const stats = calculatePercents(counts);
 
   await db
     .collection('users')
-    .findOneAndUpdate(
-      { uid },
-      { $set: { games, percentages } },
-      { upsert: true }
-    );
+    .findOneAndUpdate({ uid }, { $set: { games, stats } }, { upsert: true });
 
-  return { games, percentages };
+  return { games, stats };
 };
 
 export const getPlayers = async (db) =>

@@ -2,9 +2,13 @@ import { formatTime } from '@/helpers/times';
 import { formatNumber, formatPercent } from '@/helpers/numbers';
 import { gameOutcome } from '@/helpers/game';
 
-export const formatLeaderboardGames = (games, players, { showBest }) =>
-  games.map((item, index) => {
-    const { uid, date } = item;
+export const formatLeaderboardGames = (
+  leaderboardGames,
+  players,
+  { showBest }
+) =>
+  leaderboardGames.map((item, index) => {
+    const { uid } = item;
 
     const player = players.find(({ uid: id }) => id === uid);
 
@@ -13,36 +17,44 @@ export const formatLeaderboardGames = (games, players, { showBest }) =>
       player: player?.name ?? 'Unknown Player',
     };
 
-    if (showBest === 'moves') {
-      const { moves } = item;
+    const results = {
+      moves: () => {
+        const { date, moves } = item;
 
-      return {
-        ...defaultItems,
-        date,
-        moves,
-      };
-    }
+        return {
+          ...defaultItems,
+          date,
+          moves,
+        };
+      },
+      time: () => {
+        const { date, time } = item;
 
-    if (showBest === 'time') {
-      const { time } = item;
+        return {
+          ...defaultItems,
+          date,
+          time: formatTime(time),
+        };
+      },
+      winPercent: () => {
+        const { stats } = item;
 
-      return {
-        ...defaultItems,
-        date,
-        time: formatTime(time),
-      };
-    }
+        return {
+          ...defaultItems,
+          won: formatPercent(stats.won),
+        };
+      },
+      wins: () => {
+        const { games } = item;
 
-    if (showBest === 'wonPercent') {
-      const { percentages } = item;
+        return {
+          ...defaultItems,
+          won: formatNumber(games.won),
+        };
+      },
+    };
 
-      return {
-        ...defaultItems,
-        won: formatPercent(percentages.won),
-      };
-    }
-
-    return defaultItems;
+    return results[showBest]?.() ?? item;
   });
 
 export const formatHistoryGames = (games, gamesPlayed, offset) =>
@@ -55,14 +67,19 @@ export const formatHistoryGames = (games, gamesPlayed, offset) =>
     duration: formatTime(time),
   }));
 
-export const formatStats = ({ games, percentages }) => [
+export const formatStats = ({ games, stats }) => [
   [
     formatNumber(games.completed),
     formatNumber(games.won),
     formatNumber(games.lost),
     formatNumber(games.quit),
   ],
-  ['', percentages.won, percentages.lost, percentages.quit],
+  [
+    '',
+    formatPercent(stats.won),
+    formatPercent(stats.lost),
+    formatPercent(stats.quit),
+  ],
 ];
 
 export const formatEmptyStats = () => {
@@ -73,10 +90,10 @@ export const formatEmptyStats = () => {
       lost: 0,
       quit: 0,
     },
-    percentages: {
-      won: 0,
-      lost: 0,
-      quit: 0,
+    stats: {
+      won: formatPercent(0),
+      lost: formatPercent(0),
+      quit: formatPercent(0),
     },
   };
 
