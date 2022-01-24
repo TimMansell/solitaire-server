@@ -8,10 +8,10 @@ import { createUser, getUser, getUserHistory } from './user';
 import {
   getUsersGamesPlayed,
   getGlobalGamesPlayed,
-  getPlayerCount,
   getStats,
   getLeaderboards,
 } from './stats';
+import { getPlayerCount, getOnlinePlayerCount } from './players';
 
 // eslint-disable-next-line import/prefer-default-export
 export const setupSockets = ({ server }, db) => {
@@ -34,6 +34,7 @@ export const setupSockets = ({ server }, db) => {
     getLatestVersion(core);
     getPlayerCount(core);
     getGlobalGamesPlayed(core);
+    getOnlinePlayerCount(core);
 
     console.log('Client connected.', socket.id);
   });

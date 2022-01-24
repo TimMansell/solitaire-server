@@ -117,6 +117,3 @@ export const updateUserStats = async (db, uid) => {
 
   return { games, stats };
 };
-
-export const getPlayers = async (db) =>
-  db.collection('users').find({}, {}).count();

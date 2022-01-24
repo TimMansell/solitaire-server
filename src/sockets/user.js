@@ -5,7 +5,7 @@ import {
   animals,
 } from 'unique-names-generator';
 import { updateUser, getUserDetails, getUserGames } from '@/db/user';
-import { getPlayers } from '@/db/stats';
+import { getPlayers } from '@/db/players';
 import { formatHistoryGames } from './format';
 
 export const createUser = async ({ socket, io, db }, uid) => {
