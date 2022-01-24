@@ -445,13 +445,13 @@ export const mockLeaderboardsTimes = [
     rank: 1,
     date: '2021-04-29T12:25:47.907Z',
     player: 'Player 1',
-    duration: '0:00:20',
+    time: '0:00:20',
   },
   {
     rank: 2,
     date: '2021-04-29T12:26:20.825Z',
     player: 'Player 2',
-    duration: '0:03:20',
+    time: '0:03:20',
   },
 ];
 
@@ -461,3 +461,17 @@ export const mockPlayers = [
 ];
 
 export const mockVersionNumber = '1.0.0';
+
+export const mockStats = {
+  games: {
+    completed: 4,
+    won: 2,
+    lost: 1,
+    quit: 1,
+  },
+  stats: {
+    won: 0.5,
+    lost: 0.25,
+    quit: 0.25,
+  },
+};
