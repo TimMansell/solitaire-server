@@ -2,7 +2,6 @@ import {
   getUserStats,
   getGlobalStats,
   getGameLeaderboards,
-  getPlayers,
   getUserLeaderboards,
 } from '@/db/stats';
 import { getUsers } from '@/db/user';
@@ -28,16 +27,6 @@ export const getGlobalGamesPlayed = async ({ io, db }) => {
     const { games } = await getGlobalStats(db);
 
     io.emit('setGlobalGamesPlayed', games.completed);
-  } catch (error) {
-    console.log({ error });
-  }
-};
-
-export const getPlayerCount = async ({ io, db }) => {
-  try {
-    const players = await getPlayers(db);
-
-    io.emit('setPlayerCount', players);
   } catch (error) {
     console.log({ error });
   }
