@@ -1,24 +1,19 @@
-import { mockHistoryApi } from '@/mockData';
-import { calculateGameResults, calculateStats } from '../index';
+import { mockStats } from '@/mockData';
+import { calculateResults, calculatePercents } from '../index';
 
-describe('Stats service', () => {
+describe('DB Formatting', () => {
   it('should return calculated stats', async () => {
-    const games = calculateGameResults(mockHistoryApi);
-    const result = calculateStats(games);
+    const result = calculatePercents(mockStats.games);
 
     expect(result).toStrictEqual({
-      completed: 4,
-      lost: 1,
-      lostPercent: 0.25,
-      quit: 1,
-      quitPercent: 0.25,
-      won: 2,
-      wonPercent: 0.5,
+      lost: 0.25,
+      quit: 0.25,
+      won: 0.5,
     });
   });
 
   it('should return game counts', async () => {
-    const result = calculateGameResults(mockHistoryApi);
+    const result = calculateResults(mockStats.games);
 
     expect(result).toStrictEqual({
       completed: 4,

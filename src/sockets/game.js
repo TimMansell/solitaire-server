@@ -1,5 +1,5 @@
 import { newDeck, saveNewGame } from '@/db/game';
-import { updateUserStats, updateGlobalStats } from '@/db/stats';
+import { updateUserStats, getGlobalStats } from '@/db/stats';
 
 export const newGame = async ({ socket, db }, uid) => {
   try {
@@ -16,10 +16,10 @@ export const saveGame = async ({ socket, io, db }, { uid, game }) => {
 
   const [userStats, globalStats] = await Promise.all([
     updateUserStats(db, uid),
-    updateGlobalStats(db),
+    getGlobalStats(db),
   ]);
 
   socket.emit('gameSaved');
-  socket.emit('setUserGamesPlayed', userStats.completed);
-  io.emit('setGlobalGamesPlayed', globalStats.completed);
+  socket.emit('setUserGamesPlayed', userStats.games.completed);
+  io.emit('setGlobalGamesPlayed', globalStats.games.completed);
 };

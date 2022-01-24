@@ -14,10 +14,19 @@ export const getUserDetails = async (db, uid) => {
   return user?.name;
 };
 
-export const getUsers = async (db) => {
+export const getAllUsers = async (db) => {
   const users = await db
     .collection('users')
     .find({}, { projection: { uid: 1 } })
+    .toArray();
+
+  return users;
+};
+
+export const getUsers = async (db, uids) => {
+  const users = await db
+    .collection('users')
+    .find({ uid: { $in: uids } }, { projection: { _id: 0, uid: 1, name: 1 } })
     .toArray();
 
   return users;

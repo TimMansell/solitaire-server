@@ -1,5 +1,11 @@
-import { getUserStats, getGlobalStats, getLeaderboard } from '@/db/stats';
-
+import {
+  getUserStats,
+  getGlobalStats,
+  getGameLeaderboards,
+  getPlayers,
+  getUserLeaderboards,
+} from '@/db/stats';
+import { getUsers } from '@/db/user';
 import {
   formatStats,
   formatEmptyStats,
@@ -9,7 +15,7 @@ import {
 export const getUsersGamesPlayed = async ({ socket, db }, uid) => {
   try {
     const userStats = await getUserStats(db, uid);
-    const userCounts = userStats ? userStats.completed : 0;
+    const userCounts = userStats ? userStats.games.completed : 0;
 
     socket.emit('setUserGamesPlayed', userCounts);
   } catch (error) {
@@ -19,9 +25,9 @@ export const getUsersGamesPlayed = async ({ socket, db }, uid) => {
 
 export const getGlobalGamesPlayed = async ({ io, db }) => {
   try {
-    const globalStats = await getGlobalStats(db);
+    const { games } = await getGlobalStats(db);
 
-    io.emit('setGlobalGamesPlayed', globalStats.completed);
+    io.emit('setGlobalGamesPlayed', games.completed);
   } catch (error) {
     console.log({ error });
   }
@@ -29,7 +35,7 @@ export const getGlobalGamesPlayed = async ({ io, db }) => {
 
 export const getPlayerCount = async ({ io, db }) => {
   try {
-    const { players } = await getGlobalStats(db);
+    const players = await getPlayers(db);
 
     io.emit('setPlayerCount', players);
   } catch (error) {
@@ -53,13 +59,25 @@ export const getStats = async ({ socket, db }, uid) => {
   }
 };
 
-export const getLeaderboards = async ({ socket, db }, { showBest, limit }) => {
+export const getLeaderboards = async ({ socket, db }, params) => {
+  const { showBest } = params;
+
+  const query = {
+    moves: () => getGameLeaderboards(db, params),
+    time: () => getGameLeaderboards(db, params),
+    winPercent: () => getUserLeaderboards(db, params),
+    wins: () => getUserLeaderboards(db, params),
+  };
+
   try {
-    const [games, players] = await getLeaderboard(db, showBest, limit);
+    const games = await query[showBest]();
 
-    const formattedGames = formatLeaderboardGames(games, players, showBest);
+    const uids = [...new Set(games.map(({ uid }) => uid))];
+    const players = await getUsers(db, uids);
 
-    socket.emit('setLeaderboards', formattedGames);
+    const results = formatLeaderboardGames(games, players, params);
+
+    socket.emit('setLeaderboards', results);
   } catch (error) {
     console.log({ error });
   }

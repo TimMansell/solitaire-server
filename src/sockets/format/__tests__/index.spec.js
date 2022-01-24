@@ -7,22 +7,22 @@ import {
   mockLeaderboardsMovesAPI,
   mockLeaderboardsMoves,
   mockPlayers,
+  mockStats,
 } from '@/mockData';
 import {
   formatLeaderboardGames,
   formatHistoryGames,
   formatStats,
 } from '../index';
-import { calculateGameResults, calculateStats } from '@/db/format';
 
 tzMock.register('UTC');
 
-describe('Stats service', () => {
+describe('Sockets Formatting', () => {
   it('should return formatted leaderboard games using times', async () => {
     const result = formatLeaderboardGames(
       mockLeaderboardsTimesAPI,
       mockPlayers,
-      'time'
+      { showBest: 'time' }
     );
 
     expect(result).toEqual(mockLeaderboardsTimes);
@@ -32,7 +32,7 @@ describe('Stats service', () => {
     const result = formatLeaderboardGames(
       mockLeaderboardsMovesAPI,
       mockPlayers,
-      'moves'
+      { showBest: 'moves' }
     );
 
     expect(result).toEqual(mockLeaderboardsMoves);
@@ -45,9 +45,7 @@ describe('Stats service', () => {
   });
 
   it('should return formated stats', async () => {
-    const games = calculateGameResults(mockHistoryApi);
-    const stats = calculateStats(games);
-    const result = formatStats(stats);
+    const result = formatStats(mockStats);
 
     expect(result).toStrictEqual([
       ['4', '2', '1', '1'],
