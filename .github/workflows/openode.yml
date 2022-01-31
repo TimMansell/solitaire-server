@@ -1,6 +1,8 @@
 name: opeNode
 
-on: [pull_request]
+on:
+  push:
+    branches: [master]
 
 jobs:
   deploy-on-openode:
