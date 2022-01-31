@@ -5,6 +5,7 @@ on: [pull_request]
 jobs:
   deploy-on-openode:
     runs-on: ubuntu-latest
+    environment: solitaire-server
     steps:
       - uses: actions/checkout@v2
       - name: deploy
