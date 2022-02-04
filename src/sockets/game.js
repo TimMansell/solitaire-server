@@ -1,5 +1,5 @@
-import { newDeck, saveNewGame } from '@/db/game';
-import { updateUserStats, getGlobalStats } from '@/db/stats';
+import { newDeck, saveNewGame } from '../db/game';
+import { updateUserStats, getGlobalStats } from '../db/stats';
 
 export const newGame = async ({ socket, db }, uid) => {
   try {

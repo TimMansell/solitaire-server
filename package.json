@@ -6,16 +6,13 @@
     "node": "14.x"
   },
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "build": "rollup -c",
-    "serve:dev": "run-p serve watch",
-    "serve": "nodemon ./dist/index.js",
-    "stats": "node ./dist/stats.js",
-    "watch": "rollup -c -w",
-    "start": "node ./dist/index.js",
+    "start": "nodemon --experimental-specifier-resolution=node ./src/main.js",
+    "stats": "nodemon --experimental-specifier-resolution=node ./src/tasks/stats.js",
     "test:unit": "jest",
-    "test:e2e": "run-p -r serve:test cypress:run",
-    "test:e2e:gui": "run-p -r serve:test cypress:open",
+    "test:e2e": "run-p -r dev cypress:run",
+    "test:e2e:gui": "run-p -r dev cypress:open",
     "cypress:run": "cypress run --headless --browser chrome",
     "cypress:open": "cypress open",
     "lint": "eslint {src,tests}/**/*.js --fix"

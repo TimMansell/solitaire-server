@@ -1,5 +1,5 @@
-import { initCards, checkGameState } from '@/services/solitaire';
-import { createISODate } from '@/helpers/dates';
+import { initCards, checkGameState } from '../services/solitaire';
+import { createISODate } from '../helpers/dates';
 import 'dotenv/config';
 
 export const newDeck = async (db, uid) => {

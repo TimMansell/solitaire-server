@@ -1,6 +1,6 @@
-import { getAllGames } from '@/db/stats';
-import { getAllUsers } from '@/db/user';
-import { calculatePercents } from '@/db/format';
+import { getAllGames } from '../db/stats';
+import { getAllUsers } from '../db/user';
+import { calculatePercents } from '../db/format';
 import { setupDB } from '../setup';
 
 const calculateGameResults = (games) => {
