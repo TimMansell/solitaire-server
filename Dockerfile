@@ -11,11 +11,8 @@ WORKDIR /app
 # Install dependencies
 RUN yarn
 
-# Build application
-RUN yarn build
-
 # Expose API port to the outside
 EXPOSE 80
 
 # Launch application
-CMD ["yarn","start"]
+CMD ["node","--experimental-specifier-resolution=node","./src/main.js"]
