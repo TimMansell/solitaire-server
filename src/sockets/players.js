@@ -1,4 +1,4 @@
-import { getPlayers } from '../db/players';
+import { getPlayers } from '#@/db/players';
 
 export const getPlayerCount = async ({ io, db }) => {
   try {

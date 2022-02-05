@@ -66,5 +66,8 @@
       "eslint --fix",
       "git add"
     ]
+  },
+  "imports": {
+    "#@/*": "./src/*"
   }
 }

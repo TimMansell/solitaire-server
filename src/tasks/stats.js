@@ -1,7 +1,7 @@
-import { getAllGames } from '../db/stats';
-import { getAllUsers } from '../db/user';
-import { calculatePercents } from '../db/format';
-import { setupDB } from '../setup';
+import { getAllGames } from '#@/db/stats';
+import { getAllUsers } from '#@/db/user';
+import { calculatePercents } from '#@/db/format';
+import { setupDB } from '#@/setup';
 
 const calculateGameResults = (games) => {
   const completed = games.length;
@@ -37,7 +37,7 @@ const main = async () => {
       bulk
         .find({ uid })
         .upsert()
-        .update({ $set: { ...user } });
+        .update({ $set: { #@.user } });
     });
 
     await bulk.execute();

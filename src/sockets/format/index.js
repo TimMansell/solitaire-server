@@ -1,6 +1,6 @@
-import { formatTime } from '../../helpers/times';
-import { formatNumber, formatPercent } from '../../helpers/numbers';
-import { gameOutcome } from '../../helpers/game';
+import { formatTime } from '#@/helpers/times';
+import { formatNumber, formatPercent } from '#@/helpers/numbers';
+import { gameOutcome } from '#@/helpers/game';
 
 export const formatLeaderboardGames = (
   leaderboardGames,
