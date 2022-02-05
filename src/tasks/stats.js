@@ -37,7 +37,7 @@ const main = async () => {
       bulk
         .find({ uid })
         .upsert()
-        .update({ $set: { #@.user } });
+        .update({ $set: { ...user } });
     });
 
     await bulk.execute();
