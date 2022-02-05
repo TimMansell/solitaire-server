@@ -1,5 +1,6 @@
 FROM node:14
 
+ENV NODE_ENV=production
 ENV PORT=80
 
 # Copy source code
