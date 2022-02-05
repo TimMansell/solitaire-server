@@ -10,7 +10,7 @@ COPY . /app
 WORKDIR /app
 
 # Install dependencies
-RUN yarn
+RUN yarn --frozen-lockfile
 
 # Expose API port to the outside
 EXPOSE 80
