@@ -3,8 +3,12 @@ module.exports = {
   env: {
     node: true,
   },
-  extends: ['airbnb-base', 'plugin:prettier/recommended'],
-  plugins: ['jest', 'prettier'],
+  extends: [
+    'airbnb-base',
+    'plugin:prettier/recommended',
+    'plugin:security/recommended',
+  ],
+  plugins: ['jest', 'prettier', 'security'],
   parserOptions: {
     ecmaVersion: 2020,
   },
