@@ -1,4 +1,4 @@
-import { mockBoard, mockFoundation, mockDeck } from '@/mockData';
+import { mockBoard, mockFoundation, mockDeck } from '../mockData';
 
 export const initCards = () => mockDeck;
 

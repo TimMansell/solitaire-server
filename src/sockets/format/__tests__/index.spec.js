@@ -8,7 +8,7 @@ import {
   mockLeaderboardsMoves,
   mockPlayers,
   mockStats,
-} from '@/mockData';
+} from '#@/services/solitaire/mockData';
 import {
   formatLeaderboardGames,
   formatHistoryGames,

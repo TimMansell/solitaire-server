@@ -11,9 +11,15 @@ module.exports = {
   ignorePatterns: ['dist/'],
   rules: {
     'import/no-cycle': 'off',
-    'import/no-unresolved': [2, { ignore: ['@'] }],
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+  },
+  settings: {
+    'import/resolver': {
+      alias: {
+        map: [['#@', './src']],
+      },
+    },
   },
   overrides: [
     {

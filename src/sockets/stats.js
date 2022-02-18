@@ -3,8 +3,8 @@ import {
   getGlobalStats,
   getGameLeaderboards,
   getUserLeaderboards,
-} from '@/db/stats';
-import { getUsers } from '@/db/user';
+} from '#@/db/stats';
+import { getUsers } from '#@/db/user';
 import {
   formatStats,
   formatEmptyStats,

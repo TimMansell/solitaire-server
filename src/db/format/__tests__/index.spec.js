@@ -1,4 +1,4 @@
-import { mockStats } from '@/mockData';
+import { mockStats } from '#@/services/solitaire/mockData';
 import { calculateResults, calculatePercents } from '../index';
 
 describe('DB Formatting', () => {
