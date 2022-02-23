@@ -53,18 +53,20 @@ export const getGameLeaderboards = async (db, { showBest, limit }) => {
 };
 
 export const getUserLeaderboards = async (db, { showBest, limit }) => {
-  const fieldMapping = {
-    winPercent: {
+  const fields = [
+    {
+      key: 'winPercent',
       field: 'stats.won',
       completed: 25,
     },
-    wins: {
+    {
+      key: 'wins',
       field: 'games.won',
       completed: 0,
     },
-  };
+  ];
 
-  const { field, completed } = fieldMapping[showBest];
+  const { field, completed } = fields.find(({ key }) => key === showBest);
 
   const games = await db
     .collection('users')
