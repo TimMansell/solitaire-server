@@ -18,6 +18,17 @@ module.exports = {
   },
   rules: {
     'import/no-cycle': 'off',
+    'node/no-missing-import': 'off',
+    'node/no-unpublished-import': [
+      'error',
+      {
+        allowModules: [
+          'timezone-mock',
+          'cypress-commands',
+          'cypress-wait-until',
+        ],
+      },
+    ],
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
   },
