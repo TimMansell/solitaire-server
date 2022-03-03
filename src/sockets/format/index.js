@@ -17,44 +17,60 @@ export const formatLeaderboardGames = (
       player: player?.name ?? 'Unknown Player',
     };
 
-    const results = {
-      moves: () => {
-        const { date, moves } = item;
+    const formats = [
+      {
+        key: 'moves',
+        format: () => {
+          const { date, moves } = item;
 
-        return {
-          ...defaultItems,
-          date,
-          moves,
-        };
+          return {
+            ...defaultItems,
+            date,
+            moves,
+          };
+        },
       },
-      time: () => {
-        const { date, time } = item;
+      {
+        key: 'time',
+        format: () => {
+          const { date, time } = item;
 
-        return {
-          ...defaultItems,
-          date,
-          time: formatTime(time),
-        };
+          return {
+            ...defaultItems,
+            date,
+            time: formatTime(time),
+          };
+        },
       },
-      winPercent: () => {
-        const { stats } = item;
+      {
+        key: 'winPercent',
+        format: () => {
+          const { stats } = item;
 
-        return {
-          ...defaultItems,
-          won: formatPercent(stats.won),
-        };
+          return {
+            ...defaultItems,
+            won: formatPercent(stats.won),
+          };
+        },
       },
-      wins: () => {
-        const { games } = item;
+      {
+        key: 'wins',
+        format: () => {
+          const { games } = item;
 
-        return {
-          ...defaultItems,
-          won: formatNumber(games.won),
-        };
+          return {
+            ...defaultItems,
+            won: formatNumber(games.won),
+          };
+        },
       },
-    };
+    ];
 
-    return results[showBest]?.() ?? item;
+    const { format } = formats.find(({ key }) => key === showBest);
+
+    const result = format() ?? item;
+
+    return result;
   });
 
 export const formatHistoryGames = (games, gamesPlayed, offset) =>

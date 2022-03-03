@@ -51,15 +51,28 @@ export const getStats = async ({ socket, db }, uid) => {
 export const getLeaderboards = async ({ socket, db }, params) => {
   const { showBest } = params;
 
-  const query = {
-    moves: () => getGameLeaderboards(db, params),
-    time: () => getGameLeaderboards(db, params),
-    winPercent: () => getUserLeaderboards(db, params),
-    wins: () => getUserLeaderboards(db, params),
-  };
+  const queries = [
+    {
+      key: 'moves',
+      query: () => getGameLeaderboards(db, params),
+    },
+    {
+      key: 'time',
+      query: () => getGameLeaderboards(db, params),
+    },
+    {
+      key: 'winPercent',
+      query: () => getUserLeaderboards(db, params),
+    },
+    {
+      key: 'wins',
+      query: () => getUserLeaderboards(db, params),
+    },
+  ];
 
   try {
-    const games = await query[showBest]();
+    const { query } = queries.find(({ key }) => key === showBest);
+    const games = await query();
 
     const uids = [...new Set(games.map(({ uid }) => uid))];
     const players = await getUsers(db, uids);
