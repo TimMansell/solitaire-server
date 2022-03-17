@@ -11,28 +11,28 @@ import {
   formatLeaderboardGames,
 } from './format';
 
-export const getUsersGamesPlayed = async ({ socket, db }, uid) => {
+export const getUsersGamesPlayed = async ({ db }, uid, callback) => {
   try {
     const userStats = await getUserStats(db, uid);
     const userCounts = userStats ? userStats.games.completed : 0;
 
-    socket.emit('setUserGamesPlayed', userCounts);
+    callback(userCounts);
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const getGlobalGamesPlayed = async ({ io, db }) => {
+export const getGlobalGamesPlayed = async ({ socket, db }) => {
   try {
     const { games } = await getGlobalStats(db);
 
-    io.emit('setGlobalGamesPlayed', games.completed);
+    socket.emit('setGlobalGamesPlayed', games.completed);
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const getStats = async ({ socket, db }, uid) => {
+export const getStats = async ({ db }, uid, callback) => {
   try {
     const [user, global] = await Promise.all([
       getUserStats(db, uid),
@@ -42,13 +42,13 @@ export const getStats = async ({ socket, db }, uid) => {
     const userStats = user ? formatStats(user) : formatEmptyStats();
     const globalStats = formatStats(global);
 
-    socket.emit('setStats', { userStats, globalStats });
+    callback({ userStats, globalStats });
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const getLeaderboards = async ({ socket, db }, params) => {
+export const getLeaderboards = async ({ db }, params, callback) => {
   const { showBest } = params;
 
   const queries = [
@@ -79,7 +79,7 @@ export const getLeaderboards = async ({ socket, db }, params) => {
 
     const results = formatLeaderboardGames(games, players, params);
 
-    socket.emit('setLeaderboards', results);
+    callback(results);
   } catch (error) {
     console.log({ error });
   }

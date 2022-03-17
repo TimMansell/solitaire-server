@@ -8,7 +8,7 @@ import { updateUser, getUserDetails, getUserGames } from '#@/db/user';
 import { getPlayers } from '#@/db/players';
 import { formatHistoryGames } from './format';
 
-export const createUser = async ({ socket, io, db }, uid) => {
+export const createUser = async ({ io, db }, uid, callback) => {
   const numberDictionary = NumberDictionary.generate({ min: 10, max: 999 });
   const name = uniqueNamesGenerator({
     dictionaries: [colors, animals, numberDictionary],
@@ -21,30 +21,32 @@ export const createUser = async ({ socket, io, db }, uid) => {
     getPlayers(db),
   ]);
 
-  socket.emit('setUser', user);
   io.emit('setPlayerCount', players);
+
+  callback(user);
 };
 
-export const getUser = async ({ socket, db }, uid) => {
+export const getUser = async ({ db }, uid, callback) => {
   try {
     const user = await getUserDetails(db, uid);
 
-    socket.emit('setUser', user);
+    callback(user);
   } catch (error) {
     console.log({ error });
   }
 };
 
 export const getUserHistory = async (
-  { socket, db },
-  { uid, offset, limit }
+  { db },
+  { uid, offset, limit },
+  callback
 ) => {
   try {
     const [games, gamesPlayed] = await getUserGames(db, uid, offset, limit);
 
     const formattedGames = formatHistoryGames(games, gamesPlayed, offset);
 
-    socket.emit('setUserHistory', formattedGames);
+    callback(formattedGames);
   } catch (error) {
     console.log({ error });
   }
