@@ -2,40 +2,40 @@ import { Server } from 'socket.io';
 
 import { setupOn } from './setup';
 import { disconnect } from './disconnect';
-import { getLatestVersion } from './version';
+import { checkVersion } from './version';
 import { newGame, saveGame } from './game';
-import { createUser, getUser, getUserHistory } from './user';
+import { getUser, getUserHistory } from './user';
 import {
-  getUsersGamesPlayed,
-  getGlobalGamesPlayed,
+  getUserPlayed,
+  getGlobalPlayed,
   getStats,
   getLeaderboards,
 } from './stats';
-import { getPlayerCount, getOnlinePlayerCount } from './players';
+import { getPlayerCount, getOnlineCount } from './players';
 
 // eslint-disable-next-line import/prefer-default-export
 export const setupSockets = ({ server }, db) => {
   const io = new Server(server);
 
   io.on('connection', async (socket) => {
-    const core = { socket, io, db };
+    const { uid } = socket.handshake.query;
+    const core = { socket, io, db, uid };
     const on = setupOn(core);
 
     on('newGame', newGame);
     on('saveGame', saveGame);
-    on('createUser', createUser);
-    on('getUser', getUser);
-    on('getUserHistory', getUserHistory);
-    on('getUsersGamesPlayed', getUsersGamesPlayed);
-    on('getStats', getStats);
-    on('getLeaderboards', getLeaderboards);
+    on('userHistory', getUserHistory);
+    on('stats', getStats);
+    on('leaderboards', getLeaderboards);
     on('disconnect', disconnect);
 
-    getLatestVersion(core);
+    checkVersion(core);
+    getUser(core);
     getPlayerCount(core);
-    getGlobalGamesPlayed(core);
-    getOnlinePlayerCount(core);
+    getGlobalPlayed(core);
+    getUserPlayed(core);
+    getOnlineCount(core);
 
-    console.log('Client connected.', socket.id);
+    console.log('Client connected.', uid);
   });
 };

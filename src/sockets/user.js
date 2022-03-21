@@ -8,7 +8,9 @@ import { updateUser, getUserDetails, getUserGames } from '#@/db/user';
 import { getPlayers } from '#@/db/players';
 import { formatHistoryGames } from './format';
 
-export const createUser = async ({ io, db }, uid, callback) => {
+export const createUser = async ({ io, socket, db, uid }, currentName) => {
+  if (currentName) return;
+
   const numberDictionary = NumberDictionary.generate({ min: 10, max: 999 });
   const name = uniqueNamesGenerator({
     dictionaries: [colors, animals, numberDictionary],
@@ -21,32 +23,30 @@ export const createUser = async ({ io, db }, uid, callback) => {
     getPlayers(db),
   ]);
 
-  io.emit('setPlayerCount', players);
-
-  callback(user);
+  socket.emit('user', user);
+  io.emit('playerCount', players);
 };
 
-export const getUser = async ({ db }, uid, callback) => {
+export const getUser = async ({ socket, db, uid }) => {
   try {
-    const user = await getUserDetails(db, uid);
+    const existingUser = await getUserDetails(db, uid);
 
-    callback(user);
+    socket.emit('user', existingUser);
   } catch (error) {
     console.log({ error });
   }
 };
 
 export const getUserHistory = async (
-  { db },
-  { uid, offset, limit },
-  callback
+  { socket, db, uid },
+  { offset, limit }
 ) => {
   try {
     const [games, gamesPlayed] = await getUserGames(db, uid, offset, limit);
 
     const formattedGames = formatHistoryGames(games, gamesPlayed, offset);
 
-    callback(formattedGames);
+    socket.emit('userGames', formattedGames);
   } catch (error) {
     console.log({ error });
   }
