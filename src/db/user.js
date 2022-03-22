@@ -1,4 +1,18 @@
-export const updateUser = async (db, uid, name) => {
+import {
+  uniqueNamesGenerator,
+  NumberDictionary,
+  colors,
+  animals,
+} from 'unique-names-generator';
+
+export const createNewUser = async (db, uid) => {
+  const numberDictionary = NumberDictionary.generate({ min: 10, max: 999 });
+  const name = uniqueNamesGenerator({
+    dictionaries: [colors, animals, numberDictionary],
+    separator: '',
+    style: 'capital',
+  });
+
   await db
     .collection('users')
     .findOneAndUpdate({ uid }, { $set: { name } }, { upsert: true });
