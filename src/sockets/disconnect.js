@@ -1,10 +1,10 @@
-import { getOnlineCount } from './players';
+import { setOnlineCount } from './players';
 
 // eslint-disable-next-line import/prefer-default-export
 export const disconnect = ({ io, socket, uid }) => {
   socket.removeAllListeners();
 
-  getOnlineCount({ io });
+  setOnlineCount({ io });
 
   console.log('Client disconnected.', uid);
 };

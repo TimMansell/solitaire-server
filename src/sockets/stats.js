@@ -11,7 +11,7 @@ import {
   formatLeaderboardGames,
 } from './format';
 
-export const getUserPlayed = async ({ socket, db, uid }) => {
+export const setUserPlayed = async ({ socket, db, uid }) => {
   try {
     const userStats = await getUserStats(db, uid);
     const userCounts = userStats ? userStats.games.completed : 0;
@@ -22,7 +22,7 @@ export const getUserPlayed = async ({ socket, db, uid }) => {
   }
 };
 
-export const getGlobalPlayed = async ({ socket, db }) => {
+export const setGlobalPlayed = async ({ socket, db }) => {
   try {
     const { games } = await getGlobalStats(db);
 
@@ -32,7 +32,7 @@ export const getGlobalPlayed = async ({ socket, db }) => {
   }
 };
 
-export const getStats = async ({ socket, db, uid }) => {
+export const setStats = async ({ socket, db, uid }) => {
   try {
     const [user, global] = await Promise.all([
       getUserStats(db, uid),
@@ -48,7 +48,7 @@ export const getStats = async ({ socket, db, uid }) => {
   }
 };
 
-export const getLeaderboards = async ({ socket, db }, params) => {
+export const setLeaderboards = async ({ socket, db }, params) => {
   const { showBest } = params;
 
   const queries = [
