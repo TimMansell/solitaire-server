@@ -8,8 +8,10 @@ import { updateUser, getUserDetails, getUserGames } from '#@/db/user';
 import { getPlayers } from '#@/db/players';
 import { formatHistoryGames } from './format';
 
-export const createUser = async ({ io, socket, db, uid }, currentName) => {
-  if (currentName) return;
+export const createUser = async ({ io, socket, db, uid }) => {
+  const isExistingUser = await getUserDetails(db, uid);
+
+  if (isExistingUser) return;
 
   const numberDictionary = NumberDictionary.generate({ min: 10, max: 999 });
   const name = uniqueNamesGenerator({

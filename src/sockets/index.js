@@ -4,7 +4,7 @@ import { setupOn } from './setup';
 import { disconnect } from './disconnect';
 import { checkVersion } from './version';
 import { newGame, saveGame } from './game';
-import { getUser, getUserHistory } from './user';
+import { createUser, getUser, getUserHistory } from './user';
 import {
   getUserPlayed,
   getGlobalPlayed,
@@ -24,6 +24,7 @@ export const setupSockets = ({ server }, db) => {
 
     on('newGame', newGame);
     on('saveGame', saveGame);
+    on('createUser', createUser);
     on('userHistory', getUserHistory);
     on('stats', getStats);
     on('leaderboards', getLeaderboards);
