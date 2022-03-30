@@ -13,5 +13,8 @@ export const checkGameState = (moves, deck) => {
     foundation,
   });
 
-  return { isGameFinished, hasMoves };
+  const hasWon = isGameFinished && !hasMoves;
+  const hasLost = !isGameFinished && !hasMoves;
+
+  return { hasWon, hasLost };
 };
