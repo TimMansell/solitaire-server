@@ -3,7 +3,7 @@ import { Server } from 'socket.io';
 import { setupOn } from './setup';
 import { disconnect } from './disconnect';
 import { checkVersion } from './version';
-import { newGame, saveGame } from './game';
+import { initNewGame, saveGame } from './game';
 import { createUser, setUser, setUserGames } from './user';
 import {
   setUserPlayed,
@@ -18,12 +18,11 @@ export const setupSockets = ({ server }, db) => {
   const io = new Server(server);
 
   io.on('connection', async (socket) => {
-    const { uid } = socket.handshake.query;
-    const core = { socket, io, db, uid };
+    const { query } = socket.handshake;
+    const core = { socket, io, db, ...query };
 
-    const on = setupOn(core);
+    const on = setupOn(core, query);
 
-    on('newGame', newGame);
     on('saveGame', saveGame);
     on('createUser', createUser);
     on('userGames', setUserGames);
@@ -31,6 +30,7 @@ export const setupSockets = ({ server }, db) => {
     on('leaderboards', setLeaderboards);
     on('disconnect', disconnect);
 
+    initNewGame(core);
     checkVersion(core);
     setUser(core);
     setPlayerCount(core);
@@ -38,6 +38,6 @@ export const setupSockets = ({ server }, db) => {
     setUserPlayed(core);
     setOnlineCount(core);
 
-    console.log('Client connected.', uid);
+    console.log('Client connected.', query.uid);
   });
 };

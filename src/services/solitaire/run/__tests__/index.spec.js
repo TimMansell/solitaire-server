@@ -10,33 +10,27 @@ import quitGameMoves from '../../../../../tests/fixtures/moves/quitGame.json';
 describe('run', () => {
   describe('checkGameState', () => {
     it('should be won game', () => {
-      const { isGameFinished, hasMoves } = checkGameState(
-        fullGameMoves,
-        fullGameDeck
-      );
+      const { hasWon, hasLost } = checkGameState(fullGameMoves, fullGameDeck);
 
-      expect(isGameFinished).toBe(true);
-      expect(hasMoves).toBe(false);
+      expect(hasWon).toBe(true);
+      expect(hasLost).toBe(false);
     });
 
     it('should be lost game', () => {
-      const { isGameFinished, hasMoves } = checkGameState(
+      const { hasWon, hasLost } = checkGameState(
         incompleteGameMoves,
         incompleteGameDeck
       );
 
-      expect(isGameFinished).toBe(false);
-      expect(hasMoves).toBe(false);
+      expect(hasWon).toBe(false);
+      expect(hasLost).toBe(true);
     });
 
     it('should be quit game', () => {
-      const { isGameFinished, hasMoves } = checkGameState(
-        quitGameMoves,
-        quitGameDeck
-      );
+      const { hasWon, hasLost } = checkGameState(quitGameMoves, quitGameDeck);
 
-      expect(isGameFinished).toBe(false);
-      expect(hasMoves).toBe(true);
+      expect(hasWon).toBe(false);
+      expect(hasLost).toBe(false);
     });
   });
 });
