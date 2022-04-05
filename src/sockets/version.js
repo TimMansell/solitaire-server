@@ -1,11 +1,21 @@
-import semver from 'semver';
-import { getVersion } from '#@/db/version';
+import lt from 'semver/functions/lt';
+import { watchVersion } from '#@/db/version';
 
 // eslint-disable-next-line import/prefer-default-export
-export const checkVersion = async ({ socket, db, version }) => {
-  const latestVersion = await getVersion({ db });
-  const isValid = semver.valid(version);
-  const isOutdated = !isValid || !semver.eq(version, latestVersion);
+export const watchVersionUpdate = ({ io, db }) => {
+  const changeStream = watchVersion(db);
 
-  socket.emit('setVersion', { latestVersion, isOutdated });
+  changeStream.on('change', async ({ updateDescription }) => {
+    const sockets = await io.fetchSockets();
+    const { appVersion } = updateDescription.updatedFields;
+
+    if (!appVersion) return;
+
+    sockets.forEach((socket) => {
+      const { version } = socket.handshake.query;
+      const isOutdated = lt(version, appVersion);
+
+      socket.emit('newUpdate', isOutdated);
+    });
+  });
 };
