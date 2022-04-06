@@ -2,7 +2,11 @@ import { Server } from 'socket.io';
 
 import { setupOn } from './setup';
 import { disconnect } from './disconnect';
-import { watchForVersionUpdate } from './version';
+import {
+  watchForVersionUpdate,
+  watchForUsersUpdate,
+  watchForGamesUpdate,
+} from './watch';
 import { initNewGame, saveGame } from './game';
 import { createUser, setUser, setUserGames } from './user';
 import {
@@ -18,6 +22,8 @@ export const setupSockets = ({ server }, db) => {
   const io = new Server(server);
 
   watchForVersionUpdate({ io, db });
+  watchForUsersUpdate({ io, db });
+  watchForGamesUpdate({ io, db });
 
   io.on('connection', (socket) => {
     const { query } = socket.handshake;

@@ -1,7 +1,13 @@
 import { calculateResults, calculatePercents } from './format';
 
+export const getUserGameCount = async (db, uid) =>
+  db.collection('games').find({ uid }, {}).count();
+
 export const getUserStats = async (db, uid) =>
   db.collection('users').findOne({ uid }, { _id: 0 });
+
+export const getGlobalGameCount = async (db) =>
+  db.collection('games').find({}, {}).count();
 
 export const getGlobalStats = async (db) => {
   const [counts] = await db

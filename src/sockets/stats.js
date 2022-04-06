@@ -1,5 +1,7 @@
 import {
+  getUserGameCount,
   getUserStats,
+  getGlobalGameCount,
   getGlobalStats,
   getGameLeaderboards,
   getUserLeaderboards,
@@ -13,10 +15,9 @@ import {
 
 export const setUserPlayed = async ({ socket, db, uid }) => {
   try {
-    const userStats = await getUserStats(db, uid);
-    const userCounts = userStats ? userStats.games.completed : 0;
+    const gameCount = await getUserGameCount(db, uid);
 
-    socket.emit('userPlayed', userCounts);
+    socket.emit('userPlayed', gameCount);
   } catch (error) {
     console.log({ error });
   }
@@ -24,9 +25,9 @@ export const setUserPlayed = async ({ socket, db, uid }) => {
 
 export const setGlobalPlayed = async ({ socket, db }) => {
   try {
-    const { games } = await getGlobalStats(db);
+    const gameCount = await getGlobalGameCount(db);
 
-    socket.emit('globalPlayed', games.completed);
+    socket.emit('globalPlayed', gameCount);
   } catch (error) {
     console.log({ error });
   }
