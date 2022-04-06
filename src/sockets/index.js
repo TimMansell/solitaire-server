@@ -2,7 +2,7 @@ import { Server } from 'socket.io';
 
 import { setupOn } from './setup';
 import { disconnect } from './disconnect';
-import { watchVersionUpdate } from './version';
+import { watchForVersionUpdate } from './version';
 import { initNewGame, saveGame } from './game';
 import { createUser, setUser, setUserGames } from './user';
 import {
@@ -17,7 +17,7 @@ import { setPlayerCount, setOnlineCount } from './players';
 export const setupSockets = ({ server }, db) => {
   const io = new Server(server);
 
-  watchVersionUpdate({ io, db });
+  watchForVersionUpdate({ io, db });
 
   io.on('connection', (socket) => {
     const { query } = socket.handshake;

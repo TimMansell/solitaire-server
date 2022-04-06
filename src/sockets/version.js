@@ -2,7 +2,7 @@ import lt from 'semver/functions/lt';
 import { watchVersion } from '#@/db/watch';
 
 // eslint-disable-next-line import/prefer-default-export
-export const watchVersionUpdate = ({ io, db }) => {
+export const watchForVersionUpdate = ({ io, db }) => {
   const changeStream = watchVersion(db);
 
   changeStream.on('change', async ({ updateDescription }) => {
