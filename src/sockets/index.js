@@ -2,7 +2,7 @@ import { Server } from 'socket.io';
 
 import { setupOn } from './setup';
 import { disconnect } from './disconnect';
-import { checkVersion } from './version';
+import { watchForVersionUpdate } from './version';
 import { initNewGame, saveGame } from './game';
 import { createUser, setUser, setUserGames } from './user';
 import {
@@ -17,7 +17,9 @@ import { setPlayerCount, setOnlineCount } from './players';
 export const setupSockets = ({ server }, db) => {
   const io = new Server(server);
 
-  io.on('connection', async (socket) => {
+  watchForVersionUpdate({ io, db });
+
+  io.on('connection', (socket) => {
     const { query } = socket.handshake;
     const core = { socket, io, db, ...query };
 
@@ -31,7 +33,6 @@ export const setupSockets = ({ server }, db) => {
     on('disconnect', disconnect);
 
     initNewGame(core);
-    checkVersion(core);
     setUser(core);
     setPlayerCount(core);
     setGlobalPlayed(core);
