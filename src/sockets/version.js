@@ -1,5 +1,5 @@
 import lt from 'semver/functions/lt';
-import { watchVersion } from '#@/db/version';
+import { watchVersion } from '#@/db/watch';
 
 // eslint-disable-next-line import/prefer-default-export
 export const watchVersionUpdate = ({ io, db }) => {
