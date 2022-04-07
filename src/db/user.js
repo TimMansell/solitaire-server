@@ -1,16 +1,19 @@
 import {
   uniqueNamesGenerator,
-  NumberDictionary,
+  adjectives,
   colors,
   animals,
 } from 'unique-names-generator';
+import shuffle from 'lodash.shuffle';
 
 export const createNewUser = async (db, uid) => {
-  const numberDictionary = NumberDictionary.generate({ min: 10, max: 999 });
+  const [first, second] = shuffle([adjectives, colors, animals]);
+
   const name = uniqueNamesGenerator({
-    dictionaries: [colors, animals, numberDictionary],
+    dictionaries: [first, second],
     separator: '',
     style: 'capital',
+    length: 2,
   });
 
   await db
