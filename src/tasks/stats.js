@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { getAllGames } from '#@/db/stats';
 import { getAllUsers } from '#@/db/user';
 import { calculatePercents } from '#@/db/format';
@@ -49,3 +50,4 @@ const main = async () => {
 };
 
 main();
+/* eslint-enable */

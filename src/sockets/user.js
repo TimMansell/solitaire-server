@@ -1,34 +1,41 @@
-import { createNewUser, getUserDetails, getUserGames } from '#@/db/user';
+import { createNewUser, getUser, getUserGames } from '#@/db/user';
+import { getUserGameCount } from '#@/db/stats';
 import { formatHistoryGames } from './format';
 
-export const createUser = async ({ socket, db, uid }) => {
+export const createUser = async ({ socket, ...core }) => {
   if (socket.user) return;
 
   try {
-    const user = await createNewUser(db, uid);
+    const { name } = await createNewUser(core);
 
-    socket.emit('user', user);
+    socket.user = name;
+    socket.emit('user', name);
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const setUser = async ({ socket, db, uid }) => {
+export const setUser = async ({ socket, ...core }) => {
   try {
-    const existingUser = await getUserDetails(db, uid);
+    const { name } = await getUser(core);
 
-    socket.user = existingUser;
-    socket.emit('user', existingUser);
+    if (!name) return;
+
+    socket.user = name;
+    socket.emit('user', name);
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const setUserGames = async ({ socket, db, uid }, { offset, limit }) => {
+export const setUserGames = async ({ socket, ...core }, params) => {
   try {
-    const [games, gamesPlayed] = await getUserGames(db, uid, offset, limit);
+    const [games, gamesPlayed] = await Promise.all([
+      getUserGames(core, params),
+      getUserGameCount(core),
+    ]);
 
-    const formattedGames = formatHistoryGames(games, gamesPlayed, offset);
+    const formattedGames = formatHistoryGames(games, gamesPlayed, params);
 
     socket.emit('userGames', formattedGames);
   } catch (error) {

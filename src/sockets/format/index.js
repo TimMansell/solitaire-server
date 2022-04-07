@@ -2,78 +2,65 @@ import { formatTime } from '#@/helpers/times';
 import { formatNumber, formatPercent } from '#@/helpers/numbers';
 import { gameOutcome } from '#@/helpers/game';
 
-export const formatLeaderboardGames = (
-  leaderboardGames,
-  players,
-  { showBest }
-) =>
-  leaderboardGames.map((item, index) => {
-    const { uid } = item;
+export const formatLeaderboardGames = (leaderboards, { showBest }) => {
+  const formats = [
+    {
+      key: 'moves',
+      format: ({ defaultItems, date, moves }) => {
+        return {
+          ...defaultItems,
+          date,
+          moves,
+        };
+      },
+    },
+    {
+      key: 'time',
+      format: ({ defaultItems, date, time }) => {
+        return {
+          ...defaultItems,
+          date,
+          time: formatTime(time),
+        };
+      },
+    },
+    {
+      key: 'winPercent',
+      format: ({ defaultItems, stats }) => {
+        return {
+          ...defaultItems,
+          won: formatPercent(stats.won),
+        };
+      },
+    },
+    {
+      key: 'wins',
+      format: ({ defaultItems, games }) => {
+        return {
+          ...defaultItems,
+          won: formatNumber(games.won),
+        };
+      },
+    },
+  ];
 
-    const player = players.find(({ uid: id }) => id === uid);
+  const { format } = formats.find(({ key }) => key === showBest);
 
+  const results = leaderboards.map(({ name, ...leaderboard }, index) => {
     const defaultItems = {
       rank: index + 1,
-      player: player?.name ?? 'Unknown Player',
+      player: name,
     };
 
-    const formats = [
-      {
-        key: 'moves',
-        format: () => {
-          const { date, moves } = item;
+    const game = format({ defaultItems, ...leaderboard });
 
-          return {
-            ...defaultItems,
-            date,
-            moves,
-          };
-        },
-      },
-      {
-        key: 'time',
-        format: () => {
-          const { date, time } = item;
-
-          return {
-            ...defaultItems,
-            date,
-            time: formatTime(time),
-          };
-        },
-      },
-      {
-        key: 'winPercent',
-        format: () => {
-          const { stats } = item;
-
-          return {
-            ...defaultItems,
-            won: formatPercent(stats.won),
-          };
-        },
-      },
-      {
-        key: 'wins',
-        format: () => {
-          const { games } = item;
-
-          return {
-            ...defaultItems,
-            won: formatNumber(games.won),
-          };
-        },
-      },
-    ];
-
-    const { format } = formats.find(({ key }) => key === showBest);
-
-    const result = format() ?? item;
-
-    return result;
+    return game;
   });
 
-export const formatHistoryGames = (games, gamesPlayed, offset) =>
+  return results;
+};
+
+export const formatHistoryGames = (games, gamesPlayed, { offset }) =>
   games.map(({ date, won, lost, time, moves }, index) => ({
     number: formatNumber(gamesPlayed - offset - index),
     date,
@@ -83,37 +70,23 @@ export const formatHistoryGames = (games, gamesPlayed, offset) =>
     duration: formatTime(time),
   }));
 
-export const formatStats = ({ games, stats }) => [
-  [
-    formatNumber(games.completed),
-    formatNumber(games.won),
-    formatNumber(games.lost),
-    formatNumber(games.quit),
-  ],
-  [
-    '',
-    formatPercent(stats.won),
-    formatPercent(stats.lost),
-    formatPercent(stats.quit),
-  ],
-];
+export const formatStats = ({ completed, won, lost, quit }) => {
+  const wonPercent = completed ? won / completed : completed;
+  const lostPercent = completed ? lost / completed : completed;
+  const quitPercent = completed ? quit / completed : completed;
 
-export const formatEmptyStats = () => {
-  const stats = {
-    games: {
-      completed: 0,
-      won: 0,
-      lost: 0,
-      quit: 0,
-    },
-    stats: {
-      won: formatPercent(0),
-      lost: formatPercent(0),
-      quit: formatPercent(0),
-    },
-  };
-
-  const formattedStats = formatStats(stats);
-
-  return formattedStats;
+  return [
+    [
+      formatNumber(completed),
+      formatNumber(won),
+      formatNumber(lost),
+      formatNumber(quit),
+    ],
+    [
+      '',
+      formatPercent(wonPercent),
+      formatPercent(lostPercent),
+      formatPercent(quitPercent),
+    ],
+  ];
 };

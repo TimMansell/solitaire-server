@@ -1,4 +1,4 @@
-export const watchVersion = (db) =>
+export const watchVersion = ({ db }) =>
   db.collection('version').watch([
     {
       $match: {
@@ -7,7 +7,7 @@ export const watchVersion = (db) =>
     },
   ]);
 
-export const watchUsers = (db) =>
+export const watchUsers = ({ db }) =>
   db.collection('users').watch([
     {
       $match: {
@@ -16,7 +16,7 @@ export const watchUsers = (db) =>
     },
   ]);
 
-export const watchGames = (db) =>
+export const watchGames = ({ db }) =>
   db.collection('games').watch([
     {
       $match: {

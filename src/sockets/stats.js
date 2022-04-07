@@ -1,21 +1,15 @@
 import {
   getUserGameCount,
-  getUserStats,
   getGlobalGameCount,
-  getGlobalStats,
+  getStats,
   getGameLeaderboards,
   getUserLeaderboards,
 } from '#@/db/stats';
-import { getUsers } from '#@/db/user';
-import {
-  formatStats,
-  formatEmptyStats,
-  formatLeaderboardGames,
-} from './format';
+import { formatStats, formatLeaderboardGames } from './format';
 
-export const setUserPlayed = async ({ socket, db, uid }) => {
+export const setUserPlayed = async ({ socket, ...core }) => {
   try {
-    const gameCount = await getUserGameCount(db, uid);
+    const gameCount = await getUserGameCount(core);
 
     socket.emit('userPlayed', gameCount);
   } catch (error) {
@@ -23,9 +17,9 @@ export const setUserPlayed = async ({ socket, db, uid }) => {
   }
 };
 
-export const setGlobalPlayed = async ({ socket, db }) => {
+export const setGlobalPlayed = async ({ socket, ...core }) => {
   try {
-    const gameCount = await getGlobalGameCount(db);
+    const gameCount = await getGlobalGameCount(core);
 
     socket.emit('globalPlayed', gameCount);
   } catch (error) {
@@ -33,14 +27,14 @@ export const setGlobalPlayed = async ({ socket, db }) => {
   }
 };
 
-export const setStats = async ({ socket, db, uid }) => {
+export const setStats = async ({ socket, uid, ...core }) => {
   try {
     const [user, global] = await Promise.all([
-      getUserStats(db, uid),
-      getGlobalStats(db),
+      getStats(core, { uid }),
+      getStats(core),
     ]);
 
-    const userStats = user ? formatStats(user) : formatEmptyStats();
+    const userStats = formatStats(user);
     const globalStats = formatStats(global);
 
     socket.emit('stats', { userStats, globalStats });
@@ -49,36 +43,33 @@ export const setStats = async ({ socket, db, uid }) => {
   }
 };
 
-export const setLeaderboards = async ({ socket, db }, params) => {
+export const setLeaderboards = async ({ socket, ...core }, params) => {
   const { showBest } = params;
 
   const queries = [
     {
       key: 'moves',
-      query: () => getGameLeaderboards(db, params),
+      query: () => getGameLeaderboards(core, params),
     },
     {
       key: 'time',
-      query: () => getGameLeaderboards(db, params),
+      query: () => getGameLeaderboards(core, params),
     },
     {
       key: 'winPercent',
-      query: () => getUserLeaderboards(db, params),
+      query: () => getUserLeaderboards(core, params),
     },
     {
       key: 'wins',
-      query: () => getUserLeaderboards(db, params),
+      query: () => getUserLeaderboards(core, params),
     },
   ];
 
   try {
     const { query } = queries.find(({ key }) => key === showBest);
-    const games = await query();
+    const leaderboards = await query();
 
-    const uids = [...new Set(games.map(({ uid }) => uid))];
-    const players = await getUsers(db, uids);
-
-    const results = formatLeaderboardGames(games, players, params);
+    const results = formatLeaderboardGames(leaderboards, params);
 
     socket.emit('leaderboards', results);
   } catch (error) {

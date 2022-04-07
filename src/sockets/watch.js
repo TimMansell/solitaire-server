@@ -1,51 +1,37 @@
-import lt from 'semver/functions/lt';
 import { watchVersion, watchUsers, watchGames } from '#@/db/watch';
-import { updateUserStats } from '#@/db/stats';
+import { newUpdate } from './app';
 import { setPlayerCount } from './players';
 import { setUserPlayed, setGlobalPlayed } from './stats';
 import { createUser } from './user';
+import { newGame } from './game';
 
-export const watchForVersionUpdate = ({ io, db }) => {
-  const changeStream = watchVersion(db);
+export const watchForVersionUpdate = ({ io, ...core }) =>
+  watchVersion(core).on(
+    'change',
+    async ({
+      updateDescription: {
+        updatedFields: { appVersion },
+      },
+    }) => {
+      const sockets = await io.fetchSockets();
 
-  changeStream.on('change', async ({ updateDescription }) => {
+      if (!appVersion) return;
+
+      sockets.forEach((socket) => newUpdate({ socket, appVersion }));
+    }
+  );
+
+export const watchForUsersUpdate = ({ io, ...core }) =>
+  watchUsers(core).on('change', () => setPlayerCount({ ...core, socket: io }));
+
+export const watchForGamesUpdate = ({ io, ...core }) =>
+  watchGames(core).on('change', async ({ fullDocument: { uid } }) => {
     const sockets = await io.fetchSockets();
-    const { appVersion } = updateDescription.updatedFields;
+    const socket = sockets.find(({ handshake }) => handshake.query.uid === uid);
+    const newCore = { ...core, socket, uid };
 
-    if (!appVersion) return;
-
-    sockets.forEach((socket) => {
-      const { version } = socket.handshake.query;
-      const isOutdated = lt(version, appVersion);
-
-      socket.emit('newUpdate', isOutdated);
-    });
+    newGame(newCore);
+    createUser(newCore);
+    setUserPlayed(newCore);
+    setGlobalPlayed({ ...newCore, socket: io });
   });
-};
-
-export const watchForUsersUpdate = ({ io, db }) => {
-  const changeStream = watchUsers(db);
-
-  changeStream.on('change', async () => setPlayerCount({ socket: io, db }));
-};
-
-export const watchForGamesUpdate = ({ io, db }) => {
-  const changeStream = watchGames(db);
-
-  changeStream.on('change', async ({ fullDocument }) => {
-    const sockets = await io.fetchSockets();
-    const { uid: gameUid } = fullDocument;
-
-    setGlobalPlayed({ socket: io, db });
-
-    sockets.forEach((socket) => {
-      const { uid } = socket.handshake.query;
-
-      if (uid !== gameUid) return;
-
-      createUser({ socket, db, uid });
-      setUserPlayed({ socket, db, uid });
-      updateUserStats(db, uid);
-    });
-  });
-};

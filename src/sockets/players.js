@@ -1,8 +1,8 @@
-import { getPlayers } from '#@/db/players';
+import { getPlayers } from '#@/db/stats';
 
-export const setPlayerCount = async ({ socket, db }) => {
+export const setPlayerCount = async ({ socket, ...core }) => {
   try {
-    const players = await getPlayers(db);
+    const players = await getPlayers(core);
 
     socket.emit('playerCount', players);
   } catch (error) {

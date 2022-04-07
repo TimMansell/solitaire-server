@@ -20,16 +20,15 @@ import { setPlayerCount, setOnlineCount } from './players';
 // eslint-disable-next-line import/prefer-default-export
 export const setupSockets = ({ server }, db) => {
   const io = new Server(server);
+  const core = { io, db };
 
-  watchForVersionUpdate({ io, db });
-  watchForUsersUpdate({ io, db });
-  watchForGamesUpdate({ io, db });
+  watchForVersionUpdate(core);
+  watchForUsersUpdate(core);
+  watchForGamesUpdate(core);
 
   io.on('connection', (socket) => {
-    const { query } = socket.handshake;
-    const core = { socket, io, db, ...query };
-
-    const on = setupOn(core, query);
+    const coreConnection = { ...core, socket, ...socket.handshake.query };
+    const on = setupOn(coreConnection);
 
     on('saveGame', saveGame);
     on('userGames', setUserGames);
@@ -37,13 +36,13 @@ export const setupSockets = ({ server }, db) => {
     on('leaderboards', setLeaderboards);
     on('disconnect', disconnect);
 
-    initNewGame(core);
-    setUser(core);
-    setPlayerCount(core);
-    setGlobalPlayed(core);
-    setUserPlayed(core);
-    setOnlineCount(core);
+    initNewGame(coreConnection);
+    setUser(coreConnection);
+    setPlayerCount(coreConnection);
+    setGlobalPlayed(coreConnection);
+    setUserPlayed(coreConnection);
+    setOnlineCount(coreConnection);
 
-    console.log('Client connected.', query.uid);
+    console.log('Client connected.', coreConnection.uid);
   });
 };

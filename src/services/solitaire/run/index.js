@@ -3,7 +3,8 @@ import { isBoardEmpty } from '../board';
 import { checkHasMoves } from '../moves';
 
 // eslint-disable-next-line import/prefer-default-export
-export const checkGameState = (moves, deck) => {
+export const checkGameState = (game, deck) => {
+  const { moves } = game;
   const { cards, foundation } = runGameMoves(moves, deck);
 
   const isGameFinished = isBoardEmpty({ cards });
@@ -16,5 +17,5 @@ export const checkGameState = (moves, deck) => {
   const hasWon = isGameFinished && !hasMoves;
   const hasLost = !isGameFinished && !hasMoves;
 
-  return { hasWon, hasLost };
+  return { moves: moves.length, won: hasWon, lost: hasLost, completed: true };
 };

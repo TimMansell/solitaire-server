@@ -6,7 +6,7 @@ import {
 } from 'unique-names-generator';
 import shuffle from 'lodash.shuffle';
 
-export const createNewUser = async (db, uid) => {
+export const createNewUser = async ({ db, uid }) => {
   const [first, second] = shuffle([adjectives, colors, animals]);
 
   const name = uniqueNamesGenerator({
@@ -16,57 +16,33 @@ export const createNewUser = async (db, uid) => {
     length: 2,
   });
 
-  await db
-    .collection('users')
-    .findOneAndUpdate({ uid }, { $set: { name } }, { upsert: true });
+  const { value } = await db.collection('users').findOneAndUpdate(
+    { uid },
+    { $set: { name } },
+    {
+      projection: { _id: 0 },
+      upsert: true,
+      returnDocument: 'after',
+    }
+  );
 
-  return name;
+  return value;
 };
 
-export const getUserDetails = async (db, uid) => {
-  const user = await db
-    .collection('users')
-    .findOne({ uid }, { projection: { _id: 0, name: 1 } });
+export const getUser = ({ db, uid }) =>
+  db.collection('users').findOne({ uid }, { projection: { _id: 0 } });
 
-  return user?.name;
-};
-
-export const getAllUsers = async (db) => {
-  const users = await db
+export const getAllUsers = ({ db }) =>
+  db
     .collection('users')
-    .find({}, { projection: { uid: 1 } })
+    .find({}, { projection: { _id: 0 } })
     .toArray();
 
-  return users;
-};
-
-export const getUsers = async (db, uids) => {
-  const users = await db
-    .collection('users')
-    .find({ uid: { $in: uids } }, { projection: { _id: 0, uid: 1, name: 1 } })
-    .toArray();
-
-  return users;
-};
-
-export const getUserGames = async (db, uid, offset, limit) => {
-  const findGames = await db
+export const getUserGames = ({ db, uid }, { offset, limit }) =>
+  db
     .collection('games')
-    .find(
-      { uid },
-      { projection: { date: 1, won: 1, lost: 1, time: 1, moves: 1 } }
-    )
+    .find({ uid }, { projection: { _id: 0 } })
     .skip(offset)
     .limit(limit)
     .sort({ date: -1 })
     .toArray();
-
-  const findGamesPlayed = db
-    .collection('games')
-    .find({ uid }, { projection: { date: 1 } })
-    .count();
-
-  const [games, gamesPlayed] = await Promise.all([findGames, findGamesPlayed]);
-
-  return [games, gamesPlayed];
-};
