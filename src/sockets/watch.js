@@ -3,6 +3,7 @@ import { watchVersion, watchUsers, watchGames } from '#@/db/watch';
 import { updateUserStats } from '#@/db/stats';
 import { setPlayerCount } from './players';
 import { setUserPlayed, setGlobalPlayed } from './stats';
+import { createUser } from './user';
 
 export const watchForVersionUpdate = ({ io, db }) => {
   const changeStream = watchVersion(db);
@@ -42,6 +43,7 @@ export const watchForGamesUpdate = ({ io, db }) => {
 
       if (uid !== gameUid) return;
 
+      createUser({ socket, db, uid });
       setUserPlayed({ socket, db, uid });
       updateUserStats(db, uid);
     });
