@@ -8,7 +8,7 @@ import {
   watchForGamesUpdate,
 } from './watch';
 import { initNewGame, saveGame } from './game';
-import { createUser, setUser, setUserGames } from './user';
+import { setUser, setUserGames } from './user';
 import {
   setUserPlayed,
   setGlobalPlayed,
@@ -32,7 +32,6 @@ export const setupSockets = ({ server }, db) => {
     const on = setupOn(core, query);
 
     on('saveGame', saveGame);
-    on('createUser', createUser);
     on('userGames', setUserGames);
     on('stats', setStats);
     on('leaderboards', setLeaderboards);

@@ -2,11 +2,9 @@ import { createNewUser, getUserDetails, getUserGames } from '#@/db/user';
 import { formatHistoryGames } from './format';
 
 export const createUser = async ({ socket, db, uid }) => {
+  if (socket.user) return;
+
   try {
-    const isExistingUser = await getUserDetails(db, uid);
-
-    if (isExistingUser) return;
-
     const user = await createNewUser(db, uid);
 
     socket.emit('user', user);
@@ -19,6 +17,7 @@ export const setUser = async ({ socket, db, uid }) => {
   try {
     const existingUser = await getUserDetails(db, uid);
 
+    socket.user = existingUser;
     socket.emit('user', existingUser);
   } catch (error) {
     console.log({ error });
