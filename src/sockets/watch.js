@@ -30,8 +30,11 @@ export const watchForGamesUpdate = ({ io, ...core }) =>
     const socket = sockets.find(({ handshake }) => handshake.query.uid === uid);
     const newCore = { ...core, socket, uid };
 
+    await Promise.all([
+      createUser(newCore),
+      setUserPlayed(newCore),
+      setGlobalPlayed({ ...newCore, socket: io }),
+    ]);
+
     newGame(newCore);
-    createUser(newCore);
-    setUserPlayed(newCore);
-    setGlobalPlayed({ ...newCore, socket: io });
   });
