@@ -1,9 +1,9 @@
 import { watchVersion, watchUsers, watchGames } from '#@/db/watch';
-import { emitNewUpdate } from './app';
-import { emitPlayerCount } from './players';
-import { emitUserPlayed, emitGlobalPlayed } from './stats';
-import { emitCreateUser } from './user';
-import { emitNewGame } from './game';
+import { emitNewUpdate } from './emit/app';
+import { emitPlayerCount } from './emit/players';
+import { emitUserPlayed, emitGlobalPlayed } from './emit/stats';
+import { emitCreateUser } from './emit/user';
+import { emitGame } from './emit/game';
 
 export const watchForVersionUpdate = ({ io, ...core }) =>
   watchVersion(core).on(
@@ -36,5 +36,5 @@ export const watchForGamesUpdate = ({ io, ...core }) =>
       emitGlobalPlayed({ ...newCore, socket: io }),
     ]);
 
-    emitNewGame(newCore);
+    emitGame(newCore);
   });

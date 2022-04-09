@@ -1,16 +1,7 @@
 import { checkGameState } from '#@/services/solitaire';
-import { getDeck, newDeck, saveNewGame } from '#@/db/game';
-
-export const emitNewGame = async ({ socket, deck, ...core }) => {
-  try {
-    const useDeck = deck ?? newDeck(core);
-    const { cards } = await useDeck;
-
-    socket.emit('newGame', cards);
-  } catch (error) {
-    console.log({ error });
-  }
-};
+import { getDeck, saveNewGame } from '#@/db/game';
+import { emitGame } from './emit/game';
+import { emitOnlineCount } from './emit/players';
 
 export const initGame = async ({ socket, timer, ...core }) => {
   if (timer > 0) return;
@@ -18,7 +9,7 @@ export const initGame = async ({ socket, timer, ...core }) => {
   try {
     const deck = await getDeck(core);
 
-    emitNewGame({ socket, deck, ...core });
+    emitGame({ socket, deck, ...core });
   } catch (error) {
     console.log({ error });
   }
@@ -33,4 +24,12 @@ export const saveGame = async (core, game) => {
   } catch (error) {
     console.log({ error });
   }
+};
+
+export const disconnectUser = ({ socket, uid, ...core }) => {
+  socket.removeAllListeners();
+
+  emitOnlineCount(core);
+
+  console.log('Client disconnected.', uid);
 };

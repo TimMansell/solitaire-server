@@ -1,21 +1,20 @@
 import { Server } from 'socket.io';
 
 import { setupOn } from './setup';
-import { disconnect } from './disconnect';
 import {
   watchForVersionUpdate,
   watchForUsersUpdate,
   watchForGamesUpdate,
 } from './watch';
-import { initGame, saveGame } from './game';
-import { emitUser, emitUserGames } from './user';
+import { emitUser, emitUserGames } from './emit/user';
 import {
   emitUserPlayed,
   emitGlobalPlayed,
   emitStats,
   emitLeaderboards,
-} from './stats';
-import { emitPlayerCount, emitOnlineCount } from './players';
+} from './emit/stats';
+import { emitPlayerCount, emitOnlineCount } from './emit/players';
+import { initGame, saveGame, disconnectUser } from './game';
 
 // eslint-disable-next-line import/prefer-default-export
 export const setupSockets = ([express, db]) => {
@@ -34,14 +33,15 @@ export const setupSockets = ([express, db]) => {
     on('userGames', emitUserGames);
     on('stats', emitStats);
     on('leaderboards', emitLeaderboards);
-    on('disconnect', disconnect);
+    on('disconnect', disconnectUser);
 
-    initGame(core);
     emitUser(core);
     emitPlayerCount(core);
     emitGlobalPlayed(core);
     emitUserPlayed(core);
     emitOnlineCount(core);
+
+    initGame(core);
 
     console.log('Client connected.', core.uid);
   });
