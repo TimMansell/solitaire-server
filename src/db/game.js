@@ -3,7 +3,7 @@ import { createISODate } from '#@/helpers/dates';
 import 'dotenv/config';
 
 export const getDeck = ({ db, uid }) =>
-  db.collection('decks').findOne({ uid }, { projection: { _id: 0 } });
+  db.collection('decks').findOne({ uid }, { projection: { _id: 0, uid: 0 } });
 
 export const newDeck = async ({ db, uid }) => {
   const date = createISODate();
@@ -13,7 +13,7 @@ export const newDeck = async ({ db, uid }) => {
     { uid },
     { $set: { cards, date } },
     {
-      projection: { _id: 0 },
+      projection: { _id: 0, uid: 0 },
       upsert: true,
       returnDocument: 'after',
     }

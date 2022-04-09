@@ -1,6 +1,6 @@
 import { getPlayers } from '#@/db/stats';
 
-export const setPlayerCount = async ({ socket, ...core }) => {
+export const emitPlayerCount = async ({ socket, ...core }) => {
   try {
     const players = await getPlayers(core);
 
@@ -10,5 +10,5 @@ export const setPlayerCount = async ({ socket, ...core }) => {
   }
 };
 
-export const setOnlineCount = ({ io }) =>
+export const emitOnlineCount = ({ io }) =>
   io.emit('onlineCount', io.engine.clientsCount);

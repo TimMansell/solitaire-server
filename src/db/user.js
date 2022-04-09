@@ -6,7 +6,7 @@ import {
 } from 'unique-names-generator';
 import shuffle from 'lodash.shuffle';
 
-export const createNewUser = async ({ db, uid }) => {
+export const createUser = async ({ db, uid }) => {
   const [first, second] = shuffle([adjectives, colors, animals]);
 
   const name = uniqueNamesGenerator({
@@ -20,7 +20,7 @@ export const createNewUser = async ({ db, uid }) => {
     { uid },
     { $set: { name } },
     {
-      projection: { _id: 0 },
+      projection: { _id: 0, uid: 0 },
       upsert: true,
       returnDocument: 'after',
     }
@@ -30,7 +30,7 @@ export const createNewUser = async ({ db, uid }) => {
 };
 
 export const getUser = ({ db, uid }) =>
-  db.collection('users').findOne({ uid }, { projection: { _id: 0 } });
+  db.collection('users').findOne({ uid }, { projection: { _id: 0, uid: 0 } });
 
 export const getAllUsers = ({ db }) =>
   db
@@ -41,7 +41,7 @@ export const getAllUsers = ({ db }) =>
 export const getUserGames = ({ db, uid }, { offset, limit }) =>
   db
     .collection('games')
-    .find({ uid }, { projection: { _id: 0 } })
+    .find({ uid }, { projection: { _id: 0, uid: 0 } })
     .skip(offset)
     .limit(limit)
     .sort({ date: -1 })

@@ -7,7 +7,7 @@ import {
 } from '#@/db/stats';
 import { formatStats, formatLeaderboardGames } from './format';
 
-export const setUserPlayed = async ({ socket, ...core }) => {
+export const emitUserPlayed = async ({ socket, ...core }) => {
   try {
     const gameCount = await getUserGameCount(core);
 
@@ -17,7 +17,7 @@ export const setUserPlayed = async ({ socket, ...core }) => {
   }
 };
 
-export const setGlobalPlayed = async ({ socket, ...core }) => {
+export const emitGlobalPlayed = async ({ socket, ...core }) => {
   try {
     const gameCount = await getGlobalGameCount(core);
 
@@ -27,7 +27,7 @@ export const setGlobalPlayed = async ({ socket, ...core }) => {
   }
 };
 
-export const setStats = async ({ socket, uid, ...core }) => {
+export const emitStats = async ({ socket, uid, ...core }) => {
   try {
     const [user, global] = await Promise.all([
       getStats(core, { uid }),
@@ -43,7 +43,7 @@ export const setStats = async ({ socket, uid, ...core }) => {
   }
 };
 
-export const setLeaderboards = async ({ socket, ...core }, params) => {
+export const emitLeaderboards = async ({ socket, ...core }, params) => {
   const { showBest } = params;
 
   const queries = [

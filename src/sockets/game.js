@@ -1,12 +1,9 @@
 import { checkGameState } from '#@/services/solitaire';
 import { getDeck, newDeck, saveNewGame } from '#@/db/game';
 
-export const initNewGame = async ({ socket, timer, ...core }) => {
-  if (timer > 0) return;
-
+export const emitNewGame = async ({ socket, deck, ...core }) => {
   try {
-    const savedDeck = await getDeck(core);
-    const useDeck = savedDeck || newDeck(core);
+    const useDeck = deck ?? newDeck(core);
     const { cards } = await useDeck;
 
     socket.emit('newGame', cards);
@@ -15,11 +12,13 @@ export const initNewGame = async ({ socket, timer, ...core }) => {
   }
 };
 
-export const newGame = async ({ socket, ...core }) => {
-  try {
-    const { cards } = await newDeck(core);
+export const initGame = async ({ socket, timer, ...core }) => {
+  if (timer > 0) return;
 
-    socket.emit('newGame', cards);
+  try {
+    const deck = await getDeck(core);
+
+    emitNewGame({ socket, deck, ...core });
   } catch (error) {
     console.log({ error });
   }

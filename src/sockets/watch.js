@@ -1,9 +1,9 @@
 import { watchVersion, watchUsers, watchGames } from '#@/db/watch';
-import { newUpdate } from './app';
-import { setPlayerCount } from './players';
-import { setUserPlayed, setGlobalPlayed } from './stats';
-import { createUser } from './user';
-import { newGame } from './game';
+import { emitNewUpdate } from './app';
+import { emitPlayerCount } from './players';
+import { emitUserPlayed, emitGlobalPlayed } from './stats';
+import { emitCreateUser } from './user';
+import { emitNewGame } from './game';
 
 export const watchForVersionUpdate = ({ io, ...core }) =>
   watchVersion(core).on(
@@ -17,12 +17,12 @@ export const watchForVersionUpdate = ({ io, ...core }) =>
 
       if (!appVersion) return;
 
-      sockets.forEach((socket) => newUpdate({ socket, appVersion }));
+      sockets.forEach((socket) => emitNewUpdate({ socket, appVersion }));
     }
   );
 
 export const watchForUsersUpdate = ({ io, ...core }) =>
-  watchUsers(core).on('change', () => setPlayerCount({ ...core, socket: io }));
+  watchUsers(core).on('change', () => emitPlayerCount({ ...core, socket: io }));
 
 export const watchForGamesUpdate = ({ io, ...core }) =>
   watchGames(core).on('change', async ({ fullDocument: { uid } }) => {
@@ -31,10 +31,10 @@ export const watchForGamesUpdate = ({ io, ...core }) =>
     const newCore = { ...core, socket, uid };
 
     await Promise.all([
-      createUser(newCore),
-      setUserPlayed(newCore),
-      setGlobalPlayed({ ...newCore, socket: io }),
+      emitCreateUser({ ...newCore, create: !socket.user }),
+      emitUserPlayed(newCore),
+      emitGlobalPlayed({ ...newCore, socket: io }),
     ]);
 
-    newGame(newCore);
+    emitNewGame(newCore);
   });

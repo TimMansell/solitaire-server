@@ -29,5 +29,5 @@ export const setupExpress = async () => {
 
   console.log(`http server listening on ${APP_PORT}`);
 
-  return { server, app };
+  return server;
 };
