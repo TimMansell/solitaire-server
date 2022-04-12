@@ -38,14 +38,13 @@ export const getStats = async ({ db }, filter) => {
   return games;
 };
 
-export const getPlayers = ({ db }) =>
-  db.collection('users').find({}, {}).count();
+export const getPlayers = ({ db }) => db.collection('users').countDocuments({});
 
 export const getUserGameCount = ({ db, uid }) =>
-  db.collection('games').find({ uid }, {}).count();
+  db.collection('games').countDocuments({ uid });
 
 export const getGlobalGameCount = ({ db }) =>
-  db.collection('games').find({}, {}).count();
+  db.collection('games').countDocuments({});
 
 export const getAllGames = (db) =>
   db.collection('games').find({}, { _id: 0 }).toArray();
