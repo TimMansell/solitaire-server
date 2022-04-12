@@ -1,10 +1,21 @@
-import { newDeck } from '#@/db/game';
+import { getDeck, newDeck } from '#@/db/game';
 
-// eslint-disable-next-line import/prefer-default-export
-export const emitGame = async ({ socket, deck, ...core }) => {
+export const emitInitalGame = async ({ socket, timer, ...core }) => {
+  if (timer > 0) return;
+
   try {
-    const useDeck = deck ?? newDeck(core);
-    const { cards } = await useDeck;
+    const deck = await getDeck(core);
+    const { cards } = deck ?? (await newDeck(core));
+
+    socket.emit('newGame', cards);
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
+export const emitNewGame = async ({ socket, ...core }) => {
+  try {
+    const { cards } = await newDeck(core);
 
     socket.emit('newGame', cards);
   } catch (error) {
