@@ -3,7 +3,6 @@ import { emitNewUpdate } from './emit/app';
 import { emitPlayerCount } from './emit/players';
 import { emitUserPlayed, emitGlobalPlayed } from './emit/stats';
 import { emitCreateUser } from './emit/user';
-import { emitGame } from './emit/game';
 
 export const watchForVersionUpdate = ({ io, ...core }) =>
   watchVersion(core).on(
@@ -30,11 +29,7 @@ export const watchForGamesUpdate = ({ io, ...core }) =>
     const socket = sockets.find(({ handshake }) => handshake.query.uid === uid);
     const newCore = { ...core, socket, uid };
 
-    await Promise.all([
-      emitCreateUser({ ...newCore, create: !socket.user }),
-      emitUserPlayed(newCore),
-      emitGlobalPlayed({ ...newCore, socket: io }),
-    ]);
-
-    emitGame(newCore);
+    emitCreateUser({ ...newCore, create: !socket.user });
+    emitUserPlayed(newCore);
+    emitGlobalPlayed({ ...newCore, socket: io });
   });
