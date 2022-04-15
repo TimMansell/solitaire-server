@@ -4,26 +4,35 @@ import { emitNewGame } from '../emit/game';
 import { emitStats, emitLeaderboards } from '../emit/stats';
 import { emitUserGames } from '../emit/user';
 
-export const onSaveGame = async (core, game) => {
-  try {
-    await saveGame(core, game);
+export const onSaveGame = ({ socket, ...core }) =>
+  socket.on('saveGame', async (game) => {
+    try {
+      await saveGame(core, game);
 
-    emitNewGame(core);
-  } catch (error) {
-    console.log({ error });
-  }
-};
+      emitNewGame({ socket, ...core });
+    } catch (error) {
+      console.log({ error });
+    }
+  });
 
-export const onUserGames = (core, params) => emitUserGames(core, params);
+export const onUserGames = ({ socket, ...core }) =>
+  socket.on('userGames', (params) =>
+    emitUserGames({ socket, ...core }, params)
+  );
 
-export const onStats = (core) => emitStats(core);
+export const onStats = ({ socket, ...core }) =>
+  socket.on('stats', () => emitStats({ socket, ...core }));
 
-export const onLeaderboards = (core, params) => emitLeaderboards(core, params);
+export const onLeaderboards = ({ socket, ...core }) =>
+  socket.on('leaderboards', (params) =>
+    emitLeaderboards({ socket, ...core }, params)
+  );
 
-export const onDisconnected = ({ socket, uid, ...core }) => {
-  socket.removeAllListeners();
+export const onDisconnected = ({ socket, uid, ...core }) =>
+  socket.on('disconnect', () => {
+    socket.removeAllListeners();
 
-  emitOnlineCount(core);
+    emitOnlineCount(core);
 
-  console.log('Client disconnected.', uid);
-};
+    console.log('Client disconnected.', uid);
+  });

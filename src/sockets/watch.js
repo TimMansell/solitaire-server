@@ -27,9 +27,8 @@ export const watchForGamesUpdate = ({ io, ...core }) =>
   watchGames(core).on('change', async ({ fullDocument: { uid } }) => {
     const sockets = await io.fetchSockets();
     const socket = sockets.find(({ handshake }) => handshake.query.uid === uid);
-    const newCore = { ...core, socket, uid };
 
-    emitCreateUser({ ...newCore, create: !socket.user });
-    emitUserPlayed(newCore);
-    emitGlobalPlayed({ ...newCore, socket: io });
+    emitCreateUser({ ...core, socket, uid });
+    emitUserPlayed({ ...core, socket, uid });
+    emitGlobalPlayed({ ...core, socket: io });
   });

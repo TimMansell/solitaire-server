@@ -15,32 +15,22 @@ import {
   watchForGamesUpdate,
 } from './watch';
 
-const setupOn =
-  ({ socket, ...core }) =>
-  (socketName, callback) =>
-    socket.on(socketName, (params) => callback({ socket, ...core }, params));
+export const initMongoEvents = (server) =>
+  [watchForVersionUpdate, watchForUsersUpdate, watchForGamesUpdate].forEach(
+    (fn) => fn(server)
+  );
 
-export const initWatchEvents = (server) => {
-  watchForVersionUpdate(server);
-  watchForUsersUpdate(server);
-  watchForGamesUpdate(server);
-};
-
-export const initOnEvents = (core) => {
-  const on = setupOn(core);
-
-  on('saveGame', onSaveGame);
-  on('userGames', onUserGames);
-  on('stats', onStats);
-  on('leaderboards', onLeaderboards);
-  on('disconnect', onDisconnected);
-};
-
-export const initEmitEvents = (core) => {
-  emitUser(core);
-  emitPlayerCount(core);
-  emitGlobalPlayed(core);
-  emitUserPlayed(core);
-  emitOnlineCount(core);
-  emitInitalGame(core);
-};
+export const initSocketEvents = (core) =>
+  [
+    onSaveGame,
+    onUserGames,
+    onStats,
+    onLeaderboards,
+    onDisconnected,
+    emitUser,
+    emitPlayerCount,
+    emitGlobalPlayed,
+    emitUserPlayed,
+    emitOnlineCount,
+    emitInitalGame,
+  ].forEach((fn) => fn(core));

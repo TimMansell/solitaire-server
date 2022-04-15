@@ -2,8 +2,8 @@ import { createUser, getUser, getUserGames } from '#@/db/user';
 import { getUserGameCount } from '#@/db/stats';
 import { formatHistoryGames } from './format';
 
-export const emitCreateUser = async ({ socket, create, ...core }) => {
-  if (!create) return;
+export const emitCreateUser = async ({ socket, ...core }) => {
+  if (socket.user) return;
 
   try {
     const user = await createUser(core);
