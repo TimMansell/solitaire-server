@@ -19,9 +19,9 @@ export const newDeck = async ({ db, uid }) => {
   return value;
 };
 
-export const saveGame = async ({ db, uid }, game) => {
+export const saveGame = async ({ db, uid, moves, time }) => {
   const { cards } = await getDeck({ db, uid });
-  const gameResult = checkGameState(game, cards);
+  const gameResult = checkGameState({ cards, moves, time });
 
   return db.collection('games').insertOne({
     date: createISODate(),

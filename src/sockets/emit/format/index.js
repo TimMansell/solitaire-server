@@ -1,6 +1,6 @@
 import { formatTime } from '#@/helpers/times';
 import { formatNumber, formatPercent } from '#@/helpers/numbers';
-import { gameOutcome } from '#@/helpers/game';
+// import { gameOutcome } from '#@/helpers/game';
 
 export const formatLeaderboardGames = (leaderboards, { showBest }) => {
   const formats = [
@@ -60,15 +60,15 @@ export const formatLeaderboardGames = (leaderboards, { showBest }) => {
   return results;
 };
 
-export const formatHistoryGames = (games, gamesPlayed, { offset }) =>
-  games.map(({ date, won, lost, time, moves }, index) => ({
-    number: formatNumber(gamesPlayed - offset - index),
-    date,
-    time: date,
-    outcome: gameOutcome({ won, lost }),
-    moves,
-    duration: formatTime(time),
-  }));
+// export const formatHistoryGames = ([games, gamesPlayed], { offset }) =>
+//   games.map(({ date, won, lost, time, moves }, index) => ({
+//     number: formatNumber(gamesPlayed - offset - index),
+//     date,
+//     time: date,
+//     outcome: gameOutcome({ won, lost }),
+//     moves,
+//     duration: formatTime(time),
+//   }));
 
 export const formatStats = ({ completed, won, lost, quit }) => {
   const wonPercent = completed ? won / completed : completed;

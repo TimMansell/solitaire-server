@@ -1,43 +1,30 @@
 import { createUser, getUser, getUserGames } from '#@/db/user';
-import { getUserGameCount } from '#@/db/stats';
-import { formatHistoryGames } from './format';
 
-export const emitCreateUser = async ({ socket, ...core }) => {
-  if (socket.user) return;
-
+export const emitCreateUser = async ({ emit, query }) => {
   try {
-    const user = await createUser(core);
+    const newUser = await query(createUser);
 
-    socket.user = user;
-    socket.emit('user', user);
+    emit('user', newUser);
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const emitUser = async ({ socket, ...core }) => {
+export const emitUser = async ({ emit, query }) => {
   try {
-    const user = await getUser(core);
+    const user = await query(getUser);
 
-    if (!user) return;
-
-    socket.user = user;
-    socket.emit('user', user);
+    if (user) emit('user', user);
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const emitUserGames = async ({ socket, ...core }, params) => {
+export const emitUserGames = async ({ emit, query, params }) => {
   try {
-    const [games, gamesPlayed] = await Promise.all([
-      getUserGames(core, params),
-      getUserGameCount(core),
-    ]);
+    const [games] = await query(getUserGames, params);
 
-    const formattedGames = formatHistoryGames(games, gamesPlayed, params);
-
-    socket.emit('userGames', formattedGames);
+    emit('userGames', games);
   } catch (error) {
     console.log({ error });
   }

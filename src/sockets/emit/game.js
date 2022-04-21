@@ -1,23 +1,21 @@
 import { getDeck, newDeck } from '#@/db/game';
 
-export const emitInitalGame = async ({ socket, timer, ...core }) => {
-  if (timer > 0) return;
-
+export const emitInitalGame = async ({ emit, query }) => {
   try {
-    const deck = await getDeck(core);
-    const { cards } = deck ?? (await newDeck(core));
+    const deck = await query(getDeck);
+    const { cards } = deck ?? (await query(newDeck));
 
-    socket.emit('newGame', cards);
+    emit('newGame', cards);
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const emitNewGame = async ({ socket, ...core }) => {
+export const emitNewGame = async ({ emit, query }) => {
   try {
-    const { cards } = await newDeck(core);
+    const { cards } = await query(newDeck);
 
-    socket.emit('newGame', cards);
+    emit('newGame', cards);
   } catch (error) {
     console.log({ error });
   }

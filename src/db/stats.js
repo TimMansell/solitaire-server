@@ -1,44 +1,47 @@
-export const getStats = async ({ db }, filter) => {
-  const [games] = await db
+export const getStats = async ({ db, uid, filter = false }) => {
+  const match = filter ? { uid } : {};
+
+  const [stats] = await db
     .collection('games')
     .aggregate([
+      { $match: { ...match } },
       {
         $facet: {
-          completed: [
-            { $match: { ...filter, completed: true } },
-            { $count: 'count' },
-          ],
-          won: [{ $match: { ...filter, won: true } }, { $count: 'count' }],
-          lost: [{ $match: { ...filter, lost: true } }, { $count: 'count' }],
-          quit: [
-            { $match: { ...filter, won: false, lost: false, completed: true } },
-            { $count: 'count' },
-          ],
+          completed: [{ $match: { completed: true } }, { $count: 'count' }],
+          won: [{ $match: { won: true } }, { $count: 'count' }],
+          lost: [{ $match: { lost: true } }, { $count: 'count' }],
+          quit: [{ $match: { won: false, lost: false } }, { $count: 'count' }],
         },
       },
       {
         $project: {
           completed: {
-            $ifNull: [{ $first: '$completed.count' }, 0],
+            $ifNull: ['$completed.count', 0],
           },
           won: {
-            $ifNull: [{ $first: '$won.count' }, 0],
+            $ifNull: ['$won.count', 0],
           },
           lost: {
-            $ifNull: [{ $first: '$lost.count' }, 0],
+            $ifNull: ['$lost.count', 0],
           },
           quit: {
-            $ifNull: [{ $first: '$quit.count' }, 0],
+            $ifNull: ['$quit.count', 0],
           },
         },
       },
+      { $unwind: '$completed' },
+      { $unwind: '$won' },
+      { $unwind: '$lost' },
+      { $unwind: '$quit' },
     ])
     .toArray();
 
-  return games;
+  return stats;
 };
 
 export const getPlayers = ({ db }) => db.collection('users').countDocuments({});
+
+export const getOnlinePlayers = ({ io }) => io.engine.clientsCount;
 
 export const getUserGameCount = ({ db, uid }) =>
   db.collection('games').countDocuments({ uid });
@@ -46,10 +49,7 @@ export const getUserGameCount = ({ db, uid }) =>
 export const getGlobalGameCount = ({ db }) =>
   db.collection('games').countDocuments({});
 
-export const getAllGames = (db) =>
-  db.collection('games').find({}, { _id: 0 }).toArray();
-
-export const getGameLeaderboards = async ({ db }, { showBest, limit }) => {
+export const getGameLeaderboards = async ({ db, showBest, limit }) => {
   const games = await db
     .collection('games')
     .find(
@@ -79,7 +79,7 @@ export const getGameLeaderboards = async ({ db }, { showBest, limit }) => {
   return result;
 };
 
-export const getUserLeaderboards = async ({ db }, { showBest, limit }) => {
+export const getUserLeaderboards = async ({ db, showBest, limit }) => {
   const fields = [
     {
       key: 'winPercent',

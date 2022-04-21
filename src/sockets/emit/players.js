@@ -1,14 +1,17 @@
-import { getPlayers } from '#@/db/stats';
+import { getPlayers, getOnlinePlayers } from '#@/db/stats';
 
-export const emitPlayerCount = async ({ socket, ...core }) => {
+export const emitPlayerCount = async ({ emit, query }) => {
   try {
-    const players = await getPlayers(core);
+    const players = await query(getPlayers);
 
-    socket.emit('playerCount', players);
+    emit('playerCount', players);
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const emitOnlineCount = ({ io }) =>
-  io.emit('onlineCount', io.engine.clientsCount);
+export const emitOnlineCount = ({ emit, query }) => {
+  const onlinePlayers = query(getOnlinePlayers);
+
+  emit('onlineCount', onlinePlayers);
+};

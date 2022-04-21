@@ -7,71 +7,73 @@ import {
 } from '#@/db/stats';
 import { formatStats, formatLeaderboardGames } from './format';
 
-export const emitUserPlayed = async ({ socket, ...core }) => {
+export const emitUserPlayed = async ({ emit, query }) => {
   try {
-    const gameCount = await getUserGameCount(core);
+    const gameCount = await query(getUserGameCount);
 
-    socket.emit('userPlayed', gameCount);
+    emit('userPlayed', gameCount);
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const emitGlobalPlayed = async ({ socket, ...core }) => {
+export const emitGlobalPlayed = async ({ emit, query }) => {
   try {
-    const gameCount = await getGlobalGameCount(core);
+    const gameCount = await query(getGlobalGameCount);
 
-    socket.emit('globalPlayed', gameCount);
+    emit('globalPlayed', gameCount);
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const emitStats = async ({ socket, uid, ...core }) => {
+export const emitStats = async ({ emit, query }) => {
   try {
     const [user, global] = await Promise.all([
-      getStats(core, { uid }),
-      getStats(core),
+      query(getStats, { filter: true }),
+      query(getStats),
     ]);
 
     const userStats = formatStats(user);
     const globalStats = formatStats(global);
 
-    socket.emit('stats', { userStats, globalStats });
+    emit('stats', { userStats, globalStats });
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const emitLeaderboards = async ({ socket, ...core }, params) => {
+export const emitLeaderboards = async ({ emit, query, params }) => {
+  console.log({ query });
+
   const { showBest } = params;
 
   const queries = [
     {
       key: 'moves',
-      query: () => getGameLeaderboards(core, params),
+      query2: () => query(getGameLeaderboards, params),
     },
     {
       key: 'time',
-      query: () => getGameLeaderboards(core, params),
+      query2: () => query(getGameLeaderboards, params),
     },
     {
       key: 'winPercent',
-      query: () => getUserLeaderboards(core, params),
+      query2: () => query(getUserLeaderboards, params),
     },
     {
       key: 'wins',
-      query: () => getUserLeaderboards(core, params),
+      query2: () => query(getUserLeaderboards, params),
     },
   ];
 
   try {
-    const { query } = queries.find(({ key }) => key === showBest);
-    const leaderboards = await query();
+    const { query2 } = queries.find(({ key }) => key === showBest);
+    const leaderboards = await query2();
 
     const results = formatLeaderboardGames(leaderboards, params);
 
-    socket.emit('leaderboards', results);
+    emit('leaderboards', results);
   } catch (error) {
     console.log({ error });
   }
