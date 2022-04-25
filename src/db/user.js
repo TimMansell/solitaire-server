@@ -5,9 +5,7 @@ import {
   animals,
 } from 'unique-names-generator';
 import shuffle from 'lodash.shuffle';
-import { formatTime } from '#@/helpers/times';
-import { formatNumber } from '#@/helpers/numbers';
-import { gameOutcome } from '#@/helpers/game';
+import { formatGames } from './helpers/format';
 
 export const createUser = async ({ db, uid }) => {
   const [first, second] = shuffle([adjectives, colors, animals]);
@@ -35,12 +33,6 @@ export const createUser = async ({ db, uid }) => {
 export const getUser = ({ db, uid }) =>
   db.collection('users').findOne({ uid }, { projection: { _id: 0, uid: 0 } });
 
-export const getAllUsers = ({ db }) =>
-  db
-    .collection('users')
-    .find({}, { projection: { _id: 0 } })
-    .toArray();
-
 export const getUserGames = ({ db, uid, offset, limit }) =>
   db
     .collection('games')
@@ -53,20 +45,32 @@ export const getUserGames = ({ db, uid, offset, limit }) =>
             { $sort: { date: -1 } },
             { $skip: offset },
             { $limit: limit },
+            {
+              $setWindowFields: {
+                sortBy: { date: -1 },
+                output: {
+                  rank: {
+                    $documentNumber: {},
+                  },
+                },
+              },
+            },
+            {
+              $set: {
+                rank: { $add: [offset, { $subtract: ['$rank', 1] }] },
+              },
+            },
             { $project: { _id: 0, uid: 0 } },
           ],
         },
       },
-      { $unwind: '$played' },
+      {
+        $set: {
+          'games.played': { $sum: '$played.count' },
+        },
+      },
+      { $unwind: '$games' },
+      { $replaceRoot: { newRoot: '$games' } },
     ])
-    .map(({ played: { count }, games }) =>
-      games.map(({ date, won, lost, moves, time }, index) => ({
-        number: formatNumber(count - offset - index),
-        date,
-        time: date,
-        outcome: gameOutcome({ won, lost }),
-        moves,
-        duration: formatTime(time),
-      }))
-    )
+    .map(formatGames)
     .toArray();

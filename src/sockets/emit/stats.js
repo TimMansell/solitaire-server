@@ -2,10 +2,8 @@ import {
   getUserGameCount,
   getGlobalGameCount,
   getStats,
-  getGameLeaderboards,
-  getUserLeaderboards,
+  getLeaderboards,
 } from '#@/db/stats';
-import { formatStats, formatLeaderboardGames } from './format';
 
 export const emitUserPlayed = async ({ emit, query }) => {
   try {
@@ -29,13 +27,9 @@ export const emitGlobalPlayed = async ({ emit, query }) => {
 
 export const emitStats = async ({ emit, query }) => {
   try {
-    const [user, global] = await Promise.all([
-      query(getStats, { filter: true }),
-      query(getStats),
-    ]);
+    const [userStats, globalStats] = await query(getStats);
 
-    const userStats = formatStats(user);
-    const globalStats = formatStats(global);
+    console.log({ userStats, globalStats });
 
     emit('stats', { userStats, globalStats });
   } catch (error) {
@@ -44,36 +38,10 @@ export const emitStats = async ({ emit, query }) => {
 };
 
 export const emitLeaderboards = async ({ emit, query, params }) => {
-  console.log({ query });
-
-  const { showBest } = params;
-
-  const queries = [
-    {
-      key: 'moves',
-      query2: () => query(getGameLeaderboards, params),
-    },
-    {
-      key: 'time',
-      query2: () => query(getGameLeaderboards, params),
-    },
-    {
-      key: 'winPercent',
-      query2: () => query(getUserLeaderboards, params),
-    },
-    {
-      key: 'wins',
-      query2: () => query(getUserLeaderboards, params),
-    },
-  ];
-
   try {
-    const { query2 } = queries.find(({ key }) => key === showBest);
-    const leaderboards = await query2();
+    const leaderboards = await query(getLeaderboards, params);
 
-    const results = formatLeaderboardGames(leaderboards, params);
-
-    emit('leaderboards', results);
+    emit('leaderboards', leaderboards);
   } catch (error) {
     console.log({ error });
   }

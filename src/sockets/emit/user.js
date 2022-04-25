@@ -22,7 +22,7 @@ export const emitUser = async ({ emit, query }) => {
 
 export const emitUserGames = async ({ emit, query, params }) => {
   try {
-    const [games] = await query(getUserGames, params);
+    const games = await query(getUserGames, params);
 
     emit('userGames', games);
   } catch (error) {
