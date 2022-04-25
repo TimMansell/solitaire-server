@@ -9,7 +9,6 @@
   "type": "module",
   "scripts": {
     "start": "nodemon --experimental-specifier-resolution=node ./src/main.js",
-    "stats": "nodemon --experimental-specifier-resolution=node ./src/tasks/stats.js",
     "test:unit": "jest",
     "test:e2e": "run-p -r dev cypress:run",
     "test:e2e:gui": "run-p -r dev cypress:open",
