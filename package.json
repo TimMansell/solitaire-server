@@ -10,10 +10,6 @@
   "scripts": {
     "start": "nodemon --experimental-specifier-resolution=node ./src/main.js",
     "test:unit": "jest",
-    "test:e2e": "run-p -r dev cypress:run",
-    "test:e2e:gui": "run-p -r dev cypress:open",
-    "cypress:run": "cypress run --headless --browser chrome",
-    "cypress:open": "cypress open",
     "lint": "eslint {src,tests}/**/*.js --fix"
   },
   "dependencies": {
