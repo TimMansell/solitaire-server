@@ -1,9 +1,9 @@
 import { runGameMoves } from '../run';
 
-import fullGameDeck from '../../../../../tests/fixtures/decks/fullGame.json';
-import fullGameMoves from '../../../../../tests/fixtures/moves/fullGame.json';
-import incompleteGameDeck from '../../../../../tests/fixtures/decks/incompleteGame.json';
-import incompleteGameMoves from '../../../../../tests/fixtures/moves/incompleteGame.json';
+import fullGameDeck from '../../fixtures/decks/fullGame.json';
+import fullGameMoves from '../../fixtures/moves/fullGame.json';
+import incompleteGameDeck from '../../fixtures/decks/incompleteGame.json';
+import incompleteGameMoves from '../../fixtures/moves/incompleteGame.json';
 
 describe('run', () => {
   describe('runGameMoves', () => {
