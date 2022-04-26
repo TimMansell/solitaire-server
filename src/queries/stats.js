@@ -87,7 +87,7 @@ export const getLeaderboards = ({ db, showBest, limit }) => {
           sortBy,
           output: {
             rank: {
-              $rank: {},
+              $documentNumber: {},
             },
           },
         },
