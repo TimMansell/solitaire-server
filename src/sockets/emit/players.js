@@ -1,8 +1,8 @@
 import { getPlayers, getOnlinePlayers } from '#@/db/stats';
 
-export const emitPlayerCount = async ({ emit, query }) => {
+export const emitPlayerCount = async ({ emit, queryDb }) => {
   try {
-    const players = await query(getPlayers);
+    const players = await queryDb(getPlayers);
 
     emit('playerCount', players);
   } catch (error) {
@@ -10,8 +10,8 @@ export const emitPlayerCount = async ({ emit, query }) => {
   }
 };
 
-export const emitOnlineCount = ({ emit, query }) => {
-  const onlinePlayers = query(getOnlinePlayers);
+export const emitOnlineCount = ({ emit, queryIo }) => {
+  const onlinePlayers = queryIo(getOnlinePlayers);
 
   emit('onlineCount', onlinePlayers);
 };

@@ -1,8 +1,8 @@
 import { createUser, getUser, getUserGames } from '#@/db/user';
 
-export const emitCreateUser = async ({ emit, query }) => {
+export const emitCreateUser = async ({ emit, queryDb }) => {
   try {
-    const newUser = await query(createUser);
+    const newUser = await queryDb(createUser);
 
     emit('user', newUser);
   } catch (error) {
@@ -10,9 +10,9 @@ export const emitCreateUser = async ({ emit, query }) => {
   }
 };
 
-export const emitUser = async ({ emit, query }) => {
+export const emitUser = async ({ emit, queryDb }) => {
   try {
-    const user = await query(getUser);
+    const user = await queryDb(getUser);
 
     if (user) emit('user', user);
   } catch (error) {
@@ -20,9 +20,9 @@ export const emitUser = async ({ emit, query }) => {
   }
 };
 
-export const emitUserGames = async ({ emit, query, params }) => {
+export const emitUserGames = async ({ emit, queryDb }, params) => {
   try {
-    const games = await query(getUserGames, params);
+    const games = await queryDb(getUserGames, params);
 
     emit('userGames', games);
   } catch (error) {

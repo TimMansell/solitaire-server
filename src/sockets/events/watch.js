@@ -11,18 +11,20 @@ export const versionUpdate = async ({ io, record }) => {
   if (!appVersion) return;
 
   sockets.forEach(async (socket) => {
+    const queryParams = setupQuery({
+      params: { ...socket.handshake.query, appVersion },
+    });
     const emit = setupEmit(socket);
-    const { version } = socket.handshake.query;
 
-    emitNewUpdate({ emit, version, appVersion });
+    emitNewUpdate({ queryParams, emit });
   });
 };
 
 export const usersUpdate = async ({ io, db }) => {
-  const query = setupQuery(db);
+  const queryDb = setupQuery({ db });
   const globalEmit = setupEmit(io);
 
-  emitPlayerCount({ query, emit: globalEmit });
+  emitPlayerCount({ queryDb, emit: globalEmit });
 };
 
 export const gamesUpdate = async ({ io, db, record }) => {
@@ -31,14 +33,14 @@ export const gamesUpdate = async ({ io, db, record }) => {
     ({ handshake }) => handshake.query.uid === record.fullDocument.uid
   );
 
-  const query = setupQuery(db, socket);
+  const queryDb = setupQuery({ db, params: socket.handshake.query });
   const globalEmit = setupEmit(io);
   const emit = setupEmit(socket);
 
-  emitUserPlayed({ query, emit });
-  emitGlobalPlayed({ query, emit: globalEmit });
+  emitUserPlayed({ queryDb, emit });
+  emitGlobalPlayed({ queryDb, emit: globalEmit });
 
   if (!socket.user) {
-    emitCreateUser({ query, emit });
+    emitCreateUser({ queryDb, emit });
   }
 };

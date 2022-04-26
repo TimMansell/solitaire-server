@@ -1,9 +1,6 @@
 import { initCards, checkGameState } from '#@/services/solitaire';
 import { createISODate } from './helpers/dates';
 
-export const checkGameStarted = ({ hasGameStarted }) =>
-  JSON.parse(hasGameStarted);
-
 export const getDeck = ({ db, uid }) =>
   db.collection('decks').findOne({ uid }, { projection: { _id: 0, uid: 0 } });
 

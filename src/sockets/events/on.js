@@ -5,10 +5,10 @@ import { emitStats, emitLeaderboards } from '../emit/stats';
 import { emitUserGames } from '../emit/user';
 
 export const onSaveGame = async (core, params) => {
-  const { query } = core;
+  const { queryDb } = core;
 
   try {
-    await query(saveGame, params);
+    await queryDb(saveGame, params);
 
     emitNewGame(core);
   } catch (error) {
@@ -16,15 +16,13 @@ export const onSaveGame = async (core, params) => {
   }
 };
 
-export const onUserGames = async (core, params) =>
-  emitUserGames({ ...core, params });
+export const onUserGames = (core, params) => emitUserGames(core, params);
 
-export const onStats = async (core) => emitStats(core);
+export const onStats = (core) => emitStats(core);
 
-export const onLeaderboards = async (core, params) =>
-  emitLeaderboards({ ...core, params });
+export const onLeaderboards = (core, params) => emitLeaderboards(core, params);
 
-export const onDisconnected = async ({ globalEmit, ...core }) => {
+export const onDisconnected = ({ globalEmit, ...core }) => {
   emitOnlineCount({ ...core, emit: globalEmit });
 
   console.log('Client disconnected.');

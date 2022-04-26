@@ -24,10 +24,12 @@ export const setupSockets = ([express, db]) => {
   watch(watchGames, gamesUpdate);
 
   io.on('connection', async (socket) => {
-    const query = setupQuery(db, socket, io);
+    const queryIo = setupQuery({ io });
+    const queryDb = setupQuery({ db, params: socket.handshake.query });
+    const queryParams = setupQuery({ params: socket.handshake.query });
     const emit = setupEmit(socket);
 
-    const core = { query, globalEmit, emit };
+    const core = { queryParams, queryDb, queryIo, globalEmit, emit };
 
     socket.on('saveGame', (params) => onSaveGame(core, params));
     socket.on('userGames', (params) => onUserGames(core, params));
@@ -41,7 +43,7 @@ export const setupSockets = ([express, db]) => {
 
     setupBroadcast(core);
 
-    socket.user = await query(getUser);
+    socket.user = await queryDb(getUser);
 
     console.log('Client connected.');
   });

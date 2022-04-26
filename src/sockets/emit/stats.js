@@ -5,9 +5,9 @@ import {
   getLeaderboards,
 } from '#@/db/stats';
 
-export const emitUserPlayed = async ({ emit, query }) => {
+export const emitUserPlayed = async ({ emit, queryDb }) => {
   try {
-    const gameCount = await query(getUserGameCount);
+    const gameCount = await queryDb(getUserGameCount);
 
     emit('userPlayed', gameCount);
   } catch (error) {
@@ -15,9 +15,9 @@ export const emitUserPlayed = async ({ emit, query }) => {
   }
 };
 
-export const emitGlobalPlayed = async ({ emit, query }) => {
+export const emitGlobalPlayed = async ({ emit, queryDb }) => {
   try {
-    const gameCount = await query(getGlobalGameCount);
+    const gameCount = await queryDb(getGlobalGameCount);
 
     emit('globalPlayed', gameCount);
   } catch (error) {
@@ -25,9 +25,9 @@ export const emitGlobalPlayed = async ({ emit, query }) => {
   }
 };
 
-export const emitStats = async ({ emit, query }) => {
+export const emitStats = async ({ emit, queryDb }) => {
   try {
-    const [userStats, globalStats] = await query(getStats);
+    const [userStats, globalStats] = await queryDb(getStats);
 
     emit('stats', { userStats, globalStats });
   } catch (error) {
@@ -35,9 +35,9 @@ export const emitStats = async ({ emit, query }) => {
   }
 };
 
-export const emitLeaderboards = async ({ emit, query, params }) => {
+export const emitLeaderboards = async ({ emit, queryDb }, params) => {
   try {
-    const leaderboards = await query(getLeaderboards, params);
+    const leaderboards = await queryDb(getLeaderboards, params);
 
     emit('leaderboards', leaderboards);
   } catch (error) {
