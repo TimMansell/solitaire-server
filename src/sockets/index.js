@@ -8,7 +8,7 @@ import {
   onLeaderboards,
   onDisconnected,
 } from './events/on';
-import { setupWatcher, setupQuery, setupEmit } from './setup';
+import { setupWatcher, setupCore } from './setup';
 import { watchVersion, watchUsers, watchGames } from '#@/db/watch';
 import { getUser } from '#@/db/user';
 
@@ -16,7 +16,6 @@ import { getUser } from '#@/db/user';
 export const setupSockets = ([express, db]) => {
   const io = new Server(express);
 
-  const globalEmit = setupEmit(io);
   const watch = setupWatcher(db, io);
 
   watch(watchVersion, versionUpdate);
@@ -24,12 +23,7 @@ export const setupSockets = ([express, db]) => {
   watch(watchGames, gamesUpdate);
 
   io.on('connection', async (socket) => {
-    const queryIo = setupQuery({ io });
-    const queryDb = setupQuery({ db, params: socket.handshake.query });
-    const queryParams = setupQuery({ params: socket.handshake.query });
-    const emit = setupEmit(socket);
-
-    const core = { queryParams, queryDb, queryIo, globalEmit, emit };
+    const core = setupCore(db, io, socket);
 
     socket.on('saveGame', (params) => onSaveGame(core, params));
     socket.on('userGames', (params) => onUserGames(core, params));
@@ -43,7 +37,7 @@ export const setupSockets = ([express, db]) => {
 
     setupBroadcast(core);
 
-    socket.user = await queryDb(getUser);
+    socket.user = await core.queryDb(getUser);
 
     console.log('Client connected.');
   });
