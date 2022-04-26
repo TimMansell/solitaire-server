@@ -1,4 +1,4 @@
-import { initCards, checkGameState } from '#@/services/solitaire';
+import { initCards, checkGameState } from './solitaire';
 import { createISODate } from './helpers/dates';
 
 export const getDeck = ({ db, uid }) =>
