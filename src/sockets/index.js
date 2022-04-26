@@ -1,49 +1,28 @@
 import { Server } from 'socket.io';
-
-import { setupOn } from './setup';
-import { disconnect } from './disconnect';
 import {
-  watchForVersionUpdate,
-  watchForUsersUpdate,
-  watchForGamesUpdate,
-} from './watch';
-import { initNewGame, saveGame } from './game';
-import { setUser, setUserGames } from './user';
-import {
-  setUserPlayed,
-  setGlobalPlayed,
-  setStats,
-  setLeaderboards,
-} from './stats';
-import { setPlayerCount, setOnlineCount } from './players';
+  setupWatchEvents,
+  setupCore,
+  setupOnEvents,
+  setupEmitEvents,
+} from './setup';
+import { getUser } from '#query/db';
 
 // eslint-disable-next-line import/prefer-default-export
-export const setupSockets = ({ server }, db) => {
-  const io = new Server(server);
+export const setupSockets = ([express, db]) => {
+  const io = new Server(express);
 
-  watchForVersionUpdate({ io, db });
-  watchForUsersUpdate({ io, db });
-  watchForGamesUpdate({ io, db });
+  setupWatchEvents({ db, io });
 
-  io.on('connection', (socket) => {
-    const { query } = socket.handshake;
-    const core = { socket, io, db, ...query };
+  io.on('connection', async (socket) => {
+    const core = setupCore(db, io, socket);
 
-    const on = setupOn(core, query);
+    setupOnEvents(core);
+    setupEmitEvents(core);
 
-    on('saveGame', saveGame);
-    on('userGames', setUserGames);
-    on('stats', setStats);
-    on('leaderboards', setLeaderboards);
-    on('disconnect', disconnect);
+    socket.on('disconnect', () => socket.removeAllListeners());
 
-    initNewGame(core);
-    setUser(core);
-    setPlayerCount(core);
-    setGlobalPlayed(core);
-    setUserPlayed(core);
-    setOnlineCount(core);
+    socket.user = await core.queryDb(getUser);
 
-    console.log('Client connected.', query.uid);
+    console.log('Client connected.');
   });
 };
