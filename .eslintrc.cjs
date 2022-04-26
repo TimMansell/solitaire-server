@@ -26,7 +26,7 @@ module.exports = {
   settings: {
     'import/resolver': {
       alias: {
-        map: [['#db', './src/db']],
+        map: [['#query', './src/query']],
       },
     },
   },

@@ -5,7 +5,7 @@ import {
   setupOnEvents,
   setupEmitEvents,
 } from './setup';
-import { getUser } from '#db/user';
+import { getUser } from '#query/db';
 
 // eslint-disable-next-line import/prefer-default-export
 export const setupSockets = ([express, db]) => {

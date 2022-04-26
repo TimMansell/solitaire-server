@@ -52,6 +52,6 @@
     ]
   },
   "imports": {
-    "#db/*": "./src/db/*"
+    "#query/*": "./src/query/*"
   }
 }

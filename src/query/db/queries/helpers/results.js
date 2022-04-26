@@ -1,4 +1,4 @@
-import { formatNumber, formatPercent, formatDuration } from '../helpers/format';
+import { formatNumber, formatPercent, formatDuration } from './format';
 
 export const formatLeaderboards = ({
   rank,

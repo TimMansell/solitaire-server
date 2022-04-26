@@ -3,7 +3,7 @@ import {
   getGlobalGameCount,
   getStats,
   getLeaderboards,
-} from '#db/stats';
+} from '#query/db';
 
 export const emitUserPlayed = async ({ emit, queryDb }) => {
   try {

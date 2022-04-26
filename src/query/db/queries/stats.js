@@ -1,5 +1,5 @@
-import { getStatsFields, getLeaderboardFields } from './queries/fields';
-import { formatStats, formatLeaderboards } from './queries/format';
+import { getStatsFields, getLeaderboardFields } from './helpers/fields';
+import { formatStats, formatLeaderboards } from './helpers/results';
 
 export const getStats = ({ db, uid }) => {
   const queries = getStatsFields();

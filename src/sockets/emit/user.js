@@ -1,4 +1,4 @@
-import { createUser, getUser, getUserGames } from '#db/user';
+import { createUser, getUser, getUserGames } from '#query/db';
 
 export const emitCreateUser = async ({ emit, queryDb }) => {
   try {
