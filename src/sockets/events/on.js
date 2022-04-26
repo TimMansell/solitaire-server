@@ -4,26 +4,26 @@ import { emitNewGame } from '../emit/game';
 import { emitStats, emitLeaderboards } from '../emit/stats';
 import { emitUserGames } from '../emit/user';
 
-export const onSaveGame = async (core, params) => {
-  const { queryDb } = core;
+export const onSaveGame = ({ on, ...core }) =>
+  on('saveGame', async (params) => {
+    const { queryDb } = core;
 
-  try {
-    await queryDb(saveGame, params);
+    try {
+      await queryDb(saveGame, params);
 
-    emitNewGame(core);
-  } catch (error) {
-    console.log({ error });
-  }
-};
+      emitNewGame(core);
+    } catch (error) {
+      console.log({ error });
+    }
+  });
 
-export const onUserGames = (core, params) => emitUserGames(core, params);
+export const onUserGames = ({ on, ...core }) =>
+  on('userGames', (params) => emitUserGames(core, params));
 
-export const onStats = (core) => emitStats(core);
+export const onStats = ({ on, ...core }) => on('stats', () => emitStats(core));
 
-export const onLeaderboards = (core, params) => emitLeaderboards(core, params);
+export const onLeaderboards = ({ on, ...core }) =>
+  on('leaderboards', (params) => emitLeaderboards(core, params));
 
-export const onDisconnected = ({ globalEmit, ...core }) => {
-  emitOnlineCount({ ...core, emit: globalEmit });
-
-  console.log('Client disconnected.');
-};
+export const onDisconnected = ({ on, globalEmit, ...core }) =>
+  on('disconnect', () => emitOnlineCount({ ...core, emit: globalEmit }));
