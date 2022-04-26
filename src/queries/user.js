@@ -58,9 +58,26 @@ export const getUserGames = ({ db, uid, offset, limit }) =>
             {
               $set: {
                 rank: { $add: [offset, { $subtract: ['$rank', 1] }] },
+                outcome: {
+                  $switch: {
+                    branches: [
+                      { case: { $eq: [{ $toInt: '$won' }, 1] }, then: 'Won' },
+                      { case: { $eq: [{ $toInt: '$lost' }, 1] }, then: 'Lost' },
+                    ],
+                    default: 'Gave Up',
+                  },
+                },
               },
             },
-            { $project: { _id: 0, uid: 0 } },
+            {
+              $project: {
+                _id: 0,
+                uid: 0,
+                won: 0,
+                lost: 0,
+                completed: 0,
+              },
+            },
           ],
         },
       },

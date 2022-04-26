@@ -1,6 +1,5 @@
 import { formatTime } from '#@/helpers/times';
 import { formatNumber, formatPercent } from '#@/helpers/numbers';
-import { gameOutcome } from '#@/helpers/game';
 
 export const formatLeaderboards = ({
   rank,
@@ -20,19 +19,11 @@ export const formatLeaderboards = ({
   ...(won && { won: formatNumber(won) }),
 });
 
-export const formatGames = ({
-  played,
-  rank,
-  date,
-  won,
-  lost,
-  moves,
-  time,
-}) => ({
+export const formatGames = ({ played, rank, date, outcome, moves, time }) => ({
   number: formatNumber(played - rank),
   date,
   time: date,
-  outcome: gameOutcome({ won, lost }),
+  outcome,
   moves,
   duration: formatTime(time),
 });
