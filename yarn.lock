@@ -5090,10 +5090,6 @@ through@^2.3.8:
   version "2.3.8"
   resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
 
-timezone-mock@1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/timezone-mock/-/timezone-mock-1.2.1.tgz#f470559b2b4f7a0203f203d5e38a097150c4af2c"
-
 tmpl@1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/tmpl/-/tmpl-1.0.5.tgz#8683e0b902bb9c20c4f726e3c0b69f36518c07cc"
