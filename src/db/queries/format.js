@@ -1,4 +1,4 @@
-import { formatNumber, formatPercent, formatTime } from '../helpers/format';
+import { formatNumber, formatPercent, formatDuration } from '../helpers/format';
 
 export const formatLeaderboards = ({
   rank,
@@ -12,7 +12,7 @@ export const formatLeaderboards = ({
   rank,
   name,
   ...(date && { date }),
-  ...(time && { time: formatTime(time) }),
+  ...(time && { time: formatDuration(time) }),
   ...(moves && { moves }),
   ...(wonPercent && { wonPercent: formatPercent(wonPercent) }),
   ...(won && { won: formatNumber(won) }),
@@ -24,7 +24,7 @@ export const formatGames = ({ played, rank, date, outcome, moves, time }) => ({
   time: date,
   outcome,
   moves,
-  duration: formatTime(time),
+  duration: formatDuration(time),
 });
 
 export const formatStats = ({
