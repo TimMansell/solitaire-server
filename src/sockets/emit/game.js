@@ -1,4 +1,4 @@
-import { getDeck, newDeck } from '#@/db/game';
+import { getDeck, newDeck } from '#@/queries/game';
 
 export const emitInitalGame = async ({ emit, query }) => {
   try {
