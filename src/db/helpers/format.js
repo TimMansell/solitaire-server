@@ -1,52 +1,7 @@
-import { formatTime } from '#@/helpers/times';
-import { formatNumber, formatPercent } from '#@/helpers/numbers';
+import numeral from 'numeral';
 
-export const formatLeaderboards = ({
-  rank,
-  name,
-  date,
-  time,
-  moves,
-  wonPercent,
-  won,
-}) => ({
-  rank,
-  name,
-  ...(date && { date }),
-  ...(time && { time: formatTime(time) }),
-  ...(moves && { moves }),
-  ...(wonPercent && { wonPercent: formatPercent(wonPercent) }),
-  ...(won && { won: formatNumber(won) }),
-});
+export const formatNumber = (value) => numeral(value).format('0,0');
 
-export const formatGames = ({ played, rank, date, outcome, moves, time }) => ({
-  number: formatNumber(played - rank),
-  date,
-  time: date,
-  outcome,
-  moves,
-  duration: formatTime(time),
-});
+export const formatPercent = (value) => numeral(value).format('0.00%');
 
-export const formatStats = ({
-  completed,
-  won,
-  lost,
-  quit,
-  wonPercent,
-  lostPercent,
-  quitPercent,
-}) => [
-  [
-    formatNumber(completed),
-    formatNumber(won),
-    formatNumber(lost),
-    formatNumber(quit),
-  ],
-  [
-    '',
-    formatPercent(wonPercent),
-    formatPercent(lostPercent),
-    formatPercent(quitPercent),
-  ],
-];
+export const formatTime = (time) => numeral(time).format('00:00:00');
