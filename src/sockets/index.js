@@ -11,7 +11,7 @@ import { getUser } from '#query/db';
 export const setupSockets = ([express, db]) => {
   const io = new Server(express);
 
-  setupWatchEvents(db, io);
+  setupWatchEvents({ db, io });
 
   io.on('connection', async (socket) => {
     const core = setupCore(db, io, socket);

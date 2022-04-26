@@ -1,4 +1,4 @@
-import { versionUpdate, usersUpdate, gamesUpdate } from '../events/watch';
+import { onUsersUpdate, onVersionUpdate, onGamesUpdate } from '../events/watch';
 import {
   onSaveGame,
   onUserGames,
@@ -10,7 +10,6 @@ import { emitInitalGame } from '../emit/game';
 import { emitUser } from '../emit/user';
 import { emitUserPlayed, emitGlobalPlayed } from '../emit/stats';
 import { emitPlayerCount, emitOnlineCount } from '../emit/players';
-import { watchVersion, watchUsers, watchGames } from '#db/watch';
 
 export const setupQuery =
   ({ db, io, params }) =>
@@ -38,10 +37,10 @@ export const setupCore = (db, io, socket) => {
   return { queryParams, queryDb, queryIo, globalEmit, emit, on };
 };
 
-export const setupWatchEvents = (db, io) => {
-  watchVersion(db).on('change', (record) => versionUpdate({ io, record }));
-  watchUsers(db).on('change', () => usersUpdate({ io, db }));
-  watchGames(db).on('change', (record) => gamesUpdate({ io, db, record }));
+export const setupWatchEvents = (core) => {
+  onUsersUpdate(core);
+  onVersionUpdate(core);
+  onGamesUpdate(core);
 };
 
 export const setupOnEvents = (core) => {
