@@ -1,8 +1,8 @@
-import { getStatsQuery, getLeaderboardQuery } from './queries/get';
+import { getStatsFields, getLeaderboardFields } from './queries/fields';
 import { formatStats, formatLeaderboards } from './queries/format';
 
 export const getStats = ({ db, uid }) => {
-  const queries = getStatsQuery();
+  const queries = getStatsFields();
 
   return db
     .collection('games')
@@ -58,7 +58,7 @@ export const getGlobalGameCount = ({ db }) =>
 
 export const getLeaderboards = ({ db, showBest, limit }) => {
   const { matches, sortBy, lookupField, project } =
-    getLeaderboardQuery(showBest);
+    getLeaderboardFields(showBest);
 
   return db
     .collection('games')

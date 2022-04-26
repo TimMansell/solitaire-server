@@ -1,4 +1,4 @@
-export const getStatsQuery = () => [
+export const getStatsFields = () => [
   {
     $group: {
       _id: null,
@@ -32,7 +32,7 @@ export const getStatsQuery = () => [
   },
 ];
 
-export const getLeaderboardQuery = (showBest) => {
+export const getLeaderboardFields = (showBest) => {
   const fields = [
     {
       key: 'moves',
