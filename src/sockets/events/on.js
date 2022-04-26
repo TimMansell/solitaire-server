@@ -1,4 +1,4 @@
-import { saveGame } from '#@/queries/game';
+import { saveGame } from '#@/db/game';
 import { emitOnlineCount } from '../emit/players';
 import { emitNewGame } from '../emit/game';
 import { emitStats, emitLeaderboards } from '../emit/stats';

@@ -9,8 +9,8 @@ import {
   onDisconnected,
 } from './events/on';
 import { setupWatcher, setupQuery, setupEmit } from './setup';
-import { watchVersion, watchUsers, watchGames } from '#@/queries/watch';
-import { getUser } from '#@/queries/user';
+import { watchVersion, watchUsers, watchGames } from '#@/db/watch';
+import { getUser } from '#@/db/user';
 
 // eslint-disable-next-line import/prefer-default-export
 export const setupSockets = ([express, db]) => {
