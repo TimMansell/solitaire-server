@@ -10,7 +10,7 @@ import { emitInitalGame } from '../emit/game';
 import { emitUser } from '../emit/user';
 import { emitUserPlayed, emitGlobalPlayed } from '../emit/stats';
 import { emitPlayerCount, emitOnlineCount } from '../emit/players';
-import { watchVersion, watchUsers, watchGames } from '#@/db/watch';
+import { watchVersion, watchUsers, watchGames } from '#db/watch';
 
 export const setupQuery =
   ({ db, io, params }) =>

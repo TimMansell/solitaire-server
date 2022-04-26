@@ -1,4 +1,4 @@
-import { getPlayers, getOnlinePlayers } from '#@/db/stats';
+import { getPlayers, getOnlinePlayers } from '#db/stats';
 
 export const emitPlayerCount = async ({ emit, queryDb }) => {
   try {

@@ -1,4 +1,4 @@
-import { checkVersion } from '#@/db/app';
+import { checkVersion } from '#db/app';
 
 // eslint-disable-next-line import/prefer-default-export
 export const emitNewUpdate = ({ queryParams, emit }) => {
