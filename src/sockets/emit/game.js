@@ -1,6 +1,10 @@
-import { getDeck, newDeck } from '#@/queries/game';
+import { checkGameStarted, getDeck, newDeck } from '#@/queries/game';
 
 export const emitInitalGame = async ({ emit, query }) => {
+  const hasGameStarted = query(checkGameStarted);
+
+  if (hasGameStarted) return;
+
   try {
     const deck = await query(getDeck);
     const { cards } = deck ?? (await query(newDeck));
