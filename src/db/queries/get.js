@@ -90,7 +90,9 @@ export const getLeaderboardQuery = (showBest) => {
     },
   ];
 
-  const query = fields.find(({ key }) => key === showBest);
+  const [defaultQuery] = fields;
 
-  return query;
+  const queryToUse = fields.find(({ key }) => key === showBest) || defaultQuery;
+
+  return queryToUse;
 };
