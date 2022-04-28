@@ -3,6 +3,8 @@ import express from 'express';
 import { MongoClient } from 'mongodb';
 import 'dotenv/config';
 
+import { getStats, getDeck, newDeck, getLeaderboards } from '#query/db';
+
 export const setupDB = async () => {
   const { MONGOBD_URI, MONGODB_USER, MONGOBD_PASS, MONGODB_DB } = process.env;
   const URI = `mongodb+srv://${MONGODB_USER}:${MONGOBD_PASS}@${MONGOBD_URI}/test?retryWrites=true&w=majority`;
@@ -14,7 +16,15 @@ export const setupDB = async () => {
 
   const db = connection.db(MONGODB_DB);
 
-  return db;
+  const queries = (connParams) => ({
+    getDeck: (params) => getDeck({ db, ...params, ...connParams }),
+    newDeck: (params) => newDeck({ db, ...params, ...connParams }),
+    getStats: (params) => getStats({ db, ...params, ...connParams }),
+    getLeaderboards: (params) =>
+      getLeaderboards({ db, ...params, ...connParams }),
+  });
+
+  return queries;
 };
 
 export const setupExpress = async () => {

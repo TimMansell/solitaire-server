@@ -1,19 +1,20 @@
-import { checkGameStarted } from '#query/params';
-import { getDeck, newDeck } from '#query/db';
+import { newDeck } from '#query/db';
 
-export const emitInitalGame = async ({ emit, queryParams, queryDb }) => {
-  const hasGameStarted = queryParams(checkGameStarted);
+export const emitInitalGame = (emitter) => {
+  emitter.on('initGame', async (db) => {
+    // const hasGameStarted = queryParams(checkGameStarted);
 
-  if (hasGameStarted) return;
+    // if (hasGameStarted) return;
 
-  try {
-    const deck = await queryDb(getDeck);
-    const { cards } = deck ?? (await queryDb(newDeck));
+    try {
+      const deck = await db.getDeck();
+      const { cards } = deck ?? (await db.newDeck());
 
-    emit('newGame', cards);
-  } catch (error) {
-    console.log({ error });
-  }
+      emitter.emit('emit', 'newGame', cards);
+    } catch (error) {
+      console.log({ error });
+    }
+  });
 };
 
 export const emitNewGame = async ({ emit, queryDb }) => {
