@@ -1,13 +1,11 @@
-import { getDeck, newDeck, saveGame } from '#query/db';
+import { getDeck, newDeck } from '#query/db';
 
-export const emitInitalGame = async (payload) => {
-  // const hasGameStarted = queryParams(checkGameStarted);
-
-  // if (hasGameStarted) return;
+export const emitInitalGame = async ({ hasGameStarted, uid }) => {
+  if (hasGameStarted) return;
 
   try {
-    const deck = await getDeck(payload);
-    const { cards } = deck ?? (await newDeck(payload));
+    const deck = await getDeck({ uid });
+    const { cards } = deck ?? (await newDeck({ uid }));
 
     return cards;
   } catch (error) {
