@@ -1,4 +1,4 @@
-import { getDeck, newDeck } from '#query/db';
+import { getDeck, newDeck } from '#db/game';
 
 export const emitInitalGame = async ({ hasGameStarted, uid }) => {
   if (hasGameStarted) return;

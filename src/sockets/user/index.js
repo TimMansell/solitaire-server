@@ -1,7 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import queryString from 'query-string';
 
-import { emitter } from '../../setup';
 import { emitNewUpdate } from '../emit/app';
 import { emitInitalGame, emitNewGame } from '../emit/game';
 import { emitUser, emitUserGames } from '../emit/user';
@@ -12,7 +11,8 @@ import {
   emitGlobalPlayed,
 } from '../emit/stats';
 import { emitPlayerCount } from '../emit/players';
-import { saveGame } from '#query/db';
+import { dbEmitter } from '#db/setup';
+import { saveGame } from '#db/game';
 
 // eslint-disable-next-line import/prefer-default-export
 export const newUser = (req) => {
@@ -20,7 +20,7 @@ export const newUser = (req) => {
   const [_, queryParams] = req?.url?.split('?');
   const params = queryString.parse(queryParams);
 
-  emitter.on('newGame', async (uid) => {
+  dbEmitter.on('newGame', async (uid) => {
     if (params.uid !== uid) return;
 
     try {
@@ -32,7 +32,7 @@ export const newUser = (req) => {
     }
   });
 
-  emitter.on('newVersion', (appVersion) => {
+  dbEmitter.on('newVersion', (appVersion) => {
     const isOutdated = emitNewUpdate({ ...params, appVersion });
 
     userEmitter.emit('user.version', isOutdated);

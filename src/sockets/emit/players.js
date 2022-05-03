@@ -1,5 +1,6 @@
-import { getPlayers } from '#query/db';
+import { getPlayers } from '#db/stats';
 
+// eslint-disable-next-line import/prefer-default-export
 export const emitPlayerCount = async () => {
   try {
     const players = await getPlayers();

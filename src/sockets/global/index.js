@@ -1,14 +1,13 @@
 import EventEmitter from 'eventemitter3';
-import { emitter } from '../../setup';
-
 import { emitGlobalPlayed } from '../emit/stats';
 import { emitPlayerCount } from '../emit/players';
+import { dbEmitter } from '#db/setup';
 
 // eslint-disable-next-line import/prefer-default-export
 export const newGlobal = (sockets) => {
   const globalEmitter = new EventEmitter();
 
-  emitter.on('newGame', async () => {
+  dbEmitter.on('newGame', async () => {
     try {
       const played = await emitGlobalPlayed();
 
@@ -18,7 +17,7 @@ export const newGlobal = (sockets) => {
     }
   });
 
-  emitter.on('newUser', async () => {
+  dbEmitter.on('newUser', async () => {
     try {
       const players = await emitPlayerCount();
 

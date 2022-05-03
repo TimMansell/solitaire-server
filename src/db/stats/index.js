@@ -1,6 +1,6 @@
-import { db } from '../../../setup';
-import { getStatsFields, getLeaderboardFields } from './helpers/fields';
-import { formatStats, formatLeaderboards } from './helpers/results';
+import { db } from '../setup';
+import { getStatsFields, getLeaderboardFields } from '../helpers/fields';
+import { formatStats, formatLeaderboards } from '../helpers/results';
 
 export const getStats = async ({ uid }) => {
   const queries = getStatsFields();

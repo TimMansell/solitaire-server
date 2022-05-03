@@ -1,4 +1,4 @@
-import { db, emitter } from '../../../setup';
+import { db, dbEmitter } from '../setup';
 
 export const onVersionUpdate = () =>
   db()
@@ -15,7 +15,7 @@ export const onVersionUpdate = () =>
 
       if (!appVersion) return;
 
-      emitter.emit('newVersion', appVersion);
+      dbEmitter.emit('newVersion', appVersion);
     });
 
 export const onUsersUpdate = () =>
@@ -28,7 +28,7 @@ export const onUsersUpdate = () =>
         },
       },
     ])
-    .on('change', () => emitter.emit('newUser'));
+    .on('change', () => dbEmitter.emit('newUser'));
 
 export const onGamesUpdate = () =>
   db()
@@ -41,7 +41,7 @@ export const onGamesUpdate = () =>
       },
     ])
     .on('change', async (record) => {
-      emitter.emit('newGame', record.fullDocument.uid);
+      dbEmitter.emit('newGame', record.fullDocument.uid);
       // if (!socket.user) {
       //   emitCreateUser({ queryDb, emit });
       // }
