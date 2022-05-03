@@ -1,10 +1,13 @@
-import { setupExpress, setupDB } from './setup';
-import { setupSockets } from './sockets';
+import { setupExpress, setupDB, setupSockets } from './setup';
+import { initSockets } from './sockets';
+import { initWatchers } from './query/db';
 
 const main = async () => {
-  const servers = await Promise.all([setupExpress(), setupDB()]);
+  const [express] = await Promise.all([setupExpress(), setupDB()]);
+  const sockets = setupSockets(express);
 
-  setupSockets(servers);
+  initWatchers();
+  initSockets(sockets);
 };
 
 main();

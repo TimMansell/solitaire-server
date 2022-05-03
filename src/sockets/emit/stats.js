@@ -1,45 +1,46 @@
-import { getUserGameCount, getGlobalGameCount } from '#query/db';
+import {
+  getUserGameCount,
+  getGlobalGameCount,
+  getStats,
+  getLeaderboards,
+} from '#query/db';
 
-export const emitUserPlayed = async ({ emit, queryDb }) => {
+export const emitUserPlayed = async (params) => {
   try {
-    const gameCount = await queryDb(getUserGameCount);
+    const gameCount = await getUserGameCount(params);
 
-    emit('userPlayed', gameCount);
+    return gameCount;
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const emitGlobalPlayed = async ({ emit, queryDb }) => {
+export const emitGlobalPlayed = async () => {
   try {
-    const gameCount = await queryDb(getGlobalGameCount);
+    const gameCount = await getGlobalGameCount();
 
-    emit('globalPlayed', gameCount);
+    return gameCount;
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const emitStats = (emitter) => {
-  emitter.on('stats', async (db) => {
-    try {
-      const [userStats, globalStats] = await db.getStats();
+export const emitStats = async (params) => {
+  try {
+    const [userStats, globalStats] = await getStats(params);
 
-      emitter.emit('emit', 'stats', { userStats, globalStats });
-    } catch (error) {
-      console.log({ error });
-    }
-  });
+    return { userStats, globalStats };
+  } catch (error) {
+    console.log({ error });
+  }
 };
 
-export const emitLeaderboards = (emitter) => {
-  emitter.on('leaderboards', async (db, params) => {
-    try {
-      const leaderboards = await db.getLeaderboards(params);
+export const emitLeaderboards = async (params) => {
+  try {
+    const leaderboards = await getLeaderboards(params);
 
-      emitter.emit('emit', 'leaderboards', leaderboards);
-    } catch (error) {
-      console.log({ error });
-    }
-  });
+    return leaderboards;
+  } catch (error) {
+    console.log({ error });
+  }
 };

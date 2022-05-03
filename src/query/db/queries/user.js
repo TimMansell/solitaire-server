@@ -5,9 +5,10 @@ import {
   animals,
 } from 'unique-names-generator';
 import shuffle from 'lodash.shuffle';
+import { db } from '../../../setup';
 import { formatGames } from './helpers/results';
 
-export const createUser = async ({ db, uid }) => {
+export const createUser = async ({ uid }) => {
   const [first, second] = shuffle([adjectives, colors, animals]);
 
   const name = uniqueNamesGenerator({
@@ -17,24 +18,28 @@ export const createUser = async ({ db, uid }) => {
     length: 2,
   });
 
-  const { value } = await db.collection('users').findOneAndUpdate(
-    { uid },
-    { $set: { name } },
-    {
-      projection: { _id: 0, uid: 0 },
-      upsert: true,
-      returnDocument: 'after',
-    }
-  );
+  const { value } = await db()
+    .collection('users')
+    .findOneAndUpdate(
+      { uid },
+      { $set: { name } },
+      {
+        projection: { _id: 0, uid: 0 },
+        upsert: true,
+        returnDocument: 'after',
+      }
+    );
 
   return value;
 };
 
-export const getUser = ({ db, uid }) =>
-  db.collection('users').findOne({ uid }, { projection: { _id: 0, uid: 0 } });
+export const getUser = ({ uid }) =>
+  db()
+    .collection('users')
+    .findOne({ uid }, { projection: { _id: 0, uid: 0 } });
 
-export const getUserGames = ({ db, uid, offset, limit }) =>
-  db
+export const getUserGames = ({ uid, offset, limit }) =>
+  db()
     .collection('games')
     .aggregate([
       { $match: { uid } },

@@ -1,34 +1,54 @@
-import { WebSocketServer } from 'ws';
-import EventEmitter from 'eventemitter3';
-import queryString from 'query-string';
-import { setupEmitEvents } from './setup';
+import { emitter } from '../setup';
+import { newUser } from './user';
+import { emitGlobalPlayed } from './emit/stats';
+
+const formatMsg = (name, payload) => JSON.stringify({ name, payload });
 
 // eslint-disable-next-line import/prefer-default-export
-export const setupSockets = ([express, queryDb]) => {
-  const wss = new WebSocketServer({ server: express });
+export const initSockets = (sockets) => {
+  emitter.on('gamesUpdate', async () => {
+    const result = await emitGlobalPlayed();
+    const msg = formatMsg('globalPlayed', result);
 
-  // setupWatchEvents({ db, io });
+    sockets.clients.forEach((client) => {
+      client.send(msg);
+    });
+  });
 
-  wss.on('connection', (ws, req) => {
-    const [path, params] = req?.url?.split('?');
-    const connectionParams = queryString.parse(params);
+  emitter.on('updateOnlineCount', () => {
+    const onlineCount = [...sockets.clients].length;
+    const msg = formatMsg('onlineCount', onlineCount);
 
-    const db = queryDb(connectionParams);
-    const emitter = new EventEmitter();
+    sockets.clients.forEach((client) => {
+      client.send(msg);
+    });
+  });
 
-    setupEmitEvents(emitter);
+  sockets.on('connection', (ws, req) => {
+    const user = newUser(req);
+    const send = (name, payload) => ws.send(formatMsg(name, payload));
 
-    emitter.on('emit', (name, payload) =>
-      ws.send(JSON.stringify({ name, payload }))
-    );
+    emitter.on('gamesUpdate', (uid) => {
+      user.played(uid);
+    });
 
     ws.on('message', (data) => {
       const { name, payload } = JSON.parse(data);
+      const messages = {
+        stats: () => user.stats(),
+        saveGame: () => user.saveGame(payload),
+      };
 
-      emitter.emit(name, db, payload);
+      const [_, message] = Object.entries(messages).find(
+        ([key]) => key === name
+      );
+
+      message();
     });
 
     ws.on('close', () => {
+      emitter.emit('updateOnlineCount');
+
       console.log('Client Disconnected.');
     });
 
@@ -36,7 +56,14 @@ export const setupSockets = ([express, queryDb]) => {
       console.log('Some Error occurred.');
     });
 
-    emitter.emit('initGame', db);
+    user.on('newGame', (payload) => send('newGame', payload));
+    user.on('user', (payload) => send('user', payload));
+    user.on('stats', (payload) => send('stats', payload));
+    user.on('userPlayed', (payload) => send('userPlayed', payload));
+
+    user.init();
+
+    emitter.emit('updateOnlineCount');
 
     console.log('Client connected.');
   });
