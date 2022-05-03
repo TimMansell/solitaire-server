@@ -1,6 +1,6 @@
-import { setupExpress, setupDB, setupSockets } from './setup';
-import { initSockets } from './sockets';
-import { initWatchers } from './query/db';
+import { setupExpress } from './express';
+import { setupDB, initWatchers } from './db';
+import { setupSockets, initSockets } from './sockets';
 
 const main = async () => {
   const [express] = await Promise.all([setupExpress(), setupDB()]);
