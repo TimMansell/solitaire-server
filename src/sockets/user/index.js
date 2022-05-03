@@ -1,9 +1,16 @@
 import EventEmitter from 'eventemitter3';
 import queryString from 'query-string';
 
+import { emitter } from '../../setup';
+import { emitNewUpdate } from '../emit/app';
 import { emitInitalGame, emitNewGame } from '../emit/game';
-import { emitUser } from '../emit/user';
-import { emitStats, emitUserPlayed, emitGlobalPlayed } from '../emit/stats';
+import { emitUser, emitUserGames } from '../emit/user';
+import {
+  emitStats,
+  emitUserPlayed,
+  emitLeaderboards,
+  emitGlobalPlayed,
+} from '../emit/stats';
 import { emitPlayerCount } from '../emit/players';
 import { saveGame } from '#query/db';
 
@@ -13,41 +20,71 @@ export const newUser = (req) => {
   const [_, queryParams] = req?.url?.split('?');
   const params = queryString.parse(queryParams);
 
+  emitter.on('newGame', async (uid) => {
+    if (params.uid !== uid) return;
+
+    try {
+      const played = await emitUserPlayed(params);
+
+      userEmitter.emit('user.played', played);
+    } catch (error) {
+      console.log({ error });
+    }
+  });
+
+  emitter.on('newVersion', (appVersion) => {
+    const isOutdated = emitNewUpdate({ ...params, appVersion });
+
+    userEmitter.emit('user.version', isOutdated);
+  });
+
   return {
+    on: (event, cb) => userEmitter.on(event, cb),
     init: async () => {
       try {
-        const [game, user, userPlayed] = await Promise.all(
-          [emitInitalGame(params), emitUser(params), emitUserPlayed(params)]
-          // emitPlayerCount(params),
-          // emitGlobalPlayed(params)
-        );
+        const [game, user, userPlayed, playerCount, globalPlayers] =
+          await Promise.all([
+            emitInitalGame(params),
+            emitUser(params),
+            emitUserPlayed(params),
+            emitPlayerCount(),
+            emitGlobalPlayed(),
+          ]);
 
-        userEmitter.emit('newGame', game);
-        userEmitter.emit('user', user);
-        userEmitter.emit('userPlayed', userPlayed);
+        userEmitter.emit('user.newGame', game);
+        userEmitter.emit('user.profile', user);
+        userEmitter.emit('user.played', userPlayed);
+        userEmitter.emit('user.players', playerCount);
+        userEmitter.emit('user.globalPlayers', globalPlayers);
       } catch (error) {
         console.log({ error });
       }
     },
-    on: (event, cb) => userEmitter.on(event, cb),
     saveGame: async (payload) => {
       try {
         await saveGame({ ...payload, ...params });
 
         const game = await emitNewGame(params);
 
-        userEmitter.emit('newGame', game);
+        userEmitter.emit('user.newGame', game);
       } catch (error) {
         console.log({ error });
       }
     },
-    played: async (uid) => {
-      if (params.uid !== uid) return;
-
+    userGames: async (payload) => {
       try {
-        const played = await emitUserPlayed(params);
+        const games = await emitUserGames({ ...payload, ...params });
 
-        userEmitter.emit('userPlayed', played);
+        userEmitter.emit('user.games', games);
+      } catch (error) {
+        console.log({ error });
+      }
+    },
+    leaderboards: async (payload) => {
+      try {
+        const leaderboards = await emitLeaderboards({ ...payload });
+
+        userEmitter.emit('user.leaderboards', leaderboards);
       } catch (error) {
         console.log({ error });
       }
@@ -56,16 +93,10 @@ export const newUser = (req) => {
       try {
         const stats = await emitStats(params);
 
-        userEmitter.emit('stats', stats);
+        userEmitter.emit('user.stats', stats);
       } catch (error) {
         console.log({ error });
       }
     },
   };
 };
-
-//   emitUser(core);
-//   emitPlayerCount(core);
-//   emitUserPlayed(core);
-//   emitGlobalPlayed(core);
-//   emitInitalGame(core);

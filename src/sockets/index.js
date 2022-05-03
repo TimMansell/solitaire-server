@@ -1,22 +1,29 @@
-import { emitter } from '../setup';
+import { newGlobal } from './global';
 import { newUser } from './user';
-import { emitGlobalPlayed } from './emit/stats';
 
 const formatMsg = (name, payload) => JSON.stringify({ name, payload });
 
 // eslint-disable-next-line import/prefer-default-export
 export const initSockets = (sockets) => {
-  emitter.on('gamesUpdate', async () => {
-    const result = await emitGlobalPlayed();
-    const msg = formatMsg('globalPlayed', result);
+  const global = newGlobal(sockets);
+
+  global.on('global.played', (played) => {
+    const msg = formatMsg('globalPlayed', played);
 
     sockets.clients.forEach((client) => {
       client.send(msg);
     });
   });
 
-  emitter.on('updateOnlineCount', () => {
-    const onlineCount = [...sockets.clients].length;
+  global.on('global.players', (players) => {
+    const msg = formatMsg('playerCount', players);
+
+    sockets.clients.forEach((client) => {
+      client.send(msg);
+    });
+  });
+
+  global.on('global.online', (onlineCount) => {
     const msg = formatMsg('onlineCount', onlineCount);
 
     sockets.clients.forEach((client) => {
@@ -28,15 +35,13 @@ export const initSockets = (sockets) => {
     const user = newUser(req);
     const send = (name, payload) => ws.send(formatMsg(name, payload));
 
-    emitter.on('gamesUpdate', (uid) => {
-      user.played(uid);
-    });
-
     ws.on('message', (data) => {
       const { name, payload } = JSON.parse(data);
       const messages = {
-        stats: () => user.stats(),
         saveGame: () => user.saveGame(payload),
+        userGames: () => user.userGames(payload),
+        stats: () => user.stats(),
+        leaderboards: () => user.leaderboards(payload),
       };
 
       const [_, message] = Object.entries(messages).find(
@@ -47,7 +52,7 @@ export const initSockets = (sockets) => {
     });
 
     ws.on('close', () => {
-      emitter.emit('updateOnlineCount');
+      global.setOnlineCount();
 
       console.log('Client Disconnected.');
     });
@@ -56,14 +61,19 @@ export const initSockets = (sockets) => {
       console.log('Some Error occurred.');
     });
 
-    user.on('newGame', (payload) => send('newGame', payload));
-    user.on('user', (payload) => send('user', payload));
-    user.on('stats', (payload) => send('stats', payload));
-    user.on('userPlayed', (payload) => send('userPlayed', payload));
+    user.on('user.newGame', (payload) => send('newGame', payload));
+    user.on('user.profile', (payload) => send('user', payload));
+    user.on('user.games', (payload) => send('userGames', payload));
+    user.on('user.leaderboards', (payload) => send('leaderboards', payload));
+    user.on('user.stats', (payload) => send('stats', payload));
+    user.on('user.played', (payload) => send('userPlayed', payload));
+    user.on('user.players', (payload) => send('playerCount', payload));
+    user.on('user.globalPlayers', (payload) => send('globalPlayed', payload));
+    user.on('user.version', (payload) => send('newUpdate', payload));
 
     user.init();
 
-    emitter.emit('updateOnlineCount');
+    global.setOnlineCount();
 
     console.log('Client connected.');
   });

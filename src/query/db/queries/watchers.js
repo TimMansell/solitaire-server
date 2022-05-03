@@ -11,8 +11,11 @@ export const onVersionUpdate = () =>
       },
     ])
     .on('change', async (record) => {
-      emitter.emit('versionUpdate', record);
-      //   emitNewUpdate({ queryParams, emit });
+      const { appVersion } = record.updateDescription.updatedFields;
+
+      if (!appVersion) return;
+
+      emitter.emit('newVersion', appVersion);
     });
 
 export const onUsersUpdate = () =>
@@ -25,10 +28,7 @@ export const onUsersUpdate = () =>
         },
       },
     ])
-    .on('change', () => {
-      emitter.emit('usersUpdate');
-      // emitPlayerCount({ queryDb, emit: globalEmit });
-    });
+    .on('change', () => emitter.emit('newUser'));
 
 export const onGamesUpdate = () =>
   db()
@@ -41,7 +41,7 @@ export const onGamesUpdate = () =>
       },
     ])
     .on('change', async (record) => {
-      emitter.emit('gamesUpdate', record.fullDocument.uid);
+      emitter.emit('newGame', record.fullDocument.uid);
       // if (!socket.user) {
       //   emitCreateUser({ queryDb, emit });
       // }

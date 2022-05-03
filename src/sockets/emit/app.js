@@ -1,8 +1,8 @@
-import { checkVersion } from '#query/params';
+import lt from 'semver/functions/lt';
 
 // eslint-disable-next-line import/prefer-default-export
-export const emitNewUpdate = ({ queryParams, emit }) => {
-  const isOutdated = queryParams(checkVersion);
+export const emitNewUpdate = ({ version, appVersion }) => {
+  const isOutdated = lt(version, appVersion);
 
-  emit('newUpdate', isOutdated);
+  return isOutdated;
 };
