@@ -5,34 +5,36 @@ import { dbEmitter } from '#db/setup';
 
 // eslint-disable-next-line import/prefer-default-export
 export const newGlobal = (sockets) => {
-  const globalEmitter = new EventEmitter();
+  const emitter = new EventEmitter();
 
-  dbEmitter.on('newGame', async () => {
+  const emit = (name, payload) => emitter.emit('message', { name, payload });
+
+  dbEmitter.on('db.newGame', async () => {
     try {
       const played = await emitGlobalPlayed();
 
-      globalEmitter.emit('global.played', played);
+      emit('globalPlayed', played);
     } catch (error) {
       console.log({ error });
     }
   });
 
-  dbEmitter.on('newUser', async () => {
+  dbEmitter.on('db.newUser', async () => {
     try {
       const players = await emitPlayerCount();
 
-      globalEmitter.emit('global.players', players);
+      emit('playerCount', players);
     } catch (error) {
       console.log({ error });
     }
   });
 
   return {
-    on: (event, cb) => globalEmitter.on(event, cb),
+    on: (message, callback) => emitter.on(message, callback),
     setOnlineCount: () => {
       const onlineCount = [...sockets.clients].length;
 
-      globalEmitter.emit('global.online', onlineCount);
+      emit('onlineCount', onlineCount);
     },
   };
 };

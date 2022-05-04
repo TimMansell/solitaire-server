@@ -1,7 +1,7 @@
-import { getDeck, newDeck } from '#db/game';
+import { getDeck, newDeck, saveGame } from '#db/game';
 
 export const emitInitalGame = async ({ hasGameStarted, uid }) => {
-  if (hasGameStarted) return;
+  if (JSON.parse(hasGameStarted)) return;
 
   try {
     const deck = await getDeck({ uid });
@@ -13,8 +13,10 @@ export const emitInitalGame = async ({ hasGameStarted, uid }) => {
   }
 };
 
-export const emitNewGame = async (payload) => {
+export const emitSaveGame = async (payload) => {
   try {
+    await saveGame(payload);
+
     const { cards } = await newDeck(payload);
 
     return cards;

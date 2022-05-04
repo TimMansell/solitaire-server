@@ -15,7 +15,7 @@ export const onVersionUpdate = () =>
 
       if (!appVersion) return;
 
-      dbEmitter.emit('newVersion', appVersion);
+      dbEmitter.emit('db.newVersion', appVersion);
     });
 
 export const onUsersUpdate = () =>
@@ -28,7 +28,7 @@ export const onUsersUpdate = () =>
         },
       },
     ])
-    .on('change', () => dbEmitter.emit('newUser'));
+    .on('change', () => dbEmitter.emit('db.newUser'));
 
 export const onGamesUpdate = () =>
   db()
@@ -41,7 +41,7 @@ export const onGamesUpdate = () =>
       },
     ])
     .on('change', async (record) => {
-      dbEmitter.emit('newGame', record.fullDocument.uid);
+      dbEmitter.emit('db.newGame', record.fullDocument.uid);
       // if (!socket.user) {
       //   emitCreateUser({ queryDb, emit });
       // }
