@@ -18,13 +18,13 @@ export const initSockets = (sockets) => {
   });
 
   sockets.on('connection', (ws, req) => {
-    const user = newUser(req);
+    const user = newUser(req.url);
 
     user.on('message', (message) => ws.send(formatMsg(message)));
     ws.on('message', (message) => user.message(message));
 
     ws.on('close', () => {
-      global.setOnlineCount();
+      global.updateOnlineCount();
 
       console.log('Client Disconnected.');
     });
@@ -33,7 +33,7 @@ export const initSockets = (sockets) => {
       console.log('Some Error occurred.');
     });
 
-    global.setOnlineCount();
+    global.updateOnlineCount();
 
     console.log('Client connected.');
   });

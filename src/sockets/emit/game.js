@@ -1,25 +1,25 @@
-import { getDeck, newDeck, saveGame } from '#db/game';
+import { getDeckByUid, getUserNewDeck, saveGameByUid } from '#db/game';
 
-export const emitInitalGame = async ({ hasGameStarted, uid }) => {
-  if (JSON.parse(hasGameStarted)) return;
+export const initGame = async ({ hasGameStarted, uid }) => {
+  if (hasGameStarted) return [];
 
   try {
-    const deck = await getDeck({ uid });
-    const { cards } = deck ?? (await newDeck({ uid }));
+    const deck = await getDeckByUid({ uid });
+    const { cards } = deck ?? (await getUserNewDeck({ uid }));
 
-    return cards;
+    return ['newGame', cards];
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const emitSaveGame = async (payload) => {
+export const saveGame = async (payload) => {
   try {
-    await saveGame(payload);
+    await saveGameByUid(payload);
 
-    const { cards } = await newDeck(payload);
+    const { cards } = await getUserNewDeck(payload);
 
-    return cards;
+    return ['newGame', cards];
   } catch (error) {
     console.log({ error });
   }

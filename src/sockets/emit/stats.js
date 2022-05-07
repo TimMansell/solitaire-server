@@ -1,45 +1,61 @@
 import {
-  getUserGameCount,
+  getGameCountByUid,
   getGlobalGameCount,
+  getUserCount,
   getStats,
   getLeaderboards,
 } from '#db/stats';
 
-export const emitUserPlayed = async (params) => {
+export const getUserPlayed = async (params) => {
   try {
-    const gameCount = await getUserGameCount(params);
+    const gameCount = await getGameCountByUid(params);
 
-    return gameCount;
+    return ['userPlayed', gameCount];
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const emitGlobalPlayed = async () => {
+export const getGlobalPlayed = async () => {
   try {
     const gameCount = await getGlobalGameCount();
 
-    return gameCount;
+    return ['globalPlayed', gameCount];
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const emitStats = async (params) => {
+export const getPlayerCount = async () => {
+  try {
+    const players = await getUserCount();
+
+    return ['playerCount', players];
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
+export const getOnlinePlayerCount = async (sockets) => [
+  'onlineCount',
+  [...sockets.clients].length,
+];
+
+export const stats = async (params) => {
   try {
     const [userStats, globalStats] = await getStats(params);
 
-    return { userStats, globalStats };
+    return ['stats', { userStats, globalStats }];
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const emitLeaderboards = async (params) => {
+export const leaderboards = async (params) => {
   try {
-    const leaderboards = await getLeaderboards(params);
+    const leaderboard = await getLeaderboards(params);
 
-    return leaderboards;
+    return ['leaderboards', leaderboard];
   } catch (error) {
     console.log({ error });
   }

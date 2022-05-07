@@ -1,30 +1,30 @@
-import { createUser, getUser, getUserGames } from '#db/user';
+import { createNewUser, getUserByUid, getGamesByUid } from '#db/user';
 
-export const emitCreateUser = async (params) => {
+export const createUser = async (params) => {
   try {
-    const newUser = await createUser(params);
+    const user = await createNewUser(params);
 
-    return newUser;
+    return ['user', user];
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const emitUser = async (params) => {
+export const getUserDetails = async (params) => {
   try {
-    const user = await getUser(params);
+    const user = await getUserByUid(params);
 
-    return user;
+    return ['user', user];
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const emitUserGames = async (params) => {
+export const getUserGames = async (params) => {
   try {
-    const games = await getUserGames(params);
+    const games = await getGamesByUid(params);
 
-    return games;
+    return ['userGames', games];
   } catch (error) {
     console.log({ error });
   }

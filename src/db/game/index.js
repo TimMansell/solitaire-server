@@ -2,12 +2,12 @@ import { db } from '../setup';
 import { initCards, checkGameState } from '../solitaire';
 import { createISODate } from '../helpers/dates';
 
-export const getDeck = ({ uid }) =>
+export const getDeckByUid = ({ uid }) =>
   db()
     .collection('decks')
     .findOne({ uid }, { projection: { _id: 0, uid: 0 } });
 
-export const newDeck = async ({ uid }) => {
+export const getUserNewDeck = async ({ uid }) => {
   const { value } = await db()
     .collection('decks')
     .findOneAndUpdate(
@@ -23,8 +23,8 @@ export const newDeck = async ({ uid }) => {
   return value;
 };
 
-export const saveGame = async ({ uid, moves, time }) => {
-  const { cards } = await getDeck({ uid });
+export const saveGameByUid = async ({ uid, moves, time }) => {
+  const { cards } = await getDeckByUid({ uid });
   const gameResult = checkGameState({ cards, moves, time });
 
   return db()

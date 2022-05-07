@@ -2,7 +2,7 @@ import { db } from '../setup';
 import { getStatsFields, getLeaderboardFields } from '../helpers/fields';
 import { formatStats, formatLeaderboards } from '../helpers/results';
 
-export const getStats = async ({ uid }) => {
+export const getStats = ({ uid }) => {
   const queries = getStatsFields();
 
   return db()
@@ -47,9 +47,9 @@ export const getStats = async ({ uid }) => {
     .toArray();
 };
 
-export const getPlayers = () => db().collection('users').countDocuments({});
+export const getUserCount = () => db().collection('users').countDocuments({});
 
-export const getUserGameCount = ({ uid }) =>
+export const getGameCountByUid = ({ uid }) =>
   db().collection('games').countDocuments({ uid });
 
 export const getGlobalGameCount = () =>

@@ -1,4 +1,11 @@
-import { db, dbEmitter } from '../setup';
+import EventEmitter from 'eventemitter3';
+import { db } from '../setup';
+
+const emitter = new EventEmitter();
+
+export const watchDB = () => ({
+  on: (event, cb) => emitter.on(event, cb),
+});
 
 export const onVersionUpdate = () =>
   db()
@@ -10,12 +17,12 @@ export const onVersionUpdate = () =>
         },
       },
     ])
-    .on('change', async (record) => {
+    .on('change', (record) => {
       const { appVersion } = record.updateDescription.updatedFields;
 
       if (!appVersion) return;
 
-      dbEmitter.emit('db.newVersion', appVersion);
+      emitter.emit('newVersion', appVersion);
     });
 
 export const onUsersUpdate = () =>
@@ -28,7 +35,7 @@ export const onUsersUpdate = () =>
         },
       },
     ])
-    .on('change', () => dbEmitter.emit('db.newUser'));
+    .on('change', () => emitter.emit('newUser'));
 
 export const onGamesUpdate = () =>
   db()
@@ -40,9 +47,9 @@ export const onGamesUpdate = () =>
         },
       },
     ])
-    .on('change', async (record) => {
-      dbEmitter.emit('db.newGame', record.fullDocument.uid);
+    .on('change', (record) => {
+      emitter.emit('newGame', record.fullDocument.uid);
       // if (!socket.user) {
-      //   emitCreateUser({ queryDb, emit });
+      //   createUser({ queryDb, emit });
       // }
     });

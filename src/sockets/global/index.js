@@ -1,40 +1,28 @@
 import EventEmitter from 'eventemitter3';
-import { emitGlobalPlayed } from '../emit/stats';
-import { emitPlayerCount } from '../emit/players';
-import { dbEmitter } from '#db/setup';
+import { setupEmit } from '../emit';
+import {
+  getGlobalPlayed,
+  getPlayerCount,
+  getOnlinePlayerCount,
+} from '../emit/stats';
+import { watchDB } from '#db/watchers/watchers';
+
+const pipeAwait =
+  (...fns) =>
+  (param) =>
+    fns.reduce(async (result, fn) => fn(await result), param);
 
 // eslint-disable-next-line import/prefer-default-export
 export const newGlobal = (sockets) => {
   const emitter = new EventEmitter();
+  const emit = setupEmit(emitter);
+  const db = watchDB();
 
-  const emit = (name, payload) => emitter.emit('message', { name, payload });
-
-  dbEmitter.on('db.newGame', async () => {
-    try {
-      const played = await emitGlobalPlayed();
-
-      emit('globalPlayed', played);
-    } catch (error) {
-      console.log({ error });
-    }
-  });
-
-  dbEmitter.on('db.newUser', async () => {
-    try {
-      const players = await emitPlayerCount();
-
-      emit('playerCount', players);
-    } catch (error) {
-      console.log({ error });
-    }
-  });
+  db.on('newGame', () => pipeAwait(getGlobalPlayed, emit)());
+  db.on('newUser', () => pipeAwait(getPlayerCount, emit)());
 
   return {
-    on: (message, callback) => emitter.on(message, callback),
-    setOnlineCount: () => {
-      const onlineCount = [...sockets.clients].length;
-
-      emit('onlineCount', onlineCount);
-    },
+    on: (event, cb) => emitter.on(event, cb),
+    updateOnlineCount: () => pipeAwait(getOnlinePlayerCount, emit)(sockets),
   };
 };

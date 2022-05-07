@@ -8,7 +8,7 @@ import shuffle from 'lodash.shuffle';
 import { db } from '../setup';
 import { formatGames } from '../helpers/results';
 
-export const createUser = async ({ uid }) => {
+export const createNewUser = async ({ uid }) => {
   const [first, second] = shuffle([adjectives, colors, animals]);
 
   const name = uniqueNamesGenerator({
@@ -33,12 +33,12 @@ export const createUser = async ({ uid }) => {
   return value;
 };
 
-export const getUser = ({ uid }) =>
+export const getUserByUid = ({ uid }) =>
   db()
     .collection('users')
     .findOne({ uid }, { projection: { _id: 0, uid: 0 } });
 
-export const getUserGames = ({ uid, offset, limit }) =>
+export const getGamesByUid = ({ uid, offset, limit }) =>
   db()
     .collection('games')
     .aggregate([
