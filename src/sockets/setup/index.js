@@ -1,8 +1,15 @@
 import { WebSocketServer } from 'ws';
+import queryString from 'query-string';
 import { newGlobal } from '../global';
 import { newUser } from '../user';
 
 const formatMsg = ({ name, payload }) => JSON.stringify({ name, payload });
+
+const getQueryParams = (url) => {
+  const { query } = queryString.parseUrl(url, { parseBooleans: true });
+
+  return query;
+};
 
 export const setupSockets = (server) => new WebSocketServer({ server });
 
@@ -18,10 +25,11 @@ export const initSockets = (sockets) => {
   });
 
   sockets.on('connection', (ws, req) => {
-    const user = newUser(req.url);
+    const params = getQueryParams(req.url);
+    const user = newUser(params);
 
     user.on('message', (message) => ws.send(formatMsg(message)));
-    ws.on('message', (message) => user.message(message));
+    ws.on('message', (message) => user.sendMessage(message));
 
     ws.on('close', () => {
       global.updateOnlineCount();
