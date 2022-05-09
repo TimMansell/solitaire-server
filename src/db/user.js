@@ -5,8 +5,8 @@ import {
   animals,
 } from 'unique-names-generator';
 import shuffle from 'lodash.shuffle';
-import { db } from '../setup';
-import { formatGames } from '../helpers/results';
+import { db } from './setup';
+import { formatGames } from './helpers/results';
 
 export const createNewUser = async ({ uid }) => {
   const [first, second] = shuffle([adjectives, colors, animals]);
