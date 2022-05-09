@@ -16,28 +16,32 @@ const pipeAwait =
   (param) =>
     fns.reduce(async (result, fn) => fn(await result), param);
 
-const setupEmit =
-  (emitter) =>
-  ([name, payload]) =>
-    emitter.emit('message', { name, payload });
+const setupEmit = (emitter) => (payload) => emitter.emit('message', payload);
+
+const format = ([name, payload]) => JSON.stringify({ name, payload });
 
 // eslint-disable-next-line import/prefer-default-export
 export const newEmitter = () => {
   const emitter = new EventEmitter();
   const emit = setupEmit(emitter);
 
-  const emitInitGame = (params) => pipeAwait(initGame, emit)(params);
-  const saveGameMsg = (params) => pipeAwait(saveGame, emit)(params);
-  const emitEuser = (params) => pipeAwait(getUserDetails, emit)(params);
-  const statsMsg = (params) => pipeAwait(stats, emit)(params);
-  const userGamesMsg = (params) => pipeAwait(getUserGames, emit)(params);
-  const leaderboardsMsg = (params) => pipeAwait(leaderboards, emit)(params);
-  const emitUserPlayed = (params) => pipeAwait(getUserPlayed, emit)(params);
-  const emitGlobalPlayed = (params) => pipeAwait(getGlobalPlayed, emit)(params);
-  const emitPlayerCount = () => pipeAwait(getPlayerCount, emit)();
+  const emitInitGame = (params) => pipeAwait(initGame, format, emit)(params);
+  const saveGameMsg = (params) => pipeAwait(saveGame, format, emit)(params);
+  const emitEuser = (params) => pipeAwait(getUserDetails, format, emit)(params);
+  const statsMsg = (params) => pipeAwait(stats, format, emit)(params);
+  const userGamesMsg = (params) =>
+    pipeAwait(getUserGames, format, emit)(params);
+  const leaderboardsMsg = (params) =>
+    pipeAwait(leaderboards, format, emit)(params);
+  const emitUserPlayed = (params) =>
+    pipeAwait(getUserPlayed, format, emit)(params);
+  const emitGlobalPlayed = (params) =>
+    pipeAwait(getGlobalPlayed, format, emit)(params);
+  const emitPlayerCount = () => pipeAwait(getPlayerCount, format, emit)();
   const emitOnlinePlayerCount = (params) =>
-    pipeAwait(getOnlinePlayerCount, emit)(params);
-  const emitCheckVersion = (params) => pipeAwait(checkVersion, emit)(params);
+    pipeAwait(getOnlinePlayerCount, format, emit)(params);
+  const emitCheckVersion = (params) =>
+    pipeAwait(checkVersion, format, emit)(params);
 
   return {
     on: (...args) => emitter.on(...args),
