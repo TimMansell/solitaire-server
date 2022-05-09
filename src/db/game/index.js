@@ -1,5 +1,5 @@
 import { db } from '../setup';
-import { initCards, checkGameState } from '../solitaire';
+import { initCards, checkGameState } from '#solitaire';
 import { createISODate } from '../helpers/dates';
 
 export const getDeckByUid = ({ uid }) =>
