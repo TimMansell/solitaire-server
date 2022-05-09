@@ -1,4 +1,4 @@
-import { createNewUser, getUserByUid, getGamesByUid } from '#db/user';
+import { createNewUser, getUserByUid, getGamesByUid } from '#db';
 
 export const createUser = async (params) => {
   try {

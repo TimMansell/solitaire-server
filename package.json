@@ -55,6 +55,7 @@
   },
   "imports": {
     "#db": "./src/db/index.js",
+    "#watchers": "./src/watchers/index.js",
     "#solitaire": "./src/solitaire/index.js"
   }
 }

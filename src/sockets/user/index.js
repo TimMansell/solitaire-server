@@ -1,5 +1,5 @@
 import { newEmitter } from '../emit';
-import { watchDB } from '#db/watchers/watchers';
+import { watchDB } from '#watchers';
 
 const runEmitEvents = (emits, params) =>
   emits.forEach((runEmit) => runEmit(params));
@@ -16,6 +16,7 @@ export const newUser = (params) => {
     if (params.uid !== uid) return;
 
     emitUserPlayed(params);
+    // Todo createUser()
   });
 
   db.on('newVersion', (appVersion) =>

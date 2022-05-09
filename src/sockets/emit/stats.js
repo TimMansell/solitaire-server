@@ -4,7 +4,7 @@ import {
   getUserCount,
   getStats,
   getLeaderboards,
-} from '#db/stats';
+} from '#db';
 
 export const getUserPlayed = async (params) => {
   try {

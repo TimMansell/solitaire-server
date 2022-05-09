@@ -1,5 +1,5 @@
 import EventEmitter from 'eventemitter3';
-import { checkVersion } from '../emit/app';
+import { checkVersion } from './app';
 import { initGame, saveGame } from './game';
 import { getUserDetails, getUserGames } from './user';
 import {

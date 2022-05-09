@@ -1,5 +1,5 @@
 import { newEmitter } from '../emit';
-import { watchDB } from '#db/watchers/watchers';
+import { watchDB } from '#watchers';
 
 // eslint-disable-next-line import/prefer-default-export
 export const newGlobal = (sockets) => {

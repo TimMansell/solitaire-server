@@ -1,4 +1,4 @@
-import { getDeckByUid, getUserNewDeck, saveGameByUid } from '#db/game';
+import { getDeckByUid, getUserNewDeck, saveGameByUid } from '#db';
 
 export const initGame = async ({ hasGameStarted, uid }) => {
   if (hasGameStarted) return [];
