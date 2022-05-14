@@ -2,7 +2,7 @@ import { db } from './setup';
 import { getStatsFields, getLeaderboardFields } from './helpers/fields';
 import { formatStats, formatLeaderboards } from './helpers/results';
 
-export const getStats = ({ uid }) => {
+export const getGameStats = ({ uid }) => {
   const queries = getStatsFields();
 
   return db()
@@ -55,7 +55,7 @@ export const getGameCountByUid = ({ uid }) =>
 export const getGlobalGameCount = () =>
   db().collection('games').countDocuments({});
 
-export const getLeaderboards = ({ showBest, limit }) => {
+export const getLeaderboard = ({ showBest, limit }) => {
   const { matches, sortBy, lookupField, project } =
     getLeaderboardFields(showBest);
 

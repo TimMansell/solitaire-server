@@ -3,19 +3,19 @@ import { setupDBWatcher } from './setup';
 
 const emitter = new EventEmitter();
 
-export const watchDB = () => {
+export const dbEmitter = () => {
   return {
     on: (...args) => emitter.on(...args),
   };
 };
 
-// eslint-disable-next-line import/prefer-default-export
 export const initWatchers = (db) => {
   const createWatcher = setupDBWatcher(db);
 
   const versionWatcher = createWatcher({
     collection: 'version',
     operationType: 'update',
+    fields: ['appVersion'],
   });
 
   const usersWatcher = createWatcher({
@@ -26,19 +26,14 @@ export const initWatchers = (db) => {
   const gamesWatcher = createWatcher({
     collection: 'games',
     operationType: 'insert',
+    fields: ['uid'],
   });
 
-  versionWatcher.on('change', ({ updateDescription }) => {
-    const { appVersion } = updateDescription.updatedFields;
-
-    if (!appVersion) return;
-
-    emitter.emit('newVersion', appVersion);
-  });
+  versionWatcher.on('change', ({ appVersion }) =>
+    emitter.emit('newVersion', appVersion)
+  );
 
   usersWatcher.on('change', () => emitter.emit('newUser'));
 
-  gamesWatcher.on('change', ({ fullDocument }) =>
-    emitter.emit('newGame', fullDocument.uid)
-  );
+  gamesWatcher.on('change', ({ uid }) => emitter.emit('newGame', uid));
 };

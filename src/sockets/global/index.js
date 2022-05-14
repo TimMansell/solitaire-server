@@ -1,17 +1,17 @@
-import { newEmitter } from '../emit';
-import { watchDB } from '#watchers';
+import { setupEmitter } from '../emit';
+import { dbEmitter } from '#watchers';
 
 // eslint-disable-next-line import/prefer-default-export
-export const newGlobal = (sockets) => {
-  const { on, emitGlobalPlayed, emitPlayerCount, emitOnlinePlayerCount } =
-    newEmitter();
-  const db = watchDB();
+export const globalEmitter = () => {
+  const { on, emitGlobalPlayed, emitPlayerCount, emitOnlineCount } =
+    setupEmitter();
+  const db = dbEmitter();
 
-  db.on('newGame', () => emitGlobalPlayed());
-  db.on('newUser', () => emitPlayerCount());
+  db.on('newGame', emitGlobalPlayed);
+  db.on('newUser', emitPlayerCount);
 
   return {
     on,
-    updateOnlineCount: () => emitOnlinePlayerCount(sockets),
+    updateOnlineCount: emitOnlineCount,
   };
 };

@@ -23,15 +23,17 @@ export const getUserNewDeck = async ({ uid }) => {
   return value;
 };
 
-export const saveGameByUid = async ({ uid, moves, time }) => {
+export const saveGame = async ({ uid, moves, time }) => {
   const { cards } = await getDeckByUid({ uid });
   const gameResult = checkGameState({ cards, moves, time });
 
-  return db()
+  await db()
     .collection('games')
     .insertOne({
       date: createISODate(),
       uid,
       ...gameResult,
     });
+
+  return { uid };
 };

@@ -1,32 +1,28 @@
 import { WebSocketServer } from 'ws';
 import queryString from 'query-string';
-import { newGlobal } from '../global';
-import { newUser } from '../user';
-
-const getQueryParams = (url) => {
-  const { query } = queryString.parseUrl(url, { parseBooleans: true });
-
-  return query;
-};
+import { globalEmitter } from '../global';
+import { userEmitter } from '../user';
 
 export const setupSockets = (server) => new WebSocketServer({ server });
 
 export const initSockets = (sockets) => {
-  const global = newGlobal(sockets);
+  const global = globalEmitter();
 
-  global.on('message', (message) =>
-    sockets.clients.forEach((client) => client.send(message))
+  global.on('sendMessage', (payload) =>
+    sockets.clients.forEach((client) => client.send(payload))
   );
 
   sockets.on('connection', (ws, req) => {
-    const params = getQueryParams(req.url);
-    const user = newUser(params);
+    const { query } = queryString.parseUrl(req.url, {
+      parseBooleans: true,
+    });
+    const user = userEmitter(query);
 
-    user.on('message', (message) => ws.send(message));
-    ws.on('message', (message) => user.sendMessage(message));
+    user.on('sendMessage', (message) => ws.send(message));
+    ws.on('message', user.runMessage);
 
     ws.on('close', () => {
-      global.updateOnlineCount();
+      global.updateOnlineCount(sockets);
 
       console.log('Client Disconnected.');
     });
@@ -35,7 +31,8 @@ export const initSockets = (sockets) => {
       console.log('Some Error occurred.');
     });
 
-    global.updateOnlineCount();
+    user.init();
+    global.updateOnlineCount(sockets);
 
     console.log('Client connected.');
   });

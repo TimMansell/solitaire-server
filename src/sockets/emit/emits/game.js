@@ -1,4 +1,4 @@
-import { getDeckByUid, getUserNewDeck, saveGameByUid } from '#db';
+import { getDeckByUid, getUserNewDeck } from '#db';
 
 export const initGame = async ({ hasGameStarted, uid }) => {
   if (hasGameStarted) return [];
@@ -13,10 +13,8 @@ export const initGame = async ({ hasGameStarted, uid }) => {
   }
 };
 
-export const saveGame = async (payload) => {
+export const newGame = async (payload) => {
   try {
-    await saveGameByUid(payload);
-
     const { cards } = await getUserNewDeck(payload);
 
     return ['newGame', cards];

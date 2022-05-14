@@ -1,40 +1,33 @@
-import { newEmitter } from '../emit';
-import { watchDB } from '#watchers';
-
-const runEmitEvents = (emits, params) =>
-  emits.forEach((runEmit) => runEmit(params));
-
-const checkMessageNameExists = (messageName, messages) =>
-  messages.find(({ name }) => `${messageName}Msg` === name);
+import { setupEmitter } from '../emit';
+import { dbEmitter } from '#watchers';
 
 // eslint-disable-next-line import/prefer-default-export
-export const newUser = (params) => {
-  const { on, init, messages, emitUserPlayed, emitCheckVersion } = newEmitter();
-  const db = watchDB();
+export const userEmitter = (params) => {
+  const {
+    on,
+    init,
+    runMessage,
+    // emitCreateUser,
+    emitUserPlayed,
+    emitCheckVersion,
+  } = setupEmitter();
+  const db = dbEmitter();
+  // const user = await getUserByUid(params);
 
   db.on('newGame', (uid) => {
     if (params.uid !== uid) return;
 
     emitUserPlayed(params);
-    // Todo createUser()
+    // if (!user) emitCreateUser(params);
   });
 
   db.on('newVersion', (appVersion) =>
     emitCheckVersion({ ...params, appVersion })
   );
 
-  runEmitEvents(init, params);
-
   return {
     on,
-    sendMessage: (message) => {
-      const { name, payload } = JSON.parse(message);
-
-      const runEmit = checkMessageNameExists(name, messages);
-
-      if (!runEmit) return console.error('Invalid message name');
-
-      runEmit({ ...params, ...payload });
-    },
+    init: () => init(params),
+    runMessage: (message) => runMessage(message, params),
   };
 };

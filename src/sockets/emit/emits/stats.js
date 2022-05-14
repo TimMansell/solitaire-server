@@ -2,8 +2,8 @@ import {
   getGameCountByUid,
   getGlobalGameCount,
   getUserCount,
-  getStats,
-  getLeaderboards,
+  getGameStats,
+  getLeaderboard,
 } from '#db';
 
 export const getUserPlayed = async (params) => {
@@ -36,14 +36,14 @@ export const getPlayerCount = async () => {
   }
 };
 
-export const getOnlinePlayerCount = async (sockets) => [
+export const getOnlineCount = async (sockets) => [
   'onlineCount',
   [...sockets.clients].length,
 ];
 
-export const stats = async (params) => {
+export const getStats = async (params) => {
   try {
-    const [userStats, globalStats] = await getStats(params);
+    const [userStats, globalStats] = await getGameStats(params);
 
     return ['stats', { userStats, globalStats }];
   } catch (error) {
@@ -51,9 +51,9 @@ export const stats = async (params) => {
   }
 };
 
-export const leaderboards = async (params) => {
+export const getLeaderboards = async (params) => {
   try {
-    const leaderboard = await getLeaderboards(params);
+    const leaderboard = await getLeaderboard(params);
 
     return ['leaderboards', leaderboard];
   } catch (error) {
