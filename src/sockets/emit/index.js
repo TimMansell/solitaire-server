@@ -1,10 +1,11 @@
-import { setupEmitter } from './setup';
+import { runEmits, getEmit } from './run';
+import { setupEmitter } from './emits';
 import { dbEmitter } from '#watchers';
 
 export const globalEmitter = () => {
+  const db = dbEmitter();
   const { on, emitGlobalPlayed, emitPlayerCount, emitOnlineCount } =
     setupEmitter();
-  const db = dbEmitter();
 
   db.on('newGame', emitGlobalPlayed);
   db.on('newUser', emitPlayerCount);
@@ -15,10 +16,18 @@ export const globalEmitter = () => {
   };
 };
 
-export const userEmitter = (params) => {
-  const { on, init, runMessage, emitUserPlayed, emitCheckVersion } =
-    setupEmitter();
+export const connectionEmitter = (params) => {
   const db = dbEmitter();
+  const {
+    on,
+    getOnConnectedEmits,
+    getMessages,
+    emitUserPlayed,
+    emitCheckVersion,
+  } = setupEmitter();
+
+  const connectedEmits = getOnConnectedEmits();
+  const messages = getMessages();
 
   db.on('newGame', (uid) => {
     if (params.uid !== uid) return;
@@ -30,9 +39,20 @@ export const userEmitter = (params) => {
     emitCheckVersion({ ...params, appVersion })
   );
 
+  const init = () => runEmits(connectedEmits, params);
+
+  const runMessage = (message) => {
+    const { name, payload } = JSON.parse(message);
+    const emit = getEmit(name, messages);
+
+    emit({ ...params, ...payload });
+  };
+
   return {
     on,
-    init: () => init(params),
-    runMessage: (message) => runMessage(message, params),
+    init,
+    runMessage,
+    // init: () => runEmits(connectedEmits, params),
+    // message: (message) => runMessage(message, messages, params),
   };
 };

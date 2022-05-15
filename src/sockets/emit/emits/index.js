@@ -1,13 +1,8 @@
 import EventEmitter from 'eventemitter3';
-import {
-  setupEmit,
-  createEmitter,
-  formatPayload,
-  parsePayload,
-} from './helpers';
-import { checkVersion } from './emits/app';
-import { initGame, newGame } from './emits/game';
-import { createUser, getUserDetails, getUserGames } from './emits/user';
+import { setupEmit, createEmitter, formatPayload } from './helpers';
+import { checkVersion } from './app';
+import { initGame, newGame } from './game';
+import { createUser, getUserDetails, getUserGames } from './user';
 import {
   getStats,
   getUserPlayed,
@@ -15,7 +10,7 @@ import {
   getPlayerCount,
   getOnlineCount,
   getLeaderboards,
-} from './emits/stats';
+} from './stats';
 import { saveGame } from '#db';
 
 // eslint-disable-next-line import/prefer-default-export
@@ -36,13 +31,6 @@ export const setupEmitter = () => {
   const emitOnlineCount = createEmitter(getOnlineCount, formatPayload, emit);
   const emitCheckVersion = createEmitter(checkVersion, formatPayload, emit);
 
-  const messages = {
-    saveGame: emitNewGame,
-    userGames: emitUserGames,
-    stats: emitStats,
-    leaderboards: emitLeaderboards,
-  };
-
   const emits = {
     emitCreateUser,
     emitUserPlayed,
@@ -52,30 +40,25 @@ export const setupEmitter = () => {
     emitCheckVersion,
   };
 
-  const init = (params) =>
-    [
-      emitInitGame,
-      emitUser,
-      emitUserPlayed,
-      emitPlayerCount,
-      emitGlobalPlayed,
-    ].forEach((runEmit) => runEmit(params));
+  const getOnConnectedEmits = () => [
+    emitInitGame,
+    emitUser,
+    emitUserPlayed,
+    emitPlayerCount,
+    emitGlobalPlayed,
+  ];
 
-  const runMessage = (message, params) => {
-    const { name, payload } = parsePayload(message);
-
-    const [, runEmit] =
-      Object.entries(messages).find(([key]) => key === name) || [];
-
-    if (!runEmit) return console.error('Invalid message name');
-
-    runEmit({ ...params, ...payload });
-  };
+  const getMessages = () => ({
+    saveGame: emitNewGame,
+    userGames: emitUserGames,
+    stats: emitStats,
+    leaderboards: emitLeaderboards,
+  });
 
   return {
     on: (...args) => emitter.on(...args),
-    init,
-    runMessage,
+    getOnConnectedEmits,
+    getMessages,
     ...emits,
   };
 };
