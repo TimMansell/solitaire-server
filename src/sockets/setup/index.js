@@ -1,7 +1,6 @@
 import { WebSocketServer } from 'ws';
 import queryString from 'query-string';
-import { globalEmitter } from '../global';
-import { userEmitter } from '../user';
+import { globalEmitter, userEmitter } from '../emit';
 
 export const setupSockets = (server) => new WebSocketServer({ server });
 
@@ -16,10 +15,9 @@ export const initSockets = (sockets) => {
     const { query } = queryString.parseUrl(req.url, {
       parseBooleans: true,
     });
-    const user = userEmitter(query);
+    const connection = userEmitter(query);
 
-    user.on('sendMessage', (message) => ws.send(message));
-    ws.on('message', user.runMessage);
+    ws.on('message', (message) => connection.runMessage(message));
 
     ws.on('close', () => {
       global.updateOnlineCount(sockets);
@@ -31,7 +29,9 @@ export const initSockets = (sockets) => {
       console.log('Some Error occurred.');
     });
 
-    user.init();
+    connection.on('sendMessage', (message) => ws.send(message));
+
+    connection.init();
     global.updateOnlineCount(sockets);
 
     console.log('Client connected.');
