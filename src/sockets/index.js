@@ -1,27 +1,66 @@
-import { Server } from 'socket.io';
+import { WebSocketServer } from 'ws';
 import {
-  setupWatchEvents,
-  setupCore,
-  setupOnEvents,
-  setupEmitEvents,
-} from './setup';
-import { getUser } from '#query/db';
+  createGlobalSend,
+  createSend,
+  getParams,
+  checkIsUser,
+  getMessage,
+  updateGlobalPlayed,
+  updateOnlineCount,
+  updatePlayerCount,
+  updateUserPlayed,
+  checkVersion,
+} from './socket';
+import { emitter } from '../eventEmitter';
 
-// eslint-disable-next-line import/prefer-default-export
-export const setupSockets = ([express, db]) => {
-  const io = new Server(express);
+export const setupSockets = (server) => new WebSocketServer({ server });
 
-  setupWatchEvents({ db, io });
+export const initSockets = (sockets) => {
+  const sendAllMessage = createGlobalSend(sockets);
 
-  io.on('connection', async (socket) => {
-    const core = setupCore(db, io, socket);
+  emitter.on('newGame', () => sendAllMessage(updateGlobalPlayed));
+  emitter.on('newUser', () => sendAllMessage(updatePlayerCount));
+  emitter.on('updateOnline', () => sendAllMessage(updateOnlineCount(sockets)));
 
-    setupOnEvents(core);
-    setupEmitEvents(core);
+  sockets.on('connection', async (ws, req) => {
+    const params = getParams(req);
+    const sendMessage = createSend(ws, params);
 
-    socket.on('disconnect', () => socket.removeAllListeners());
+    const newGame = (uid) => {
+      const isUser = checkIsUser(uid, params);
 
-    socket.user = await core.queryDb(getUser);
+      if (!isUser) return;
+
+      sendMessage(updateUserPlayed);
+    };
+
+    const newVersion = (appVersion) => sendMessage(checkVersion(appVersion));
+
+    emitter.on('newGame', newGame);
+    emitter.on('newVersion', newVersion);
+
+    ws.on('message', (message) => {
+      const responseMessage = getMessage(message);
+
+      if (!responseMessage) return;
+
+      sendMessage(responseMessage);
+    });
+
+    ws.on('close', () => {
+      emitter.emit('updateOnline');
+
+      emitter.removeListener('newGame', newGame);
+      emitter.removeListener('newVersion', newVersion);
+
+      console.log('Client Disconnected.');
+    });
+
+    ws.on('error', () => {
+      console.log('Some Error occurred.');
+    });
+
+    emitter.emit('updateOnline');
 
     console.log('Client connected.');
   });

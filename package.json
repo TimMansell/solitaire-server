@@ -14,13 +14,15 @@
   },
   "dependencies": {
     "dotenv": "10.0.0",
+    "eventemitter3": "4.0.7",
     "express": "4.17.1",
     "lodash.shuffle": "4.2.0",
     "mongodb": "4.1.2",
     "numeral": "2.0.6",
+    "query-string": "7.1.1",
     "semver": "7.3.5",
-    "socket.io": "4.2.0",
-    "unique-names-generator": "4.6.0"
+    "unique-names-generator": "4.6.0",
+    "ws": "8.5.0"
   },
   "devDependencies": {
     "@babel/core": "7.17.9",
@@ -52,6 +54,8 @@
     ]
   },
   "imports": {
-    "#query/*": "./src/query/*"
+    "#db": "./src/db/index.js",
+    "#watchers": "./src/watchers/index.js",
+    "#solitaire": "./src/solitaire/index.js"
   }
 }
