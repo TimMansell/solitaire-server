@@ -1,26 +1,56 @@
 import { WebSocketServer } from 'ws';
-import queryString from 'query-string';
-import { globalEmitter, connectionEmitter } from './emit';
+import {
+  getUid,
+  createGlobalSend,
+  createSend,
+  getResponseMessage,
+  updateGlobalPlayed,
+  updateOnlineCount,
+  updatePlayerCount,
+  updateUserPlayed,
+  checkUserVersion,
+} from './socket';
+import { emitter } from '../eventEmitter';
 
 export const setupSockets = (server) => new WebSocketServer({ server });
 
 export const initSockets = (sockets) => {
-  const global = globalEmitter();
+  const sendAllMessage = createGlobalSend(sockets);
 
-  global.on('sendMessage', (payload) =>
-    sockets.clients.forEach((client) => client.send(payload))
-  );
+  emitter.on('newGame', () => sendAllMessage(updateGlobalPlayed));
+  emitter.on('newUser', () => sendAllMessage(updatePlayerCount));
+  emitter.on('onlineCount', () => sendAllMessage(updateOnlineCount(sockets)));
 
-  sockets.on('connection', (ws, req) => {
-    const { query } = queryString.parseUrl(req.url, {
-      parseBooleans: true,
+  sockets.on('connection', async (ws, req) => {
+    const sendMessage = createSend(ws, req);
+
+    const newGame = (gameUid) => {
+      const uid = getUid(req);
+
+      if (uid !== gameUid) return;
+
+      sendMessage(updateUserPlayed);
+    };
+
+    const newVersion = (appVersion) =>
+      sendMessage(checkUserVersion(appVersion));
+
+    emitter.on('newGame', newGame);
+    emitter.on('newVersion', newVersion);
+
+    ws.on('message', (message) => {
+      const responseMessage = getResponseMessage(message);
+
+      if (!responseMessage) return;
+
+      sendMessage(responseMessage);
     });
-    const connection = connectionEmitter(query);
-
-    ws.on('message', (message) => connection.runMessage(message));
 
     ws.on('close', () => {
-      global.updateOnlineCount(sockets);
+      emitter.emit('onlineCount');
+
+      emitter.removeListener('newGame', newGame);
+      emitter.removeListener('newVersion', newVersion);
 
       console.log('Client Disconnected.');
     });
@@ -29,11 +59,7 @@ export const initSockets = (sockets) => {
       console.log('Some Error occurred.');
     });
 
-    connection.on('sendMessage', (message) => ws.send(message));
-
-    global.updateOnlineCount(sockets);
-
-    connection.init();
+    emitter.emit('onlineCount');
 
     console.log('Client connected.');
   });

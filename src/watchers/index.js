@@ -1,14 +1,7 @@
-import EventEmitter from 'eventemitter3';
 import { setupDBWatcher } from './setup';
+import { emitter } from '../eventEmitter';
 
-const emitter = new EventEmitter();
-
-export const dbEmitter = () => {
-  return {
-    on: (...args) => emitter.on(...args),
-  };
-};
-
+// eslint-disable-next-line import/prefer-default-export
 export const initWatchers = (db) => {
   const createWatcher = setupDBWatcher(db);
 

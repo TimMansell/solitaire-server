@@ -1,11 +1,9 @@
 import { getDeckByUid, getUserNewDeck } from '#db';
 
-export const initGame = async ({ hasGameStarted, uid }) => {
-  if (hasGameStarted) return [];
-
+export const initGame = async (params) => {
   try {
-    const deck = await getDeckByUid({ uid });
-    const { cards } = deck ?? (await getUserNewDeck({ uid }));
+    const deck = await getDeckByUid(params);
+    const { cards } = deck ?? (await getUserNewDeck(params));
 
     return ['newGame', cards];
   } catch (error) {
@@ -13,9 +11,9 @@ export const initGame = async ({ hasGameStarted, uid }) => {
   }
 };
 
-export const newGame = async (payload) => {
+export const newGame = async (params) => {
   try {
-    const { cards } = await getUserNewDeck(payload);
+    const { cards } = await getUserNewDeck(params);
 
     return ['newGame', cards];
   } catch (error) {

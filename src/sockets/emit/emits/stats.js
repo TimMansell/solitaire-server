@@ -36,7 +36,7 @@ export const getPlayerCount = async () => {
   }
 };
 
-export const getOnlineCount = async (sockets) => [
+export const getOnlineCount = async ({ sockets }) => [
   'onlineCount',
   [...sockets.clients].length,
 ];

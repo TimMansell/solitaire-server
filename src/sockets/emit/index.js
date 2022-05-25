@@ -1,58 +1,37 @@
-import { runEmits, getEmit } from './run';
-import { setupEmitter } from './emits';
-import { dbEmitter } from '#watchers';
+import { createEmitter, formatPayload } from './helpers';
+import { checkVersion } from './emits/app';
+import { initGame, newGame } from './emits/game';
+import { createUser, getUserDetails, getUserGames } from './emits/user';
+import {
+  getStats,
+  getUserPlayed,
+  getGlobalPlayed,
+  getPlayerCount,
+  getOnlineCount,
+  getLeaderboards,
+} from './emits/stats';
+import { saveGame } from '#db';
 
-export const globalEmitter = () => {
-  const db = dbEmitter();
-  const { on, emitGlobalPlayed, emitPlayerCount, emitOnlineCount } =
-    setupEmitter();
+export const emitInitGame = createEmitter(initGame, formatPayload);
 
-  db.on('newGame', emitGlobalPlayed);
-  db.on('newUser', emitPlayerCount);
+export const emitCreateUser = createEmitter(createUser, formatPayload);
 
-  return {
-    on,
-    updateOnlineCount: emitOnlineCount,
-  };
-};
+export const emitUser = createEmitter(getUserDetails, formatPayload);
 
-export const connectionEmitter = (params) => {
-  const db = dbEmitter();
-  const {
-    on,
-    getOnConnectedEmits,
-    getMessages,
-    emitUserPlayed,
-    emitCheckVersion,
-  } = setupEmitter();
+export const emitNewGame = createEmitter(saveGame, newGame, formatPayload);
 
-  const connectedEmits = getOnConnectedEmits();
-  const messages = getMessages();
+export const emitUserGames = createEmitter(getUserGames, formatPayload);
 
-  db.on('newGame', (uid) => {
-    if (params.uid !== uid) return;
+export const emitStats = createEmitter(getStats, formatPayload);
 
-    emitUserPlayed(params);
-  });
+export const emitLeaderboards = createEmitter(getLeaderboards, formatPayload);
 
-  db.on('newVersion', (appVersion) =>
-    emitCheckVersion({ ...params, appVersion })
-  );
+export const emitUserPlayed = createEmitter(getUserPlayed, formatPayload);
 
-  const init = () => runEmits(connectedEmits, params);
+export const emitPlayerCount = createEmitter(getPlayerCount, formatPayload);
 
-  const runMessage = (message) => {
-    const { name, payload } = JSON.parse(message);
-    const emit = getEmit(name, messages);
+export const emitGlobalPlayed = createEmitter(getGlobalPlayed, formatPayload);
 
-    emit({ ...params, ...payload });
-  };
+export const emitOnlineCount = createEmitter(getOnlineCount, formatPayload);
 
-  return {
-    on,
-    init,
-    runMessage,
-    // init: () => runEmits(connectedEmits, params),
-    // message: (message) => runMessage(message, messages, params),
-  };
-};
+export const emitCheckVersion = createEmitter(checkVersion, formatPayload);
