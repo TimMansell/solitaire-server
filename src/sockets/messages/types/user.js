@@ -6,7 +6,9 @@ export const createUser = async (params) => {
 
     return ['user', user];
   } catch (error) {
-    console.log({ error });
+    console.error({ error });
+
+    return [];
   }
 };
 
@@ -16,7 +18,9 @@ export const getUserDetails = async (params) => {
 
     return ['user', user];
   } catch (error) {
-    console.log({ error });
+    console.error({ error });
+
+    return [];
   }
 };
 
@@ -26,6 +30,8 @@ export const getUserGames = async (params) => {
 
     return ['userGames', games];
   } catch (error) {
-    console.log({ error });
+    console.error({ error });
+
+    return [];
   }
 };

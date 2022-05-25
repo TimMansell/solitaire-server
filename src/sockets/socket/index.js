@@ -57,11 +57,11 @@ export const getMessage = (message) => {
 
     const [msg, emit] = Object.entries(messages).find(([key]) => key === name);
 
-    if (!msg) return console.error('Invalid message name');
+    if (!msg) throw new Error('Invalid message name');
 
     return () => emit(payload);
   } catch (error) {
-    console.log({ error });
+    return console.error({ error });
   }
 };
 

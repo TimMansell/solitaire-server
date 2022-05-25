@@ -7,7 +7,9 @@ export const initGame = async (params) => {
 
     return ['newGame', cards];
   } catch (error) {
-    console.log({ error });
+    console.error({ error });
+
+    return [];
   }
 };
 
@@ -17,6 +19,8 @@ export const newGame = async (params) => {
 
     return ['newGame', cards];
   } catch (error) {
-    console.log({ error });
+    console.error({ error });
+
+    return [];
   }
 };

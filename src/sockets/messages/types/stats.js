@@ -12,7 +12,9 @@ export const getUserPlayed = async (params) => {
 
     return ['userPlayed', gameCount];
   } catch (error) {
-    console.log({ error });
+    console.error({ error });
+
+    return [];
   }
 };
 
@@ -22,7 +24,9 @@ export const getGlobalPlayed = async () => {
 
     return ['globalPlayed', gameCount];
   } catch (error) {
-    console.log({ error });
+    console.error({ error });
+
+    return [];
   }
 };
 
@@ -32,7 +36,9 @@ export const getPlayerCount = async () => {
 
     return ['playerCount', players];
   } catch (error) {
-    console.log({ error });
+    console.error({ error });
+
+    return [];
   }
 };
 
@@ -47,7 +53,9 @@ export const getStats = async (params) => {
 
     return ['stats', { userStats, globalStats }];
   } catch (error) {
-    console.log({ error });
+    console.error({ error });
+
+    return [];
   }
 };
 
@@ -57,6 +65,8 @@ export const getLeaderboards = async (params) => {
 
     return ['leaderboards', leaderboard];
   } catch (error) {
-    console.log({ error });
+    console.error({ error });
+
+    return [];
   }
 };
