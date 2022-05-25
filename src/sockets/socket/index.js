@@ -1,17 +1,17 @@
 import queryString from 'query-string';
 import {
-  emitInitGame,
-  emitUser,
-  emitUserPlayed,
-  emitPlayerCount,
-  emitGlobalPlayed,
-  emitNewGame,
-  emitUserGames,
-  emitStats,
-  emitLeaderboards,
-  emitOnlineCount,
-  emitCheckVersion,
-} from '../emit';
+  initGameMsg,
+  userMsg,
+  userPlayedMsg,
+  playerCountMsg,
+  globalPlayedMsg,
+  newGameMsg,
+  userGamesMsg,
+  statsMsg,
+  leaderboardsMsg,
+  onlineCountMsg,
+  checkVersionMsg,
+} from '../messages';
 
 export const createGlobalSend = (sockets) => async (message) => {
   const response = await message()();
@@ -21,46 +21,41 @@ export const createGlobalSend = (sockets) => async (message) => {
   sockets.clients.forEach((client) => client.send(response));
 };
 
-export const createSend = (ws, req) => async (message) => {
-  const { query } = queryString.parseUrl(req.url, {
-    parseBooleans: true,
-  });
-
-  const response = await message()(query);
+export const createSend = (ws, params) => async (message) => {
+  const response = await message()(params);
 
   if (!response) return;
 
   ws.send(response);
 };
 
-export const getUid = (req) => {
-  const {
-    query: { uid },
-  } = queryString.parseUrl(req.url, {
+export const getParams = ({ url }) => {
+  const { query } = queryString.parseUrl(url, {
     parseBooleans: true,
   });
 
-  return uid;
+  return query;
 };
 
-export const getResponseMessage = (message) => {
+export const checkIsUser = (uid, params) => uid === params.uid;
+
+export const getMessage = (message) => {
   try {
     const { name, payload } = JSON.parse(message);
 
     const messages = {
-      initGame: emitInitGame,
-      user: emitUser,
-      userPlayed: emitUserPlayed,
-      playerCount: emitPlayerCount,
-      globalPlayed: emitGlobalPlayed,
-      saveGame: emitNewGame,
-      userGames: emitUserGames,
-      stats: emitStats,
-      leaderboards: emitLeaderboards,
+      initGame: initGameMsg,
+      user: userMsg,
+      userPlayed: userPlayedMsg,
+      playerCount: playerCountMsg,
+      globalPlayed: globalPlayedMsg,
+      saveGame: newGameMsg,
+      userGames: userGamesMsg,
+      stats: statsMsg,
+      leaderboards: leaderboardsMsg,
     };
 
-    const [msg, emit] =
-      Object.entries(messages).find(([key]) => key === name) || [];
+    const [msg, emit] = Object.entries(messages).find(([key]) => key === name);
 
     if (!msg) return console.error('Invalid message name');
 
@@ -70,14 +65,13 @@ export const getResponseMessage = (message) => {
   }
 };
 
-export const updateGlobalPlayed = () => emitGlobalPlayed();
+export const updateGlobalPlayed = () => globalPlayedMsg();
 
-export const updateOnlineCount = (sockets) => () =>
-  emitOnlineCount({ sockets });
+export const updateOnlineCount = (sockets) => () => onlineCountMsg({ sockets });
 
-export const updatePlayerCount = () => () => emitPlayerCount();
+export const updatePlayerCount = () => () => playerCountMsg();
 
-export const updateUserPlayed = () => emitUserPlayed();
+export const updateUserPlayed = () => userPlayedMsg();
 
-export const checkUserVersion = (appVersion) => () =>
-  emitCheckVersion({ appVersion });
+export const checkVersion = (appVersion) => () =>
+  checkVersionMsg({ appVersion });

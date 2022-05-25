@@ -1,8 +1,8 @@
-import { getDeckByUid, getUserNewDeck } from '#db';
+import { getUserDeck, getUserNewDeck } from '#db';
 
 export const initGame = async (params) => {
   try {
-    const deck = await getDeckByUid(params);
+    const deck = await getUserDeck(params);
     const { cards } = deck ?? (await getUserNewDeck(params));
 
     return ['newGame', cards];

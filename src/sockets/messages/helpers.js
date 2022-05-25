@@ -1,7 +1,7 @@
-export const formatPayload = ([name, payload]) =>
+export const formatMessage = ([name, payload]) =>
   name ? JSON.stringify({ name, payload }) : '';
 
-export const createEmitter =
+export const createMessage =
   (...fns) =>
   (payload) =>
   (query) =>

@@ -1,14 +1,15 @@
 import { WebSocketServer } from 'ws';
 import {
-  getUid,
   createGlobalSend,
   createSend,
-  getResponseMessage,
+  getParams,
+  checkIsUser,
+  getMessage,
   updateGlobalPlayed,
   updateOnlineCount,
   updatePlayerCount,
   updateUserPlayed,
-  checkUserVersion,
+  checkVersion,
 } from './socket';
 import { emitter } from '../eventEmitter';
 
@@ -19,27 +20,27 @@ export const initSockets = (sockets) => {
 
   emitter.on('newGame', () => sendAllMessage(updateGlobalPlayed));
   emitter.on('newUser', () => sendAllMessage(updatePlayerCount));
-  emitter.on('onlineCount', () => sendAllMessage(updateOnlineCount(sockets)));
+  emitter.on('updateOnline', () => sendAllMessage(updateOnlineCount(sockets)));
 
   sockets.on('connection', async (ws, req) => {
-    const sendMessage = createSend(ws, req);
+    const params = getParams(req);
+    const sendMessage = createSend(ws, params);
 
-    const newGame = (gameUid) => {
-      const uid = getUid(req);
+    const newGame = (uid) => {
+      const isUser = checkIsUser(uid, params);
 
-      if (uid !== gameUid) return;
+      if (!isUser) return;
 
       sendMessage(updateUserPlayed);
     };
 
-    const newVersion = (appVersion) =>
-      sendMessage(checkUserVersion(appVersion));
+    const newVersion = (appVersion) => sendMessage(checkVersion(appVersion));
 
     emitter.on('newGame', newGame);
     emitter.on('newVersion', newVersion);
 
     ws.on('message', (message) => {
-      const responseMessage = getResponseMessage(message);
+      const responseMessage = getMessage(message);
 
       if (!responseMessage) return;
 
@@ -47,7 +48,7 @@ export const initSockets = (sockets) => {
     });
 
     ws.on('close', () => {
-      emitter.emit('onlineCount');
+      emitter.emit('updateOnline');
 
       emitter.removeListener('newGame', newGame);
       emitter.removeListener('newVersion', newVersion);
@@ -59,7 +60,7 @@ export const initSockets = (sockets) => {
       console.log('Some Error occurred.');
     });
 
-    emitter.emit('onlineCount');
+    emitter.emit('updateOnline');
 
     console.log('Client connected.');
   });
