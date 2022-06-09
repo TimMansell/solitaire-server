@@ -3,7 +3,7 @@ import { getUserDeck, getUserNewDeck } from '#db';
 export const initGame = async (params) => {
   try {
     const deck = await getUserDeck(params);
-    const { cards } = deck ?? (await getUserNewDeck(params));
+    const { cards } = deck || (await getUserNewDeck(params));
 
     return ['newGame', cards];
   } catch (error) {
