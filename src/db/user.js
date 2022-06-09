@@ -1,28 +1,19 @@
-import {
-  uniqueNamesGenerator,
-  adjectives,
-  colors,
-  animals,
-} from 'unique-names-generator';
-import shuffle from 'lodash.shuffle';
 import { db } from './setup';
+import { createUser } from './helpers/user';
 import { formatGames } from './helpers/results';
 
-export const createNewUser = async ({ uid }) => {
-  const [first, second] = shuffle([adjectives, colors, animals]);
-
-  const name = uniqueNamesGenerator({
-    dictionaries: [first, second],
-    separator: '',
-    style: 'capital',
-    length: 2,
-  });
-
+export const getUserByUid = async ({ uid }) => {
   const { value } = await db()
     .collection('users')
     .findOneAndUpdate(
       { uid },
-      { $set: { name } },
+      [
+        {
+          $set: {
+            name: { $ifNull: ['$name', createUser()] },
+          },
+        },
+      ],
       {
         projection: { _id: 0, uid: 0 },
         upsert: true,
@@ -32,11 +23,6 @@ export const createNewUser = async ({ uid }) => {
 
   return value;
 };
-
-export const getUserByUid = ({ uid }) =>
-  db()
-    .collection('users')
-    .findOne({ uid }, { projection: { _id: 0, uid: 0 } });
 
 export const getGamesByUid = ({ uid, offset, limit }) =>
   db()

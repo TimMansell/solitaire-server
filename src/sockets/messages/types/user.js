@@ -1,18 +1,6 @@
-import { createNewUser, getUserByUid, getGamesByUid } from '#db';
+import { getUserByUid, getGamesByUid } from '#db';
 
-export const createUser = async (params) => {
-  try {
-    const user = await createNewUser(params);
-
-    return ['user', user];
-  } catch (error) {
-    console.error({ error });
-
-    return [];
-  }
-};
-
-export const getUserDetails = async (params) => {
+export const initUser = async (params) => {
   try {
     const user = await getUserByUid(params);
 

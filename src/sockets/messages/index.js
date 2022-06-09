@@ -1,7 +1,7 @@
 import { createMessage, formatMessage } from './helpers';
 import { checkVersion } from './types/app';
 import { initGame, newGame } from './types/game';
-import { createUser, getUserDetails, getUserGames } from './types/user';
+import { initUser, getUserGames } from './types/user';
 import {
   getStats,
   getUserPlayed,
@@ -14,9 +14,7 @@ import { saveGame } from '#db';
 
 export const initGameMsg = createMessage(initGame, formatMessage);
 
-export const createUserMsg = createMessage(createUser, formatMessage);
-
-export const userMsg = createMessage(getUserDetails, formatMessage);
+export const initUserMsg = createMessage(initUser, formatMessage);
 
 export const newGameMsg = createMessage(saveGame, newGame, formatMessage);
 

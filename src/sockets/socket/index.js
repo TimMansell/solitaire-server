@@ -1,7 +1,7 @@
 import queryString from 'query-string';
 import {
   initGameMsg,
-  userMsg,
+  initUserMsg,
   userPlayedMsg,
   playerCountMsg,
   globalPlayedMsg,
@@ -45,7 +45,7 @@ export const getMessage = (message) => {
 
     const messages = {
       initGame: initGameMsg,
-      user: userMsg,
+      initUser: initUserMsg,
       userPlayed: userPlayedMsg,
       playerCount: playerCountMsg,
       globalPlayed: globalPlayedMsg,
