@@ -19,7 +19,7 @@ export const initSockets = (sockets) => {
   const sendAllMessage = createGlobalSend(sockets);
 
   emitter.on('newGame', () => sendAllMessage(updateGlobalPlayed));
-  emitter.on('newUser', () => sendAllMessage(updatePlayerCount));
+  emitter.on('newGame', () => sendAllMessage(updatePlayerCount));
   emitter.on('updateOnline', () => sendAllMessage(updateOnlineCount(sockets)));
 
   sockets.on('connection', async (ws, req) => {

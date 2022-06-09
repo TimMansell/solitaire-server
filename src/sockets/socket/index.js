@@ -69,7 +69,7 @@ export const updateGlobalPlayed = () => globalPlayedMsg();
 
 export const updateOnlineCount = (sockets) => () => onlineCountMsg({ sockets });
 
-export const updatePlayerCount = () => () => playerCountMsg();
+export const updatePlayerCount = () => playerCountMsg();
 
 export const updateUserPlayed = () => userPlayedMsg();
 

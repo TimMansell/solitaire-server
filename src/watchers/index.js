@@ -11,11 +11,6 @@ export const initWatchers = (db) => {
     fields: ['appVersion'],
   });
 
-  const usersWatcher = createWatcher({
-    collection: 'users',
-    operationType: 'insert',
-  });
-
   const gamesWatcher = createWatcher({
     collection: 'games',
     operationType: 'insert',
@@ -25,8 +20,6 @@ export const initWatchers = (db) => {
   versionWatcher.on('change', ({ appVersion }) =>
     emitter.emit('newVersion', appVersion)
   );
-
-  usersWatcher.on('change', () => emitter.emit('newUser'));
 
   gamesWatcher.on('change', ({ uid }) => emitter.emit('newGame', uid));
 };
