@@ -10,11 +10,16 @@ import {
   getOnlineCount,
   getLeaderboards,
 } from './types/stats';
-import { createUser, saveGame } from '#db';
+import { createUser, saveGame, activateUser } from '#db';
 
 export const initGameMsg = createMessage(createUser, initGame, formatMessage);
 
-export const newGameMsg = createMessage(saveGame, newGame, formatMessage);
+export const newGameMsg = createMessage(
+  saveGame,
+  activateUser,
+  newGame,
+  formatMessage
+);
 
 export const userGamesMsg = createMessage(getUserGames, formatMessage);
 

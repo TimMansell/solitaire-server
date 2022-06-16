@@ -47,18 +47,8 @@ export const getGameStats = ({ uid }) => {
     .toArray();
 };
 
-export const getActiveUsers = async () => {
-  const [{ players }] = await db()
-    .collection('games')
-    .aggregate([
-      { $group: { _id: '$uid' } },
-      { $group: { _id: 1, players: { $sum: 1 } } },
-      { $project: { _id: 0 } },
-    ])
-    .toArray();
-
-  return players;
-};
+export const getActiveUsers = () =>
+  db().collection('users').countDocuments({ isActive: true });
 
 export const getGameCountByUid = ({ uid }) =>
   db().collection('games').countDocuments({ uid });

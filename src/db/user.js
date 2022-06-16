@@ -3,7 +3,7 @@ import { createUserName } from './helpers/user';
 import { formatGames } from './helpers/results';
 
 export const createUser = async ({ uid }) => {
-  const { value } = await db()
+  await db()
     .collection('users')
     .findOneAndUpdate(
       { uid },
@@ -11,17 +11,39 @@ export const createUser = async ({ uid }) => {
         {
           $set: {
             name: { $ifNull: ['$name', createUserName()] },
+            isActive: false,
           },
         },
       ],
       {
-        projection: { _id: 0, uid: 1 },
+        projection: { _id: 0 },
         upsert: true,
         returnDocument: 'after',
       }
     );
 
-  return value;
+  return { uid };
+};
+
+export const activateUser = async ({ uid }) => {
+  await db()
+    .collection('users')
+    .findOneAndUpdate(
+      { uid },
+      [
+        {
+          $set: {
+            isActive: true,
+          },
+        },
+      ],
+      {
+        projection: { _id: 0 },
+        upsert: true,
+      }
+    );
+
+  return { uid };
 };
 
 export const getUserByUid = ({ uid }) =>
