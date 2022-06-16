@@ -10,6 +10,7 @@ import {
   leaderboardsMsg,
   onlineCountMsg,
   checkVersionMsg,
+  mockDeckMsg,
 } from '../messages';
 
 export const createGlobalSend = (sockets) => async (message) => {
@@ -51,9 +52,11 @@ export const getMessage = (message) => {
       userGames: userGamesMsg,
       stats: statsMsg,
       leaderboards: leaderboardsMsg,
+      ...(process.env.NODE_ENV === 'test' && { mockDeck: mockDeckMsg }),
     };
 
-    const [msg, emit] = Object.entries(messages).find(([key]) => key === name);
+    const [msg, emit] =
+      Object.entries(messages).find(([key]) => key === name) || [];
 
     if (!msg) throw new Error('Invalid message name');
 
