@@ -11,7 +11,7 @@ export const createUser = async ({ uid }) => {
         {
           $set: {
             name: { $ifNull: ['$name', createUserName()] },
-            isActive: false,
+            isActive: { $ifNull: ['$isActive', false] },
           },
         },
       ],
