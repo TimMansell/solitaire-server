@@ -7,7 +7,7 @@ import {
 import shuffle from 'lodash.shuffle';
 
 // eslint-disable-next-line import/prefer-default-export
-export const createUser = () => {
+export const createUserName = () => {
   const [first, second] = shuffle([adjectives, colors, animals]);
 
   const name = uniqueNamesGenerator({

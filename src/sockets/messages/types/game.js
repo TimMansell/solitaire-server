@@ -1,11 +1,11 @@
-import { getUserDeck, getUserNewDeck } from '#db';
+import { getUserNewDeck, getUserByUid } from '#db';
 
 export const initGame = async (params) => {
   try {
-    const deck = await getUserDeck(params);
+    const { name, deck } = await getUserByUid(params);
     const { cards } = deck || (await getUserNewDeck(params));
 
-    return ['newGame', cards];
+    return ['initGame', { user: { name }, cards }];
   } catch (error) {
     console.error({ error });
 

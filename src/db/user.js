@@ -1,8 +1,8 @@
 import { db } from './setup';
-import { createUser } from './helpers/user';
+import { createUserName } from './helpers/user';
 import { formatGames } from './helpers/results';
 
-export const getUserByUid = async ({ uid }) => {
+export const createUser = async ({ uid }) => {
   const { value } = await db()
     .collection('users')
     .findOneAndUpdate(
@@ -10,12 +10,12 @@ export const getUserByUid = async ({ uid }) => {
       [
         {
           $set: {
-            name: { $ifNull: ['$name', createUser()] },
+            name: { $ifNull: ['$name', createUserName()] },
           },
         },
       ],
       {
-        projection: { _id: 0, uid: 0 },
+        projection: { _id: 0, uid: 1 },
         upsert: true,
         returnDocument: 'after',
       }
@@ -23,6 +23,11 @@ export const getUserByUid = async ({ uid }) => {
 
   return value;
 };
+
+export const getUserByUid = ({ uid }) =>
+  db()
+    .collection('users')
+    .findOne({ uid }, { projection: { _id: 0, uid: 0 } });
 
 export const getGamesByUid = ({ uid, offset, limit }) =>
   db()
