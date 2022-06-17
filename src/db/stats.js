@@ -47,7 +47,8 @@ export const getGameStats = ({ uid }) => {
     .toArray();
 };
 
-export const getUserCount = () => db().collection('users').countDocuments({});
+export const getActiveUsers = () =>
+  db().collection('users').countDocuments({ isActive: true });
 
 export const getGameCountByUid = ({ uid }) =>
   db().collection('games').countDocuments({ uid });

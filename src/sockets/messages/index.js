@@ -1,7 +1,7 @@
 import { createMessage, formatMessage } from './helpers';
 import { checkVersion } from './types/app';
 import { initGame, newGame } from './types/game';
-import { createUser, getUserDetails, getUserGames } from './types/user';
+import { getUserGames } from './types/user';
 import {
   getStats,
   getUserPlayed,
@@ -10,15 +10,16 @@ import {
   getOnlineCount,
   getLeaderboards,
 } from './types/stats';
-import { saveGame } from '#db';
+import { createUser, saveGame, activateUser } from '#db';
 
-export const initGameMsg = createMessage(initGame, formatMessage);
+export const initGameMsg = createMessage(createUser, initGame, formatMessage);
 
-export const createUserMsg = createMessage(createUser, formatMessage);
-
-export const userMsg = createMessage(getUserDetails, formatMessage);
-
-export const newGameMsg = createMessage(saveGame, newGame, formatMessage);
+export const newGameMsg = createMessage(
+  saveGame,
+  activateUser,
+  newGame,
+  formatMessage
+);
 
 export const userGamesMsg = createMessage(getUserGames, formatMessage);
 
@@ -35,3 +36,5 @@ export const globalPlayedMsg = createMessage(getGlobalPlayed, formatMessage);
 export const onlineCountMsg = createMessage(getOnlineCount, formatMessage);
 
 export const checkVersionMsg = createMessage(checkVersion, formatMessage);
+
+export const mockDeckMsg = createMessage(newGame, formatMessage);

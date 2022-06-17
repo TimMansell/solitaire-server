@@ -1,7 +1,6 @@
 import queryString from 'query-string';
 import {
   initGameMsg,
-  userMsg,
   userPlayedMsg,
   playerCountMsg,
   globalPlayedMsg,
@@ -11,6 +10,7 @@ import {
   leaderboardsMsg,
   onlineCountMsg,
   checkVersionMsg,
+  mockDeckMsg,
 } from '../messages';
 
 export const createGlobalSend = (sockets) => async (message) => {
@@ -45,7 +45,6 @@ export const getMessage = (message) => {
 
     const messages = {
       initGame: initGameMsg,
-      user: userMsg,
       userPlayed: userPlayedMsg,
       playerCount: playerCountMsg,
       globalPlayed: globalPlayedMsg,
@@ -53,9 +52,11 @@ export const getMessage = (message) => {
       userGames: userGamesMsg,
       stats: statsMsg,
       leaderboards: leaderboardsMsg,
+      ...(process.env.NODE_ENV === 'test' && { mockDeck: mockDeckMsg }),
     };
 
-    const [msg, emit] = Object.entries(messages).find(([key]) => key === name);
+    const [msg, emit] =
+      Object.entries(messages).find(([key]) => key === name) || [];
 
     if (!msg) throw new Error('Invalid message name');
 
@@ -69,7 +70,7 @@ export const updateGlobalPlayed = () => globalPlayedMsg();
 
 export const updateOnlineCount = (sockets) => () => onlineCountMsg({ sockets });
 
-export const updatePlayerCount = () => () => playerCountMsg();
+export const updatePlayerCount = () => playerCountMsg();
 
 export const updateUserPlayed = () => userPlayedMsg();
 

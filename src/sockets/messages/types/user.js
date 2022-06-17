@@ -1,29 +1,6 @@
-import { createNewUser, getUserByUid, getGamesByUid } from '#db';
+import { getGamesByUid } from '#db';
 
-export const createUser = async (params) => {
-  try {
-    const user = await createNewUser(params);
-
-    return ['user', user];
-  } catch (error) {
-    console.error({ error });
-
-    return [];
-  }
-};
-
-export const getUserDetails = async (params) => {
-  try {
-    const user = await getUserByUid(params);
-
-    return ['user', user];
-  } catch (error) {
-    console.error({ error });
-
-    return [];
-  }
-};
-
+// eslint-disable-next-line import/prefer-default-export
 export const getUserGames = async (params) => {
   try {
     const games = await getGamesByUid(params);

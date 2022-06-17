@@ -1,7 +1,7 @@
 import {
   getGameCountByUid,
   getGlobalGameCount,
-  getUserCount,
+  getActiveUsers,
   getGameStats,
   getLeaderboard,
 } from '#db';
@@ -32,7 +32,7 @@ export const getGlobalPlayed = async () => {
 
 export const getPlayerCount = async () => {
   try {
-    const players = await getUserCount();
+    const players = await getActiveUsers();
 
     return ['playerCount', players];
   } catch (error) {

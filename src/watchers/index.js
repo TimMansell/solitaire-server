@@ -13,7 +13,8 @@ export const initWatchers = (db) => {
 
   const usersWatcher = createWatcher({
     collection: 'users',
-    operationType: 'insert',
+    operationType: 'update',
+    fields: ['isActive'],
   });
 
   const gamesWatcher = createWatcher({
