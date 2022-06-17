@@ -8,7 +8,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon --experimental-specifier-resolution=node ./src/main.js",
+    "start": "cross-env NODE_ENV=production nodemon --experimental-specifier-resolution=node ./src/main.js",
     "start:test": "cross-env NODE_ENV=test nodemon --experimental-specifier-resolution=node ./src/main.js",
     "test:unit": "jest",
     "lint": "eslint {src,tests}/**/*.js --fix"
