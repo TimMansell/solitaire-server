@@ -8,7 +8,7 @@ const main = async () => {
   const sockets = setupSockets(express);
 
   initWatchers(db);
-  initSockets(sockets);
+  initSockets(sockets, express);
 };
 
 main();
