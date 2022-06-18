@@ -13,7 +13,8 @@ import {
 } from './socket';
 import { emitter } from '../eventEmitter';
 
-export const setupSockets = (server) => new WebSocketServer({ server });
+export const setupSockets = (server, { path }) =>
+  new WebSocketServer({ server, path });
 
 export const initSockets = (sockets) => {
   const sendAllMessage = createGlobalSend(sockets);

@@ -5,7 +5,7 @@ import { initWatchers } from './watchers';
 
 const main = async () => {
   const [express, db] = await Promise.all([setupExpress(), setupDB()]);
-  const sockets = setupSockets(express);
+  const sockets = setupSockets(express, { path: '/v1' });
 
   initWatchers(db);
   initSockets(sockets);
