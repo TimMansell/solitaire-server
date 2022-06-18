@@ -14,6 +14,7 @@
     "lint": "eslint {src,tests}/**/*.js --fix"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "10.0.0",
     "eventemitter3": "4.0.7",
     "express": "4.17.1",
