@@ -1,10 +1,14 @@
 import express from 'express';
+import helmet from 'helmet';
 
 // eslint-disable-next-line import/prefer-default-export
 export const setupExpress = () => {
   const APP_PORT = process.env.PORT || 5000;
 
   const app = express();
+
+  app.use(helmet());
+
   const server = app.listen(APP_PORT, () => {
     console.log(`Express is listening on port ${APP_PORT}`);
   });
