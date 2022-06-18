@@ -14,9 +14,11 @@
     "lint": "eslint {src,tests}/**/*.js --fix"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "10.0.0",
     "eventemitter3": "4.0.7",
     "express": "4.17.1",
+    "helmet": "^5.1.0",
     "lodash.shuffle": "4.2.0",
     "mongodb": "4.1.2",
     "numeral": "2.0.6",
