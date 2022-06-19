@@ -15,7 +15,8 @@ jobs:
     environment: staging
     env:
       FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      NODE_ENV: ${{ secrets.NODE_ENV }}
     steps:
       - uses: actions/checkout@v2
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only --build-arg NODE_ENV=${{ secrets.NODE_ENV }}
+      - run: flyctl deploy --remote-only --build-arg NODE_ENV=$NODE_ENV
