@@ -61,6 +61,10 @@ export const initSockets = (sockets) => {
       console.log('Some Error occurred.');
     });
 
+    sendMessage(updateUserPlayed);
+    sendMessage(updatePlayerCount);
+    sendMessage(updateGlobalPlayed);
+
     emitter.emit('updateOnline');
 
     console.log('Client connected.');
