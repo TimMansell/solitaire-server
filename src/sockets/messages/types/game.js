@@ -1,23 +1,11 @@
-import { getUserNewDeck, getUserByUid } from '#db';
+import { getUserNewDeck } from '#db';
 
-export const initGame = async (params) => {
-  try {
-    const { name, deck } = await getUserByUid(params);
-    const { cards } = deck || (await getUserNewDeck(params));
-
-    return ['initGame', { user: { name }, cards }];
-  } catch (error) {
-    console.error({ error });
-
-    return [];
-  }
-};
-
+// eslint-disable-next-line import/prefer-default-export
 export const newGame = async (params) => {
   try {
-    const { cards } = await getUserNewDeck(params);
+    const deck = await getUserNewDeck(params);
 
-    return ['newGame', cards];
+    return ['newGame', deck];
   } catch (error) {
     console.error({ error });
 

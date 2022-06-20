@@ -3,35 +3,34 @@ import { initCards, checkGameState } from '#solitaire';
 import { createISODate } from './helpers/dates';
 import { getUserByUid } from '#db';
 
-export const getUserNewDeck = async ({ uid, cards }) => {
-  const {
-    value: { deck },
-  } = await db()
+export const getUserNewDeck = async ({ uid, mockCards }) => {
+  const shouldMockCards = mockCards && process.env.NODE_ENV === 'test';
+  const cards = shouldMockCards ? mockCards : initCards();
+
+  const { value } = await db()
     .collection('users')
     .findOneAndUpdate(
       { uid },
       {
         $set: {
           deck: {
-            cards: cards || initCards(),
+            cards,
             date: createISODate(),
           },
         },
       },
       {
-        projection: { _id: 0, uid: 0 },
+        projection: { _id: 0, cards: '$deck.cards' },
         upsert: true,
         returnDocument: 'after',
       }
     );
 
-  return deck;
+  return value;
 };
 
-export const saveGame = async ({ uid, moves, time }) => {
-  const {
-    deck: { cards },
-  } = await getUserByUid({ uid });
+export const saveGame = async ({ moves, time, ...params }) => {
+  const { uid, cards } = await getUserByUid(params);
   const gameResult = checkGameState({ cards, moves, time });
 
   await db()
