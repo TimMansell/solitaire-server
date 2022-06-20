@@ -1,6 +1,6 @@
 import queryString from 'query-string';
 import {
-  initGameMsg,
+  initUserMsg,
   userPlayedMsg,
   playerCountMsg,
   globalPlayedMsg,
@@ -44,7 +44,6 @@ export const getMessage = (message) => {
     const { name, payload } = JSON.parse(message);
 
     const messages = {
-      initGame: initGameMsg,
       userPlayed: userPlayedMsg,
       playerCount: playerCountMsg,
       globalPlayed: globalPlayedMsg,
@@ -73,6 +72,8 @@ export const updateOnlineCount = (sockets) => () => onlineCountMsg({ sockets });
 export const updatePlayerCount = () => playerCountMsg();
 
 export const updateUserPlayed = () => userPlayedMsg();
+
+export const initUser = () => initUserMsg();
 
 export const checkVersion = (appVersion) => () =>
   checkVersionMsg({ appVersion });

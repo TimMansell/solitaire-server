@@ -5,6 +5,7 @@ import {
   getParams,
   checkIsUser,
   getMessage,
+  initUser,
   updateGlobalPlayed,
   updateOnlineCount,
   updatePlayerCount,
@@ -61,6 +62,7 @@ export const initSockets = (sockets) => {
       console.log('Some Error occurred.');
     });
 
+    sendMessage(initUser);
     sendMessage(updateUserPlayed);
     sendMessage(updatePlayerCount);
     sendMessage(updateGlobalPlayed);
