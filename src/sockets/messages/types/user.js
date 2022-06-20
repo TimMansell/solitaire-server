@@ -1,6 +1,17 @@
-import { getGamesByUid } from '#db';
+import { createUser, getGamesByUid } from '#db';
 
-// eslint-disable-next-line import/prefer-default-export
+export const initUser = async (params) => {
+  try {
+    const user = await createUser(params);
+
+    return ['user', user];
+  } catch (error) {
+    console.error({ error });
+
+    return [];
+  }
+};
+
 export const getUserGames = async (params) => {
   try {
     const games = await getGamesByUid(params);

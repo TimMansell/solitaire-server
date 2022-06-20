@@ -5,6 +5,7 @@ import {
   getParams,
   checkIsUser,
   getMessage,
+  initUser,
   updateGlobalPlayed,
   updateOnlineCount,
   updatePlayerCount,
@@ -60,6 +61,11 @@ export const initSockets = (sockets) => {
     ws.on('error', () => {
       console.log('Some Error occurred.');
     });
+
+    sendMessage(initUser);
+    sendMessage(updateUserPlayed);
+    sendMessage(updatePlayerCount);
+    sendMessage(updateGlobalPlayed);
 
     emitter.emit('updateOnline');
 

@@ -1,9 +1,11 @@
 import { db } from './setup';
 import { createUserName } from './helpers/user';
 import { formatGames } from './helpers/results';
+import { createISODate } from './helpers/dates';
+import { initCards } from '#solitaire';
 
 export const createUser = async ({ uid }) => {
-  await db()
+  const { value } = await db()
     .collection('users')
     .findOneAndUpdate(
       { uid },
@@ -11,22 +13,26 @@ export const createUser = async ({ uid }) => {
         {
           $set: {
             name: { $ifNull: ['$name', createUserName()] },
+            deck: {
+              cards: { $ifNull: ['$cards', initCards()] },
+              date: { $ifNull: ['$date', createISODate()] },
+            },
             isActive: { $ifNull: ['$isActive', false] },
           },
         },
       ],
       {
-        projection: { _id: 0 },
+        projection: { _id: 0, name: 1, cards: '$deck.cards' },
         upsert: true,
         returnDocument: 'after',
       }
     );
 
-  return { uid };
+  return value;
 };
 
 export const activateUser = async ({ uid }) => {
-  await db()
+  const { value } = await db()
     .collection('users')
     .findOneAndUpdate(
       { uid },
@@ -43,13 +49,16 @@ export const activateUser = async ({ uid }) => {
       }
     );
 
-  return { uid };
+  return value;
 };
 
 export const getUserByUid = ({ uid }) =>
   db()
     .collection('users')
-    .findOne({ uid }, { projection: { _id: 0, uid: 0 } });
+    .findOne(
+      { uid },
+      { projection: { _id: 0, uid: 1, name: 1, cards: '$deck.cards' } }
+    );
 
 export const getGamesByUid = ({ uid, offset, limit }) =>
   db()
