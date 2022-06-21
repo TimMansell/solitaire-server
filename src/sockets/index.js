@@ -1,74 +1,19 @@
 import { WebSocketServer } from 'ws';
-import {
-  createGlobalSend,
-  createSend,
-  getParams,
-  checkIsUser,
-  getMessage,
-  initUser,
-  updateGlobalPlayed,
-  updateOnlineCount,
-  updatePlayerCount,
-  updateUserPlayed,
-  checkVersion,
-} from './socket';
-import { emitter } from '../eventEmitter';
+import { initV1Socket, initTestSocket, upgradeSocket } from './socket';
 
-export const setupSockets = (server, { path }) =>
-  new WebSocketServer({ server, path });
+export const setupSockets = (name) => ({
+  name,
+  socket: new WebSocketServer({ noServer: true }),
+});
 
-export const initSockets = (sockets) => {
-  const sendAllMessage = createGlobalSend(sockets);
+export const initSockets = (server, socketServers) => {
+  const sockets = socketServers.reduce(
+    (accumulator, { name, socket }) => ({ ...accumulator, [name]: socket }),
+    {}
+  );
 
-  emitter.on('newGame', () => sendAllMessage(updateGlobalPlayed));
-  emitter.on('newUser', () => sendAllMessage(updatePlayerCount));
-  emitter.on('updateOnline', () => sendAllMessage(updateOnlineCount(sockets)));
+  initV1Socket(sockets);
+  initTestSocket(sockets);
 
-  sockets.on('connection', async (ws, req) => {
-    const params = getParams(req);
-    const sendMessage = createSend(ws, params);
-
-    const newGame = (uid) => {
-      const isUser = checkIsUser(uid, params);
-
-      if (!isUser) return;
-
-      sendMessage(updateUserPlayed);
-    };
-
-    const newVersion = (appVersion) => sendMessage(checkVersion(appVersion));
-
-    emitter.on('newGame', newGame);
-    emitter.on('newVersion', newVersion);
-
-    ws.on('message', (message) => {
-      const responseMessage = getMessage(message);
-
-      if (!responseMessage) return;
-
-      sendMessage(responseMessage);
-    });
-
-    ws.on('close', () => {
-      emitter.emit('updateOnline');
-
-      emitter.removeListener('newGame', newGame);
-      emitter.removeListener('newVersion', newVersion);
-
-      console.log('Client Disconnected.');
-    });
-
-    ws.on('error', () => {
-      console.log('Some Error occurred.');
-    });
-
-    sendMessage(initUser);
-    sendMessage(updateUserPlayed);
-    sendMessage(updatePlayerCount);
-    sendMessage(updateGlobalPlayed);
-
-    emitter.emit('updateOnline');
-
-    console.log('Client connected.');
-  });
+  server.on('upgrade', upgradeSocket(sockets));
 };
