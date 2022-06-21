@@ -14,9 +14,6 @@ import {
 } from '../messages';
 import { isTest } from '#src/main';
 
-export const upgradeSocket = (socket, query, ...params) =>
-  socket.handleUpgrade(...params, (ws) => socket.emit('connection', ws, query));
-
 export const createGlobalSend = (sockets) => async (message) => {
   const response = await message()({ sockets });
 
@@ -48,14 +45,12 @@ export const getMessage = (message) => {
     const { name, payload } = JSON.parse(message);
 
     const messages = {
-      userPlayed: userPlayedMsg,
-      playerCount: playerCountMsg,
-      globalPlayed: globalPlayedMsg,
       saveGame: newGameMsg,
       userGames: userGamesMsg,
       stats: statsMsg,
       leaderboards: leaderboardsMsg,
       ...(isTest && { mockDeck: mockDeckMsg }),
+      ...(isTest && { playerCount: playerCountMsg }),
     };
 
     const [msg, emit] =
