@@ -27,9 +27,9 @@ module.exports = {
     'import/resolver': {
       alias: {
         map: [
-          ['#db', './src/db'],
-          ['#watchers', './src/watchers'],
-          ['#solitaire', './src/solitaire'],
+          ['#db', './src/db/index.js'],
+          ['#solitaire', './src/solitaire/index.js'],
+          ['#src/*', './src'],
         ],
       },
     },
