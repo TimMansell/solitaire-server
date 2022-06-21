@@ -71,8 +71,8 @@ export const initV1Socket = ({ v1: socket }) => {
 };
 
 export const initTestSocket = ({ test: socket }) => {
-  socket.on('connection', async (ws, query) => {
-    const sendMessage = createSend(ws, query);
+  socket.on('connection', async (ws) => {
+    const sendMessage = createSend(ws);
 
     ws.on('message', (message) => {
       const responseMessage = getMessage(message);
