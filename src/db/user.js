@@ -14,8 +14,8 @@ export const createUser = async ({ uid }) => {
           $set: {
             name: { $ifNull: ['$name', createUserName()] },
             deck: {
-              cards: { $ifNull: ['$cards', initCards()] },
-              date: { $ifNull: ['$date', createISODate()] },
+              cards: { $ifNull: ['$deck.cards', initCards()] },
+              date: { $ifNull: ['$deck.date', createISODate()] },
             },
             isActive: { $ifNull: ['$isActive', false] },
           },
