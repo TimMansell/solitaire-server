@@ -2,9 +2,10 @@ import { db } from './setup';
 import { initCards, checkGameState } from '#solitaire';
 import { createISODate } from './helpers/dates';
 import { getUserByUid } from '#db';
+import { isTest } from '#src/main';
 
 export const getUserNewDeck = async ({ uid, mockCards }) => {
-  const shouldMockCards = mockCards && process.env.NODE_ENV === 'test';
+  const shouldMockCards = isTest && mockCards;
   const cards = shouldMockCards ? mockCards : initCards();
 
   const { value } = await db()
