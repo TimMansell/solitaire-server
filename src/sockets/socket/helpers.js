@@ -18,15 +18,15 @@ export const upgradeSocket = (socket, query, ...params) =>
   socket.handleUpgrade(...params, (ws) => socket.emit('connection', ws, query));
 
 export const createGlobalSend = (sockets) => async (message) => {
-  const response = await message()();
+  const response = await message()({ sockets });
 
   if (!response) return;
 
   sockets.clients.forEach((client) => client.send(response));
 };
 
-export const createSend = (ws, params) => async (message) => {
-  const response = await message()(params);
+export const createSend = (ws, params) => async (message, extraParams) => {
+  const response = await message()({ ...params, ...extraParams });
 
   if (!response) return;
 
@@ -71,7 +71,7 @@ export const getMessage = (message) => {
 
 export const updateGlobalPlayed = () => globalPlayedMsg();
 
-export const updateOnlineCount = (sockets) => () => onlineCountMsg({ sockets });
+export const updateOnlineCount = () => onlineCountMsg();
 
 export const updatePlayerCount = () => playerCountMsg();
 
@@ -79,5 +79,4 @@ export const updateUserPlayed = () => userPlayedMsg();
 
 export const initUser = () => initUserMsg();
 
-export const checkVersion = (appVersion) => () =>
-  checkVersionMsg({ appVersion });
+export const checkVersion = () => checkVersionMsg();

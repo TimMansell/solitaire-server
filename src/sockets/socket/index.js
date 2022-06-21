@@ -19,7 +19,7 @@ export const initV1Socket = ({ v1: socket }) => {
 
   emitter.on('newGame', () => sendAllMessage(updateGlobalPlayed));
   emitter.on('newUser', () => sendAllMessage(updatePlayerCount));
-  emitter.on('updateOnline', () => sendAllMessage(updateOnlineCount(socket)));
+  emitter.on('updateOnline', () => sendAllMessage(updateOnlineCount));
 
   socket.on('connection', async (ws, query) => {
     const sendMessage = createSend(ws, query);
@@ -32,7 +32,8 @@ export const initV1Socket = ({ v1: socket }) => {
       sendMessage(updateUserPlayed);
     };
 
-    const newVersion = (appVersion) => sendMessage(checkVersion(appVersion));
+    const newVersion = (appVersion) =>
+      sendMessage(checkVersion, { appVersion });
 
     emitter.on('newGame', newGame);
     emitter.on('newVersion', newVersion);
