@@ -1,14 +1,20 @@
-import { formatSet, formatProject } from './format';
+import { formatSet, formatProject, formatFilter, formatExists } from './format';
 
 // eslint-disable-next-line import/prefer-default-export
 export const setupDBWatcher =
   (db) =>
-  ({ collection, operationType, fields = [] }) => {
+  ({ collection, operationType, filterOn = [], fields = [] }) => {
     return db.collection(collection).watch(
       [
         {
           $match: {
-            operationType,
+            $and: [
+              {
+                ...formatFilter(filterOn),
+                ...formatExists(fields),
+                operationType,
+              },
+            ],
           },
         },
         {
@@ -16,7 +22,7 @@ export const setupDBWatcher =
             ...formatSet(fields),
           },
         },
-        { $project: { _id: 1, ...formatProject(fields) } },
+        { $project: { _id: 0, ...formatProject(fields) } },
       ],
       { fullDocument: 'updateLookup' }
     );
