@@ -8,7 +8,7 @@ export const initWatchers = (db) => {
   const versionWatcher = createWatcher({
     collection: 'version',
     operationType: 'update',
-    filterOn: [{ type: 'app' }],
+    filter: [{ type: 'app' }],
     fields: ['version'],
   });
 
