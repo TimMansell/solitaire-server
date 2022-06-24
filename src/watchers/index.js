@@ -8,7 +8,8 @@ export const initWatchers = (db) => {
   const versionWatcher = createWatcher({
     collection: 'version',
     operationType: 'update',
-    fields: ['appVersion'],
+    filter: [{ type: 'app' }],
+    fields: ['version'],
   });
 
   const usersWatcher = createWatcher({
@@ -23,7 +24,7 @@ export const initWatchers = (db) => {
     fields: ['uid'],
   });
 
-  versionWatcher.on('change', ({ appVersion }) =>
+  versionWatcher.on('change', ({ version: appVersion }) =>
     emitter.emit('newVersion', appVersion)
   );
 

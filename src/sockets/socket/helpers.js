@@ -9,8 +9,10 @@ import {
   statsMsg,
   leaderboardsMsg,
   onlineCountMsg,
+  checkVersionUpdateMsg,
   checkVersionMsg,
   mockDeckMsg,
+  mockVersionMsg,
 } from '../messages';
 import { isTest } from '#src/main';
 
@@ -51,6 +53,7 @@ export const getMessage = (message) => {
       leaderboards: leaderboardsMsg,
       ...(isTest && { mockDeck: mockDeckMsg }),
       ...(isTest && { playerCount: playerCountMsg }),
+      ...(isTest && { mockVersion: mockVersionMsg }),
     };
 
     const [msg, emit] =
@@ -73,5 +76,7 @@ export const updatePlayerCount = () => playerCountMsg();
 export const updateUserPlayed = () => userPlayedMsg();
 
 export const initUser = () => initUserMsg();
+
+export const checkVersionUpdate = () => checkVersionUpdateMsg();
 
 export const checkVersion = () => checkVersionMsg();
