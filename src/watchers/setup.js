@@ -22,7 +22,7 @@ export const setupDBWatcher =
             ...formatSet(fields),
           },
         },
-        { $project: { _id: 0, ...formatProject(fields) } },
+        { $project: { _id: 1, ...formatProject(fields) } },
       ],
       { fullDocument: 'updateLookup' }
     );
