@@ -10,7 +10,7 @@ import {
   getOnlineCount,
   getLeaderboards,
 } from './types/stats';
-import { saveGame, activateUser } from '#db';
+import { saveGame, activateUser, getVersion } from '#db';
 
 export const initUserMsg = createMessage(initUser, formatMessage);
 
@@ -35,6 +35,12 @@ export const globalPlayedMsg = createMessage(getGlobalPlayed, formatMessage);
 
 export const onlineCountMsg = createMessage(getOnlineCount, formatMessage);
 
-export const checkVersionMsg = createMessage(checkVersion, formatMessage);
+export const checkVersionUpdateMsg = createMessage(checkVersion, formatMessage);
+
+export const checkVersionMsg = createMessage(
+  getVersion,
+  checkVersion,
+  formatMessage
+);
 
 export const mockDeckMsg = createMessage(newGame, formatMessage);

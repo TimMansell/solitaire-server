@@ -9,6 +9,7 @@ import {
   updateOnlineCount,
   updatePlayerCount,
   updateUserPlayed,
+  checkVersionUpdate,
   checkVersion,
 } from './helpers';
 import { emitter } from '#src/eventEmitter';
@@ -33,7 +34,7 @@ export const initV1Socket = ({ v1: socket }) => {
     };
 
     const newVersion = (appVersion) =>
-      sendMessage(checkVersion, { appVersion });
+      sendMessage(checkVersionUpdate, { appVersion });
 
     emitter.on('newGame', newGame);
     emitter.on('newVersion', newVersion);
@@ -63,6 +64,7 @@ export const initV1Socket = ({ v1: socket }) => {
     sendMessage(updateUserPlayed);
     sendMessage(updatePlayerCount);
     sendMessage(updateGlobalPlayed);
+    sendMessage(checkVersion);
 
     emitter.emit('updateOnline');
 
