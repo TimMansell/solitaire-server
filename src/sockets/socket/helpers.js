@@ -12,6 +12,7 @@ import {
   checkVersionUpdateMsg,
   checkVersionMsg,
   mockDeckMsg,
+  mockVersionMsg,
 } from '../messages';
 import { isTest } from '#src/main';
 
@@ -52,6 +53,7 @@ export const getMessage = (message) => {
       leaderboards: leaderboardsMsg,
       ...(isTest && { mockDeck: mockDeckMsg }),
       ...(isTest && { playerCount: playerCountMsg }),
+      ...(isTest && { mockVersion: mockVersionMsg }),
     };
 
     const [msg, emit] =

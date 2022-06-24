@@ -1,5 +1,5 @@
 import { createMessage, formatMessage } from './helpers';
-import { checkVersion } from './types/app';
+import { checkVersion, incrementVersion } from './types/app';
 import { newGame } from './types/game';
 import { initUser, getUserGames } from './types/user';
 import {
@@ -44,3 +44,5 @@ export const checkVersionMsg = createMessage(
 );
 
 export const mockDeckMsg = createMessage(newGame, formatMessage);
+
+export const mockVersionMsg = createMessage(incrementVersion, formatMessage);
