@@ -4,7 +4,7 @@ import { formatGames } from './helpers/results';
 import { createISODate } from './helpers/dates';
 import { initCards } from '#solitaire';
 
-export const createUser = async ({ uid }) => {
+export const createUser = async ({ uid, version }) => {
   const { value } = await db()
     .collection('users')
     .findOneAndUpdate(
@@ -19,6 +19,7 @@ export const createUser = async ({ uid }) => {
               started: { $ifNull: ['$game.started', createISODate()] },
             },
             isActive: { $ifNull: ['$isActive', false] },
+            version,
           },
         },
       ],
