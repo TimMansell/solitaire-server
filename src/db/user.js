@@ -13,16 +13,17 @@ export const createUser = async ({ uid }) => {
         {
           $set: {
             name: { $ifNull: ['$name', createUserName()] },
-            deck: {
-              cards: { $ifNull: ['$deck.cards', initCards()] },
-              date: { $ifNull: ['$deck.date', createISODate()] },
+            created: { $ifNull: ['$created', createISODate()] },
+            game: {
+              cards: { $ifNull: ['$game.cards', initCards()] },
+              started: { $ifNull: ['$game.started', createISODate()] },
             },
             isActive: { $ifNull: ['$isActive', false] },
           },
         },
       ],
       {
-        projection: { _id: 0, name: 1, cards: '$deck.cards' },
+        projection: { _id: 0, name: 1, cards: '$game.cards' },
         upsert: true,
         returnDocument: 'after',
       }
@@ -57,7 +58,7 @@ export const getUserByUid = ({ uid }) =>
     .collection('users')
     .findOne(
       { uid },
-      { projection: { _id: 0, uid: 1, name: 1, cards: '$deck.cards' } }
+      { projection: { _id: 0, uid: 1, name: 1, cards: '$game.cards' } }
     );
 
 export const getGamesByUid = ({ uid, offset, limit }) =>

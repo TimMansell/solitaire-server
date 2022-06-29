@@ -14,14 +14,14 @@ export const getUserNewDeck = async ({ uid, mockCards }) => {
       { uid },
       {
         $set: {
-          deck: {
+          game: {
             cards,
-            date: createISODate(),
+            started: createISODate(),
           },
         },
       },
       {
-        projection: { _id: 0, cards: '$deck.cards' },
+        projection: { _id: 0, cards: '$game.cards' },
         upsert: true,
         returnDocument: 'after',
       }
