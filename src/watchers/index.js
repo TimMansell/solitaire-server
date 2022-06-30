@@ -24,6 +24,10 @@ export const initWatchers = (db) => {
     fields: ['uid'],
   });
 
+  versionWatcher.on('error', (error) => console.log({ error }));
+  usersWatcher.on('error', (error) => console.log({ error }));
+  gamesWatcher.on('error', (error) => console.log({ error }));
+
   versionWatcher.on('change', ({ version: appVersion }) =>
     emitter.emit('newVersion', appVersion)
   );
