@@ -18,6 +18,9 @@ import { isTest } from '#src/main';
 export const initV1Socket = ({ v1: socket }) => {
   const sendAllMessage = createGlobalSend(socket);
 
+  emitter.on('dbIsUp', () => console.log('db up'));
+  emitter.on('dbIsDown', () => console.log('db down'));
+
   emitter.on('newGame', () => sendAllMessage(updateGlobalPlayed));
   emitter.on('newUser', () => sendAllMessage(updatePlayerCount));
   emitter.on('updateOnline', () => sendAllMessage(updateOnlineCount));
