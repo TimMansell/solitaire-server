@@ -18,7 +18,7 @@ const main = async () => {
     initWatchers(db);
     initSockets(express, sockets);
   } catch (error) {
-    console.log(1, { error });
+    console.log({ error });
   }
 };
 
