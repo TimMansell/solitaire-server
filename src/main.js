@@ -8,9 +8,10 @@ export const isTest = process.env.NODE_ENV === 'test';
 
 const main = async () => {
   try {
-    const [express, db, ...sockets] = await Promise.all([
+    const db = await setupDB();
+
+    const [express, ...sockets] = await Promise.all([
       setupExpress(),
-      setupDB(),
       setupSockets('v1'),
       setupSockets('test'),
     ]);

@@ -8,6 +8,7 @@ const URI = `mongodb+srv://${MONGODB_USER}:${MONGOBD_PASS}@${MONGOBD_URI}/?retry
 const connection = new MongoClient(URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 20000,
 });
 
 let dbConnection;
@@ -20,12 +21,13 @@ export const setupDB = async () => {
     await connection.connect();
 
     dbConnection = connection.db(MONGODB_DB);
-
-    return dbConnection;
   } catch (error) {
-    console.log({ error });
     await connection.close();
+
+    throw new Error(error);
   }
+
+  return dbConnection;
 };
 
 export const db = () => dbConnection;
