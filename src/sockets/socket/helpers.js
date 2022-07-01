@@ -17,19 +17,27 @@ import {
 import { isTest } from '#src/main';
 
 export const createGlobalSend = (sockets) => async (message) => {
-  const response = await message()({ sockets });
+  try {
+    const response = await message()({ sockets });
 
-  if (!response) return;
+    if (!response) return;
 
-  sockets.clients.forEach((client) => client.send(response));
+    sockets.clients.forEach((client) => client.send(response));
+  } catch (error) {
+    console.log({ error });
+  }
 };
 
 export const createSend = (ws, params) => async (message, extraParams) => {
-  const response = await message()({ ...params, ...extraParams });
+  try {
+    const response = await message()({ ...params, ...extraParams });
 
-  if (!response) return;
+    if (!response) return;
 
-  ws.send(response);
+    ws.send(response);
+  } catch (error) {
+    console.log({ error });
+  }
 };
 
 export const getParams = ({ url }) => {

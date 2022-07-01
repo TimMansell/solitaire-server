@@ -7,15 +7,20 @@ import { initWatchers } from './watchers';
 export const isTest = process.env.NODE_ENV === 'test';
 
 const main = async () => {
-  const [express, db, ...sockets] = await Promise.all([
-    setupExpress(),
-    setupDB(),
-    setupSockets('v1'),
-    setupSockets('test'),
-  ]);
+  try {
+    const db = await setupDB();
 
-  initWatchers(db);
-  initSockets(express, sockets);
+    const [express, ...sockets] = await Promise.all([
+      setupExpress(),
+      setupSockets('v1'),
+      setupSockets('test'),
+    ]);
+
+    initWatchers(db);
+    initSockets(express, sockets);
+  } catch (error) {
+    console.log({ error });
+  }
 };
 
 main();

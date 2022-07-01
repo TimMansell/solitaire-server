@@ -2,10 +2,10 @@ export const formatMessage = ([name, payload]) =>
   name ? JSON.stringify({ name, payload }) : '';
 
 export const createMessage =
-  (...fns) =>
+  (...functions) =>
   (payload) =>
   (query) =>
-    fns.reduce(async (result, fn) => fn(await result), {
+    functions.reduce(async (result, fn) => fn(await result), {
       ...payload,
       ...query,
     });
