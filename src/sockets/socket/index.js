@@ -121,7 +121,8 @@ export const upgradeSocket = (wss) => {
       Object.entries(paths).find(([key]) => key === url) || [];
 
     if (!path) {
-      return socket.destroy();
+      socket.destroy();
+      return;
     }
 
     socketToUse.handleUpgrade(request, socket, head, (ws) =>
