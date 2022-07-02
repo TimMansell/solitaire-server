@@ -1,4 +1,5 @@
 import queryString from 'query-string';
+import 'dotenv/config';
 import {
   initUserMsg,
   userPlayedMsg,
@@ -14,7 +15,21 @@ import {
   mockDeckMsg,
   mockVersionMsg,
 } from '../messages';
+import { emitter } from '#src/eventEmitter';
 import { isTest } from '#src/main';
+
+const { WS_HEARTBEAT_MS, WS_HEARTBEAT_REPLY_MS } = process.env;
+
+export const setupPing = () =>
+  setInterval(() => emitter.emit('ping'), WS_HEARTBEAT_MS);
+
+export const sendPing = (ws) => {
+  const pingTimeout = setTimeout(() => ws.terminate(), WS_HEARTBEAT_REPLY_MS);
+
+  ws.ping();
+
+  ws.once('pong', () => clearTimeout(pingTimeout));
+};
 
 export const createGlobalSend = (sockets) => async (message) => {
   try {

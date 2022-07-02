@@ -1,4 +1,6 @@
 import {
+  setupPing,
+  sendPing,
   createGlobalSend,
   createSend,
   getParams,
@@ -15,15 +17,19 @@ import {
 import { emitter } from '#src/eventEmitter';
 import { isTest } from '#src/main';
 
-export const initV1Socket = ({ v1: socket }) => {
-  const sendAllMessage = createGlobalSend(socket);
+export const initV1Socket = ({ v1: wss }) => {
+  const sendAllMessage = createGlobalSend(wss);
+
+  const pingInterval = setupPing();
 
   emitter.on('newGame', () => sendAllMessage(updateGlobalPlayed));
   emitter.on('newUser', () => sendAllMessage(updatePlayerCount));
   emitter.on('updateOnline', () => sendAllMessage(updateOnlineCount));
 
-  socket.on('connection', async (ws, query) => {
+  wss.on('connection', async (ws, query) => {
     const sendMessage = createSend(ws, query);
+
+    const ping = () => sendPing(ws);
 
     const newGame = (uid) => {
       const isUser = checkIsUser(uid, query);
@@ -36,6 +42,7 @@ export const initV1Socket = ({ v1: socket }) => {
     const newVersion = (appVersion) =>
       sendMessage(checkVersionUpdate, { appVersion });
 
+    emitter.on('ping', ping);
     emitter.on('newGame', newGame);
     emitter.on('newVersion', newVersion);
 
@@ -50,8 +57,9 @@ export const initV1Socket = ({ v1: socket }) => {
     ws.on('close', () => {
       emitter.emit('updateOnline');
 
-      emitter.removeListener('newGame', newGame);
-      emitter.removeListener('newVersion', newVersion);
+      emitter.off('newGame', newGame);
+      emitter.off('newVersion', newVersion);
+      emitter.off('ping', ping);
 
       console.log('Client Disconnected.');
     });
@@ -70,10 +78,12 @@ export const initV1Socket = ({ v1: socket }) => {
 
     console.log('Client connected.');
   });
+
+  wss.on('close', () => clearInterval(pingInterval));
 };
 
-export const initTestSocket = ({ test: socket }) => {
-  socket.on('connection', async (ws) => {
+export const initTestSocket = ({ test: wss }) => {
+  wss.on('connection', async (ws) => {
     const sendMessage = createSend(ws);
 
     ws.on('message', (message) => {
@@ -96,8 +106,8 @@ export const initTestSocket = ({ test: socket }) => {
   });
 };
 
-export const upgradeSocket = (sockets) => {
-  const paths = Object.entries(sockets)
+export const upgradeSocket = (wss) => {
+  const paths = Object.entries(wss)
     .filter(([name]) => isTest || name !== 'test')
     .reduce(
       (accumulator, [key, value]) => ({ ...accumulator, [`/${key}`]: value }),
@@ -111,12 +121,11 @@ export const upgradeSocket = (sockets) => {
       Object.entries(paths).find(([key]) => key === url) || [];
 
     if (!path) {
-      socket.destroy();
-      return;
+      return socket.destroy();
     }
 
-    socketToUse.handleUpgrade(request, socket, head, (ws) => {
-      socketToUse.emit('connection', ws, query);
-    });
+    socketToUse.handleUpgrade(request, socket, head, (ws) =>
+      socketToUse.emit('connection', ws, query)
+    );
   };
 };
