@@ -11,12 +11,13 @@ describe('DB Result Formatting', () => {
         moves: 10,
         wonPercent: 0.33,
         won: 1234,
+        timezone: 'Europe/London',
       });
 
       expect(result).toEqual({
         rank: 1,
         name: 'test',
-        date: '2021-04-29T12:25:47.907Z',
+        date: '29-04-2021',
         time: '0:03:20',
         moves: 10,
         wonPercent: '33.00%',
@@ -30,12 +31,13 @@ describe('DB Result Formatting', () => {
         name: 'test',
         date: '2021-04-29T12:25:47.907Z',
         time: 200,
+        timezone: 'Europe/London',
       });
 
       expect(result).toEqual({
         rank: 1,
         name: 'test',
-        date: '2021-04-29T12:25:47.907Z',
+        date: '29-04-2021',
         time: '0:03:20',
       });
     });
@@ -50,12 +52,13 @@ describe('DB Result Formatting', () => {
         outcome: 'Won',
         moves: 10,
         time: 200,
+        timezone: 'Europe/London',
       });
 
       expect(result).toEqual({
         number: '1,990',
-        date: '2021-04-29T12:25:47.907Z',
-        time: '2021-04-29T12:25:47.907Z',
+        date: '29-04-2021',
+        time: '13:25:47',
         outcome: 'Won',
         moves: 10,
         duration: '0:03:20',
