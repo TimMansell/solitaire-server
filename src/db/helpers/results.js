@@ -1,4 +1,10 @@
-import { formatNumber, formatPercent, formatDuration } from './format';
+import {
+  formatNumber,
+  formatPercent,
+  formatDuration,
+  formatTimeFromDate,
+  formatDate,
+} from './format';
 
 export const formatLeaderboards = ({
   rank,
@@ -8,20 +14,29 @@ export const formatLeaderboards = ({
   moves,
   wonPercent,
   won,
+  timezone,
 }) => ({
   rank,
   name,
-  ...(date && { date }),
+  ...(date && { date: formatDate(date, timezone) }),
   ...(time && { time: formatDuration(time) }),
   ...(moves && { moves }),
   ...(wonPercent && { wonPercent: formatPercent(wonPercent) }),
   ...(won && { won: formatNumber(won) }),
 });
 
-export const formatGames = ({ played, rank, date, outcome, moves, time }) => ({
-  number: formatNumber(played - rank),
+export const formatGames = ({
+  played,
+  rank,
   date,
-  time: date,
+  outcome,
+  moves,
+  time,
+  timezone,
+}) => ({
+  number: formatNumber(played - rank),
+  date: formatDate(date, timezone),
+  time: formatTimeFromDate(date, timezone),
   outcome,
   moves,
   duration: formatDuration(time),

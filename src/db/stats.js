@@ -56,7 +56,7 @@ export const getGameCountByUid = ({ uid }) =>
 export const getGlobalGameCount = () =>
   db().collection('games').countDocuments({});
 
-export const getLeaderboard = ({ showBest, limit }) => {
+export const getLeaderboard = ({ showBest, limit, timezone }) => {
   const { matches, sortBy, lookupField, project } =
     getLeaderboardFields(showBest);
 
@@ -94,6 +94,6 @@ export const getLeaderboard = ({ showBest, limit }) => {
       },
       { $project: { _id: 0, rank: 1, name: 1, ...project } },
     ])
-    .map(formatLeaderboards)
+    .map((game) => formatLeaderboards({ ...game, timezone }))
     .toArray();
 };
