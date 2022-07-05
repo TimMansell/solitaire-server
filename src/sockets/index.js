@@ -1,5 +1,6 @@
 import { WebSocketServer } from 'ws';
 import { initV1Socket, initTestSocket, upgradeSocket } from './socket';
+import { isTest } from '../main';
 
 export const setupSockets = (name) => ({
   name,
@@ -13,7 +14,10 @@ export const initSockets = (server, socketServers) => {
   );
 
   initV1Socket(sockets);
-  initTestSocket(sockets);
+
+  if (isTest) {
+    initTestSocket(sockets);
+  }
 
   server.on('upgrade', upgradeSocket(sockets));
 };
