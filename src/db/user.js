@@ -4,7 +4,7 @@ import { formatGames } from './helpers/results';
 import { createISODate } from './helpers/dates';
 import { initCards } from '#solitaire';
 
-export const createUser = async ({ uid, version }) => {
+export const createUser = async ({ uid, version, timezone }) => {
   const { value } = await db()
     .collection('users')
     .findOneAndUpdate(
@@ -14,6 +14,7 @@ export const createUser = async ({ uid, version }) => {
           $set: {
             name: { $ifNull: ['$name', createUserName()] },
             created: { $ifNull: ['$created', createISODate()] },
+            timezone: { $ifNull: ['$timezone', timezone] },
             game: {
               cards: { $ifNull: ['$game.cards', initCards()] },
               started: { $ifNull: ['$game.started', createISODate()] },
@@ -62,7 +63,7 @@ export const getUserByUid = ({ uid }) =>
       { projection: { _id: 0, uid: 1, name: 1, cards: '$game.cards' } }
     );
 
-export const getGamesByUid = ({ uid, offset, limit }) =>
+export const getGamesByUid = ({ uid, offset, limit, timezone }) =>
   db()
     .collection('games')
     .aggregate([
@@ -118,5 +119,5 @@ export const getGamesByUid = ({ uid, offset, limit }) =>
       { $unwind: '$games' },
       { $replaceRoot: { newRoot: '$games' } },
     ])
-    .map(formatGames)
+    .map((game) => formatGames({ ...game, timezone }))
     .toArray();
