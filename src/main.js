@@ -1,15 +1,26 @@
-import Vue from 'vue';
-import App from './App.vue';
-import store from './store';
+import { setupExpress } from './express';
+import { setupDB } from './db';
+import { setupSockets, initSockets } from './sockets';
+import { initWatchers } from './watchers';
 
-Vue.config.productionTip = false;
+// eslint-disable-next-line import/prefer-default-export
+export const isTest = process.env.NODE_ENV === 'test';
 
-const app = new Vue({
-  store,
-  render: (h) => h(App),
-}).$mount('#app');
+const main = async () => {
+  try {
+    const db = await setupDB();
 
-// only available during E2E tests
-if (window.Cypress) {
-  window.app = app;
-}
+    const [express, ...sockets] = await Promise.all([
+      setupExpress(),
+      setupSockets('v1'),
+      setupSockets('test'),
+    ]);
+
+    initWatchers(db);
+    initSockets(express, sockets);
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
+main();

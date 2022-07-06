@@ -1,4 +1,6 @@
-module.exports = {
-  preset: '@vue/cli-plugin-unit-jest',
-  modulePathIgnorePatterns: ['<rootDir>/.*/__mocks__'],
+export default {
+  transform: {
+    '^.+\\.js?$': 'babel-jest',
+  },
+  transformIgnorePatterns: ['node_modules/(?!date-fns-tz/)'],
 };
